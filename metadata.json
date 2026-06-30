@@ -1,0 +1,6 @@
+{
+  "name": "Clean World Inc.",
+  "description": "South Sudan's premier environmental consultancy delivering B2B facility management, ecology solutions, and high-stakes HSE audits.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
