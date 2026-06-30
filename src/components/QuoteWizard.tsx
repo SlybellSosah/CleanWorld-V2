@@ -1,810 +1,958 @@
-import React, { useState, useRef, useEffect } from "react";
-import { ServicePillar, RiskClass, QuoteState, Product, CartItem, ActiveView } from "../types";
-import { PRODUCTS, JUBA_LOCATIONS } from "../data";
+import React, { useState, useEffect } from "react";
+import { ActiveView, Booking } from "../types";
 import { 
-  ShieldCheck, ArrowLeft, ArrowRight, MapPin, Layers, Users, ShieldAlert,
-  Plus, Minus, Clipboard, CheckCircle, Download, FileText, Compass, Check
+  ShieldCheck, ArrowLeft, ArrowRight, CheckCircle, MapPin, 
+  Sparkles, Calendar, Clock, CreditCard, HelpCircle, Heart, User, Building, Phone, Mail, FileText
 } from "lucide-react";
+import { motion, AnimatePresence } from "motion/react";
 
 interface QuoteWizardProps {
   setActiveView: (view: ActiveView) => void;
-  quoteState: QuoteState;
-  setQuoteState: React.Dispatch<React.SetStateAction<QuoteState>>;
-  cartProducts: { [key: string]: number };
-  onUpdateCartQuantity: (productId: string, quantity: number) => void;
+  bookings: Booking[];
+  setBookings: React.Dispatch<React.SetStateAction<Booking[]>>;
 }
 
-export default function QuoteWizard({
-  setActiveView,
-  quoteState,
-  setQuoteState,
-  cartProducts,
-  onUpdateCartQuantity
-}: QuoteWizardProps) {
-  const [activeStep, setActiveStep] = useState(1); // 1: Service, 2: Inventory, 3: Location, 4: Review
+export default function QuoteWizard({ setActiveView, bookings, setBookings }: QuoteWizardProps) {
+  const [activeStep, setActiveStep] = useState(1); // Step 1: Scoping, Step 2: Frequency & Schedule, Step 3: Checkout
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [receiptState, setReceiptState] = useState<any>(null);
+  const [newBookingId, setNewBookingId] = useState<string | null>(null);
 
-  // Map click interaction refs & helper
-  const mapContainerRef = useRef<HTMLDivElement>(null);
-  const [mapPinPos, setMapPinPos] = useState({ x: 50, y: 50 }); // percentage
+  // STEP 1 STATE: Scoping
+  const [bedrooms, setBedrooms] = useState<number>(3);
+  const [bathrooms, setBathrooms] = useState<number>(2);
+  const [sqFtRange, setSqFtRange] = useState<string>("1,000 - 1,999 sq ft");
+  const [cleanType, setCleanType] = useState<"standard" | "deep" | "move-in-out">("standard");
+  const [selectedAddons, setSelectedAddons] = useState<string[]>([]);
+  const [zipCode, setZipCode] = useState<string>("61101"); // prefilled if validated
+  const [zipError, setZipError] = useState<string>("");
 
-  // Pre-configured district coordinate matching
-  const handleDistrictSelect = (locationName: string) => {
-    const loc = JUBA_LOCATIONS.find(l => l.name === locationName);
-    if (loc) {
-      setQuoteState(prev => ({
-        ...prev,
-        locationName: loc.name,
-        lat: loc.lat,
-        lng: loc.lng
-      }));
+  // STEP 2 STATE: Scheduling & Subscription Frequency
+  const [frequency, setFrequency] = useState<"one-time" | "weekly" | "bi-weekly" | "monthly">("bi-weekly");
+  const [selectedDate, setSelectedDate] = useState<string>("2026-07-01");
+  const [selectedTimeSlot, setSelectedTimeSlot] = useState<string>("09:00 AM - 12:00 PM");
 
-      // Approximate coordinates to pixel percentage on the static Juba Map image
-      let pxX = 50;
-      let pxY = 50;
-      switch (loc.name) {
-        case "Tongping": pxX = 68; pxY = 40; break;
-        case "Amarat": pxX = 58; pxY = 48; break;
-        case "Kololo": pxX = 55; pxY = 32; break;
-        case "Juba 3": pxX = 35; pxY = 65; break;
-        case "Munuki": pxX = 28; pxY = 22; break;
-        case "Gudele": pxX = 15; pxY = 45; break;
-        case "Kator": pxX = 72; pxY = 70; break;
-      }
-      setMapPinPos({ x: pxX, y: pxY });
-    }
-  };
+  // STEP 3 STATE: Personal Registration & Card Details
+  const [clientName, setClientName] = useState("");
+  const [clientEmail, setClientEmail] = useState("");
+  const [clientPhone, setClientPhone] = useState("");
+  const [address, setAddress] = useState("");
+  const [entryInstructions, setEntryInstructions] = useState("");
+  const [cardNumber, setCardNumber] = useState("");
+  const [cardHolder, setCardHolder] = useState("");
+  const [cardExpiry, setCardExpiry] = useState("");
+  const [cardCvv, setCardCvv] = useState("");
+  
+  // Validation Errors
+  const [step1Error, setStep1Error] = useState("");
+  const [step3Error, setStep3Error] = useState("");
 
-  // Click on map container to set custom coordinate pin
-  const handleMapClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!mapContainerRef.current) return;
-    const rect = mapContainerRef.current.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+  // ZIP territories served in Juba
+  const SERVED_TERRITORIES = [
+    { zip: "61101", name: "Tongping" },
+    { zip: "61102", name: "Gudele" },
+    { zip: "61103", name: "Munuki" },
+    { zip: "61104", name: "Amarat" },
+    { zip: "61105", name: "Kololo" },
+    { zip: "61106", name: "Kator" },
+    { zip: "61107", name: "Juba 3" },
+  ];
 
-    const pctX = (x / rect.width) * 100;
-    const pctY = (y / rect.height) * 100;
-
-    setMapPinPos({ x: pctX, y: pctY });
-
-    // Calculate a dynamic lat/lng based on Juba's central coordinates: 4.8517 N, 31.5822 E
-    // Center of map is roughly 50%, 50%
-    const latOffset = ((50 - pctY) * 0.0012); // moving up decreases pctY, increases latitude
-    const lngOffset = ((pctX - 50) * 0.0015); // moving right increases pctX, increases longitude
-
-    const rawLat = 4.8517 + latOffset;
-    const rawLng = 31.5822 + lngOffset;
-
-    // Keep to 4 decimal places
-    const targetLat = Math.round(rawLat * 10000) / 10000;
-    const targetLng = Math.round(rawLng * 10000) / 10000;
-
-    // Detect closest district name
-    let closestLoc = JUBA_LOCATIONS[0];
-    let minDist = Infinity;
-    JUBA_LOCATIONS.forEach(loc => {
-      const dist = Math.sqrt(Math.pow(loc.lat - targetLat, 2) + Math.pow(loc.lng - targetLng, 2));
-      if (dist < minDist) {
-        minDist = dist;
-        closestLoc = loc;
-      }
-    });
-
-    setQuoteState(prev => ({
-      ...prev,
-      locationName: `Facility Gate (Near ${closestLoc.name})`,
-      lat: targetLat,
-      lng: targetLng
-    }));
-  };
-
-  // Sync initial map pin on mount based on initial location
+  // Load validated zip code from sessionStorage on mount (if user came from Landing Page Gatekeeper)
   useEffect(() => {
-    if (quoteState.locationName) {
-      const match = JUBA_LOCATIONS.find(l => l.name === quoteState.locationName);
-      if (match) {
-        handleDistrictSelect(match.name);
-      }
+    const savedZip = sessionStorage.getItem("validatedZipCode");
+    if (savedZip) {
+      setZipCode(savedZip);
     }
   }, []);
 
-  // Compute live operational indicators
-  const suggestedPersonnel = Math.max(2, Math.ceil(quoteState.areaSize / 400));
+  // Pricing constants for dynamic scoping engine
+  const BASE_PRICE = 80;
+  const PRICE_PER_BEDROOM = 25;
+  const PRICE_PER_BATHROOM = 20;
+
+  // Addon configurations
+  const ADDONS_LIST = [
+    { name: "Inside Fridge", price: 35, icon: "❄️" },
+    { name: "Inside Oven", price: 35, icon: "🔥" },
+    { name: "Cabinets", price: 30, icon: "🚪" },
+    { name: "Interior Windows", price: 40, icon: "🪟" },
+    { name: "Pet Hair Treatment", price: 25, icon: "🐾" },
+    { name: "Wet Wiping Baseboards", price: 25, icon: "🧹" }
+  ];
+
+  const getAddonPrice = (name: string) => {
+    return ADDONS_LIST.find(a => a.name === name)?.price || 0;
+  };
+
+  // Pricing formula calculations
+  const baseSizePrice = BASE_PRICE + (bedrooms * PRICE_PER_BEDROOM) + (bathrooms * PRICE_PER_BATHROOM);
   
-  // Cost multiplier based on Risk Class
-  const getRiskMultiplier = () => {
-    switch (quoteState.riskClass) {
-      case RiskClass.High: return 1.5;
-      case RiskClass.Medium: return 1.2;
-      default: return 1.0;
-    }
+  // Clean type multipliers / flat fees
+  let typePriceModifier = 0;
+  let typeMultiplier = 1.0;
+  if (cleanType === "deep") {
+    typeMultiplier = 1.5;
+  } else if (cleanType === "move-in-out") {
+    typePriceModifier = 50;
+    typeMultiplier = 1.25;
+  }
+
+  const subtotalBeforeAddons = (baseSizePrice * typeMultiplier) + typePriceModifier;
+  const addonsTotal = selectedAddons.reduce((sum, addon) => sum + getAddonPrice(addon), 0);
+  const totalSubtotal = subtotalBeforeAddons + addonsTotal;
+
+  // Frequency discounts
+  let discountPercentage = 0;
+  if (frequency === "weekly") discountPercentage = 0.20;
+  else if (frequency === "bi-weekly") discountPercentage = 0.15;
+  else if (frequency === "monthly") discountPercentage = 0.10;
+
+  const discountAmount = totalSubtotal * discountPercentage;
+  const taxedSubtotal = totalSubtotal - discountAmount;
+  
+  // Tax
+  const localTax = taxedSubtotal * 0.05; // 5% Juba local sales tax
+  const finalPrice = taxedSubtotal + localTax;
+
+  // Helper to toggle add-ons
+  const handleToggleAddon = (addonName: string) => {
+    setSelectedAddons(prev => 
+      prev.includes(addonName) ? prev.filter(a => a !== addonName) : [...prev, addonName]
+    );
   };
 
-  // Cost multiplier based on Service Pillar
-  const getPillarBaseRate = () => {
-    switch (quoteState.servicePillar) {
-      case ServicePillar.Consultancy: return 0.85; // $ per sqm
-      case ServicePillar.Management: return 0.65;
-      case ServicePillar.Fumigation: return 0.45;
-      case ServicePillar.Landscaping: return 0.75;
-      default: return 0.50;
-    }
+  // Validate ZIP area
+  const validateZipCode = (zip: string): boolean => {
+    return SERVED_TERRITORIES.some(t => t.zip === zip);
   };
 
-  const serviceBaseCost = quoteState.areaSize * getPillarBaseRate() * getRiskMultiplier();
-
-  // Supplies in procurement
-  const cartItems: CartItem[] = PRODUCTS.map(p => ({
-    product: p,
-    quantity: cartProducts[p.id] || 0
-  })).filter(item => item.quantity > 0);
-
-  const suppliesCost = cartItems.reduce((acc, item) => acc + (item.product.price * item.quantity), 0);
-  const estimatedScopeTotal = serviceBaseCost + suppliesCost;
-
-  // Next / Previous step controls
-  const handleNextStep = () => {
-    if (activeStep < 4) {
-      setActiveStep(activeStep + 1);
+  // ADVANCE TO STEP 2
+  const handleGoToStep2 = () => {
+    setStep1Error("");
+    if (!zipCode) {
+      setStep1Error("Please specify your Juba ZIP code to verify coverage.");
+      return;
     }
+    
+    if (!validateZipCode(zipCode)) {
+      setStep1Error("Coverage Area Error: Clean World does not serve this territory yet.");
+      return;
+    }
+
+    setActiveStep(2);
   };
 
-  const handlePrevStep = () => {
-    if (activeStep > 1) {
-      setActiveStep(activeStep - 1);
+  // ADVANCE TO STEP 3
+  const handleGoToStep3 = () => {
+    if (!selectedDate) {
+      alert("Please select your clean schedule date.");
+      return;
     }
+    setActiveStep(3);
   };
 
-  const handleFormSubmission = (e: React.FormEvent) => {
+  // SUBMIT TOTAL RESERVATION (Step 3 Checkout)
+  const handleSubmitBooking = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!quoteState.contactName || !quoteState.facilityName || !quoteState.contactPhone || !quoteState.contactEmail) {
-      alert("Please fill in all contact fields to complete your quote request.");
+    setStep3Error("");
+
+    if (!clientName || !clientEmail || !clientPhone || !address) {
+      setStep3Error("Please complete all fields in your service delivery profile.");
+      return;
+    }
+
+    // Card validation regex
+    if (!cardNumber || cardNumber.length < 12) {
+      setStep3Error("Secure Billing: Please input a valid credit card on file.");
       return;
     }
 
     setIsSubmitting(true);
+
     setTimeout(() => {
+      const bId = `CW-${Math.floor(1000 + Math.random() * 9000)}`;
+      
+      const newBooking: Booking = {
+        id: bId,
+        clientName: clientName,
+        clientEmail: clientEmail,
+        clientPhone: clientPhone,
+        address: address,
+        zipCode: zipCode,
+        entryInstructions: entryInstructions,
+        bedrooms: bedrooms,
+        bathrooms: bathrooms,
+        sqFtRange: sqFtRange,
+        cleanType: cleanType,
+        addons: selectedAddons,
+        frequency: frequency,
+        date: selectedDate,
+        timeSlot: selectedTimeSlot,
+        price: parseFloat(finalPrice.toFixed(2)),
+        status: "pending",
+        tipAmount: 0,
+        beforePhoto: null,
+        afterPhoto: null,
+        checkedTasks: [],
+        createdAt: new Date().toISOString()
+      };
+
+      setBookings(prev => [newBooking, ...prev]);
+      setNewBookingId(bId);
       setIsSubmitting(false);
-      const uniqueInspectionId = `HSE-${928}-${Math.floor(10000 + Math.random() * 90000)}`;
-      setReceiptState({
-        id: uniqueInspectionId,
-        date: new Date().toLocaleDateString("en-US", { year: 'numeric', month: 'long', day: 'numeric' }),
-        facility: quoteState.facilityName,
-        contact: quoteState.contactName,
-        phone: quoteState.contactPhone,
-        email: quoteState.contactEmail,
-        pillar: quoteState.servicePillar,
-        area: quoteState.areaSize,
-        risk: quoteState.riskClass,
-        lat: quoteState.lat,
-        lng: quoteState.lng,
-        location: quoteState.locationName,
-        supplies: [...cartItems],
-        totalCost: estimatedScopeTotal,
-        notes: quoteState.notes || "None logged. Standard inspection protocol assigned."
-      });
+      setActiveStep(4); // Receipt View
     }, 1500);
   };
 
-  return (
-    <div className="bg-slate-900 text-slate-100 min-h-screen py-16 px-4" id="wizard-root">
-      <div className="max-w-7xl mx-auto">
-        
-        {receiptState ? (
-          /* High-Stakes Digital Inspection Success SLA Receipt */
-          <div className="max-w-3xl mx-auto bg-slate-950 border-2 border-emerald-500 rounded-3xl p-6 sm:p-12 space-y-8 shadow-2xl animate-fadeIn" id="inspection-receipt">
-            
-            <div className="text-center space-y-4">
-              <div className="h-16 w-16 bg-emerald-500/10 text-emerald-400 rounded-full flex items-center justify-center mx-auto border border-emerald-500/30">
-                <Check className="w-8 h-8" />
-              </div>
-              <div className="space-y-1">
-                <span className="font-mono text-emerald-400 font-bold text-xs uppercase tracking-widest">// REQUEST RECEIVED</span>
-                <h2 className="font-display text-2xl sm:text-4xl font-extrabold text-white">Quote Request Received</h2>
-              </div>
-              <p className="text-xs text-slate-400 max-w-lg mx-auto leading-relaxed">
-                Your request has been sent to our team in Juba. A Clean World Inc. representative will contact you shortly to confirm your booking and details.
-              </p>
-            </div>
+  // Generate 7-day calendar array starting today
+  const getNextDays = () => {
+    const days = [];
+    const baseDate = new Date();
+    for (let i = 0; i < 14; i++) {
+      const nextDay = new Date(baseDate);
+      nextDay.setDate(baseDate.getDate() + i);
+      days.push(nextDay);
+    }
+    return days;
+  };
 
-            {/* Receipt Details Sheet */}
-            <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-6 text-sm font-sans" id="receipt-details">
-              
-              <div className="flex flex-col sm:flex-row justify-between gap-4 border-b border-slate-800 pb-4">
-                <div>
-                  <span className="block text-[10px] text-slate-400 font-mono uppercase">Quote Request ID</span>
-                  <span className="block font-mono font-bold text-emerald-400 text-base">{receiptState.id}</span>
-                </div>
-                <div>
-                  <span className="block text-[10px] text-slate-400 font-mono uppercase">Request Date</span>
-                  <span className="block font-medium text-white">{receiptState.date}</span>
-                </div>
-                <div>
-                  <span className="block text-[10px] text-slate-400 font-mono uppercase">Status</span>
-                  <span className="inline-flex items-center gap-1.5 bg-emerald-500/10 text-emerald-400 font-mono text-[10px] font-bold px-2 py-0.5 rounded border border-emerald-500/20">
-                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-ping"></span>
-                    RECEIVED
+  return (
+    <div className="bg-slate-950 text-slate-100 min-h-screen py-12 px-4 sm:px-6 lg:px-8 font-sans" id="booking-wizard-root">
+      <div className="max-w-7xl mx-auto space-y-8">
+        
+        {/* Wizard Header Status Bar */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pb-6 border-b border-slate-800">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <Sparkles className="w-4 h-4 text-emerald-400 animate-pulse" />
+              <span className="text-emerald-400 font-mono text-[10px] uppercase tracking-widest font-extrabold">Professional Cleaning Engine</span>
+            </div>
+            <h1 className="font-display text-3xl font-extrabold text-white">Book Your Eco-Clean</h1>
+          </div>
+
+          {/* Stepper Wizard Indicator */}
+          {activeStep <= 3 && (
+            <div className="flex items-center gap-3 bg-slate-900 border border-slate-800 p-2 rounded-2xl shrink-0" id="wizard-steps-indicator">
+              {[
+                { step: 1, label: "Your Clean" },
+                { step: 2, label: "Schedule" },
+                { step: 3, label: "Checkout" }
+              ].map((s) => (
+                <div key={s.step} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg">
+                  <span className={`h-6 w-6 rounded-full flex items-center justify-center font-mono text-xs font-bold ${
+                    activeStep === s.step 
+                      ? "bg-emerald-400 text-slate-950 shadow-md shadow-emerald-400/20" 
+                      : activeStep > s.step
+                      ? "bg-emerald-500/10 text-emerald-400"
+                      : "bg-slate-950 text-slate-500"
+                  }`}>
+                    {s.step}
+                  </span>
+                  <span className={`text-xs font-semibold ${activeStep === s.step ? "text-white" : "text-slate-500"}`}>
+                    {s.label}
                   </span>
                 </div>
-              </div>
+              ))}
+            </div>
+          )}
+        </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <div>
-                  <h4 className="font-display text-xs font-bold text-white uppercase tracking-wider mb-2">// Your Contact Information</h4>
-                  <div className="space-y-1.5 text-xs text-slate-300">
-                    <div><span className="text-slate-500">Business / Home Name:</span> {receiptState.facility}</div>
-                    <div><span className="text-slate-500">Contact Person:</span> {receiptState.contact}</div>
-                    <div><span className="text-slate-500">Phone Number:</span> {receiptState.phone}</div>
-                    <div><span className="text-slate-500">Email Address:</span> {receiptState.email}</div>
-                  </div>
-                </div>
-
-                <div>
-                  <h4 className="font-display text-xs font-bold text-white uppercase tracking-wider mb-2">// Selected Location</h4>
-                  <div className="space-y-1.5 text-xs text-slate-300 font-mono">
-                    <div><span className="text-slate-500">Location Name:</span> {receiptState.location}</div>
-                    <div><span className="text-slate-500">GPS Coordinates:</span> {receiptState.lat}° N, {receiptState.lng}° E</div>
-                    <div><span className="text-slate-500">Risk Category:</span> {receiptState.risk}</div>
-                    <div><span className="text-slate-500">Estimated Size:</span> {receiptState.area.toLocaleString()} sqm</div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Items Table */}
-              <div className="border-t border-slate-800 pt-6 space-y-3">
-                <h4 className="font-display text-xs font-bold text-white uppercase tracking-wider">// Selected Service &amp; Products</h4>
-                <div className="space-y-2">
-                  <div className="flex justify-between items-center text-xs bg-slate-950 p-3 rounded-lg border border-slate-850">
-                    <span className="text-white font-medium">{receiptState.pillar} Service Program ({receiptState.area.toLocaleString()} sqm)</span>
-                    <span className="font-mono text-slate-300">${(receiptState.totalCost - receiptState.supplies.reduce((acc: any, i: any) => acc + (i.product.price * i.quantity), 0)).toFixed(2)}</span>
-                  </div>
-                  {receiptState.supplies.map((item: any) => (
-                    <div key={item.product.id} className="flex justify-between items-center text-xs bg-slate-950 p-3 rounded-lg border border-slate-850">
-                      <span className="text-slate-300">{item.product.name} (x{item.quantity})</span>
-                      <span className="font-mono text-slate-400">${(item.product.price * item.quantity).toFixed(2)}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="border-t border-slate-800 pt-4 flex justify-between items-center text-base">
-                <span className="font-display font-bold text-white">Total Estimated Price</span>
-                <span className="font-mono font-bold text-emerald-400 text-lg">${receiptState.totalCost.toFixed(2)}</span>
-              </div>
-
-              <div className="bg-slate-950 p-4 rounded-xl border border-slate-800 text-xs text-slate-400 leading-relaxed">
-                <span className="block font-semibold text-white mb-1">Special Notes &amp; Instructions:</span>
-                "{receiptState.notes}"
-              </div>
-
+        {activeStep === 4 ? (
+          /* STEP 4: CONFIRMATION & RECEIPT SHEET */
+          <div className="max-w-2xl mx-auto bg-slate-900 border border-slate-800 rounded-3xl p-8 space-y-8 text-center animate-fadeIn" id="receipt-card">
+            <div className="h-16 w-16 bg-emerald-500/10 text-emerald-400 rounded-full flex items-center justify-center mx-auto border border-emerald-500/20 shadow-lg shadow-emerald-500/5">
+              <CheckCircle className="w-10 h-10 animate-bounce" />
             </div>
 
-            {/* Actions for printable document */}
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-              <button
-                onClick={() => {
-                  window.print();
-                }}
-                className="w-full sm:w-auto bg-slate-800 hover:bg-slate-700 text-slate-100 font-sans font-semibold px-6 py-3 rounded-xl border border-slate-700 flex items-center justify-center gap-2 transition-all"
-              >
-                <Download className="w-4 h-4" />
-                Print Quote Summary
-              </button>
-              <button
-                onClick={() => {
-                  setReceiptState(null);
-                  setActiveStep(1);
-                  setQuoteState(prev => ({
-                    ...prev,
-                    notes: ""
-                  }));
-                }}
-                className="w-full sm:w-auto bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-display font-bold px-6 py-3 rounded-xl transition-all flex items-center justify-center gap-1"
-              >
-                Start New Quote
-              </button>
-            </div>
-
-          </div>
-        ) : (
-          /* Multi-Step Interactive Quote Flow */
-          <div className="space-y-10" id="quote-flow-wizard">
-            
-            {/* Form Title */}
-            <div className="text-center space-y-4 max-w-2xl mx-auto">
-              <span className="text-emerald-500 font-mono text-xs font-semibold tracking-widest uppercase">// FREE SERVICE QUOTE</span>
-              <h1 className="font-display text-3xl sm:text-4xl font-extrabold text-white">
-                Request a Free Service Quote
-              </h1>
-              <p className="text-xs sm:text-sm text-slate-400">
-                Choose your services, enter your property size, select your location, and request a free quote today.
+            <div className="space-y-2">
+              <span className="text-emerald-400 font-mono text-xs uppercase tracking-wider block font-bold">// SECURE ORDER DISPATCHED</span>
+              <h2 className="font-display text-2xl font-extrabold text-white">Booking Confirmed!</h2>
+              <p className="text-xs text-slate-400 max-w-sm mx-auto">
+                Your reservation has been authenticated and loaded into our scheduling matrix.
               </p>
             </div>
 
-            {/* Progress indicator */}
-            <div className="max-w-4xl mx-auto bg-slate-950 border border-slate-800 p-4 rounded-2xl flex justify-between items-center gap-2 text-xs sm:text-sm font-display font-medium">
-              {[
-                { step: 1, label: "1. Service & Scale" },
-                { step: 2, label: "2. Supplies Integration" },
-                { step: 3, label: "3. Location Selector" },
-                { step: 4, label: "4. Review & Dispatch" }
-              ].map((item) => (
-                <button
-                  key={item.step}
-                  onClick={() => {
-                    if (item.step < activeStep || activeStep === 4) {
-                      setActiveStep(item.step);
-                    }
-                  }}
-                  className={`flex-1 text-center py-2 px-1 rounded-lg transition-all ${
-                    activeStep === item.step
-                      ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
-                      : activeStep > item.step
-                      ? "text-emerald-500 cursor-pointer hover:underline"
-                      : "text-slate-500 cursor-not-allowed"
-                  }`}
-                  disabled={item.step > activeStep}
-                >
-                  {item.label}
-                </button>
-              ))}
+            {/* Receipt Summary Breakdown */}
+            <div className="bg-slate-950 border border-slate-850 rounded-2xl p-6 text-left space-y-4 font-mono text-xs text-slate-300">
+              <div className="flex justify-between pb-3 border-b border-slate-850">
+                <span className="text-slate-500 uppercase font-mono">Invoice Reference</span>
+                <span className="font-bold text-white">{newBookingId}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500 uppercase">Service Profile</span>
+                <span className="text-white capitalize font-semibold">{cleanType} Clean</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500">Property Layout</span>
+                <span>{bedrooms} Bed, {bathrooms} Bath</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500">Schedule Date</span>
+                <span>{selectedDate}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500">Arrival Window</span>
+                <span>{selectedTimeSlot}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500">Territory Area</span>
+                <span>{SERVED_TERRITORIES.find(t => t.zip === zipCode)?.name || "Juba Local"} ({zipCode})</span>
+              </div>
+              <div className="flex justify-between pt-3 border-t border-slate-850 text-sm font-bold text-white">
+                <span>ESTIMATED BILLING</span>
+                <span>${finalPrice.toFixed(2)}</span>
+              </div>
             </div>
 
-            {/* Main Interactive Row */}
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            {/* CTA action buttons */}
+            <div className="flex flex-col sm:flex-row gap-4 justify-center pt-2">
+              <button
+                onClick={() => setActiveView(ActiveView.ClientDashboard)}
+                className="w-full sm:w-auto bg-sky-500 hover:bg-sky-400 text-slate-950 font-display font-extrabold text-xs px-8 py-3.5 rounded-xl transition-colors shadow-lg shadow-sky-500/10 flex items-center justify-center gap-1.5"
+              >
+                Go to Client Dashboard
+              </button>
+              <button
+                onClick={() => {
+                  setActiveStep(1);
+                  setNewBookingId(null);
+                  setSelectedAddons([]);
+                }}
+                className="w-full sm:w-auto bg-slate-800 hover:bg-slate-700 text-white font-sans font-semibold text-xs px-8 py-3.5 rounded-xl border border-slate-750 transition-colors"
+              >
+                Book Another Service
+              </button>
+            </div>
+          </div>
+        ) : (
+          /* WORKFLOW CONTENT & SIDEBAR GRID */
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            
+            {/* Step form selector view (Left Column) */}
+            <div className="lg:col-span-8 bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 space-y-8 min-h-[500px]" id="wizard-form-body">
               
-              {/* Wizard Body (Left Column) */}
-              <div className="lg:col-span-8 bg-slate-950 border border-slate-800 rounded-3xl p-6 sm:p-10 min-h-[500px] flex flex-col justify-between">
-                
-                {/* STEP 1: SERVICE & SCALE */}
-                {activeStep === 1 && (
-                  <div className="space-y-8 animate-fadeIn" id="step-1-content">
-                    <div className="space-y-2">
-                      <h3 className="font-display text-lg font-bold text-white">Select a Service</h3>
-                      <p className="text-xs text-slate-400">
-                        Choose the primary service program you need for your property.
-                      </p>
+              {activeStep === 1 && (
+                /* STEP 1: SCOPING FORM */
+                <div className="space-y-6 animate-fadeIn" id="step1-scoping">
+                  
+                  {/* Step Title */}
+                  <div className="space-y-1">
+                    <span className="text-sky-400 font-mono text-[10px] uppercase font-bold tracking-wider">// STEP 1 OF 3: PROPERTY DETAILS</span>
+                    <h2 className="font-display text-xl font-bold text-white">Tell us about your home</h2>
+                    <p className="text-xs text-slate-400">Specify property size and select clean type for instant scoping.</p>
+                  </div>
+
+                  {/* Territory coverage check */}
+                  <div className="space-y-2">
+                    <label className="text-[10px] text-slate-400 font-mono uppercase tracking-wide block">Juba Neighborhood Service Area *</label>
+                    <div className="flex gap-3 max-w-md">
+                      <select 
+                        value={zipCode}
+                        onChange={(e) => {
+                          setZipCode(e.target.value);
+                          setStep1Error("");
+                        }}
+                        className="bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-xs focus:outline-none focus:border-sky-500 font-sans flex-1 font-semibold text-sky-400 cursor-pointer"
+                      >
+                        <option value="" disabled className="text-slate-500">Select Juba neighborhood...</option>
+                        {SERVED_TERRITORIES.map(t => (
+                          <option key={t.zip} value={t.zip} className="bg-slate-950 text-slate-300">
+                            {t.name} (ZIP: {t.zip})
+                          </option>
+                        ))}
+                      </select>
+                      <span className="px-3.5 py-3 rounded-xl bg-slate-950 border border-slate-800 font-semibold font-mono text-[11px] flex items-center justify-center text-slate-400">
+                        {SERVED_TERRITORIES.find(t => t.zip === zipCode)?.zip || "OUTSIDE AREA"}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Bedroom & Bathroom Counters */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    {/* Bedrooms */}
+                    <div className="bg-slate-950 border border-slate-850 p-4 rounded-2xl flex items-center justify-between">
+                      <div className="space-y-0.5">
+                        <span className="text-[10px] text-slate-500 font-mono uppercase">Bedrooms</span>
+                        <div className="font-display font-black text-white text-lg">{bedrooms} Bedrooms</div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <button 
+                          onClick={() => setBedrooms(b => Math.max(1, b - 1))}
+                          className="h-9 w-9 bg-slate-900 hover:bg-slate-850 border border-slate-800 rounded-full flex items-center justify-center font-bold text-slate-300"
+                        >-</button>
+                        <button 
+                          onClick={() => setBedrooms(b => Math.min(6, b + 1))}
+                          className="h-9 w-9 bg-slate-900 hover:bg-slate-850 border border-slate-800 rounded-full flex items-center justify-center font-bold text-slate-300"
+                        >+</button>
+                      </div>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {/* Bathrooms */}
+                    <div className="bg-slate-950 border border-slate-850 p-4 rounded-2xl flex items-center justify-between">
+                      <div className="space-y-0.5">
+                        <span className="text-[10px] text-slate-500 font-mono uppercase">Bathrooms</span>
+                        <div className="font-display font-black text-white text-lg">{bathrooms} Bathrooms</div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <button 
+                          onClick={() => setBathrooms(b => Math.max(1, b - 1))}
+                          className="h-9 w-9 bg-slate-900 hover:bg-slate-850 border border-slate-800 rounded-full flex items-center justify-center font-bold text-slate-300"
+                        >-</button>
+                        <button 
+                          onClick={() => setBathrooms(b => Math.min(4, b + 1))}
+                          className="h-9 w-9 bg-slate-900 hover:bg-slate-850 border border-slate-800 rounded-full flex items-center justify-center font-bold text-slate-300"
+                        >+</button>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Square footage Range */}
+                  <div className="space-y-2">
+                    <label className="text-[10px] text-slate-400 font-mono uppercase tracking-wide block">Estimated Area Range</label>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
                       {[
-                        { val: ServicePillar.Consultancy, label: "Environmental Consultancy", desc: "Technical audits, waste-mapping & ESG scoring." },
-                        { val: ServicePillar.Management, label: "Integrated Facility & Cleaning Management", desc: "Corporate deep sanitization & custodial program." },
-                        { val: ServicePillar.Fumigation, label: "Professional Fumigation", desc: "Malaria vector control & pathogen misting." },
-                        { val: ServicePillar.Landscaping, label: "Landscaping & Botanical Design", desc: "Botanical gardens, residential lawns & community green spaces." }
-                      ].map((item) => (
+                        "< 1,000 sq ft",
+                        "1,000 - 1,999 sq ft",
+                        "2,000 - 2,999 sq ft",
+                        "3,000+ sq ft"
+                      ].map((range) => (
                         <button
-                          key={item.val}
-                          type="button"
-                          onClick={() => setQuoteState(prev => ({ ...prev, servicePillar: item.val }))}
-                          className={`p-5 rounded-2xl text-left border transition-all flex flex-col justify-between h-36 ${
-                            quoteState.servicePillar === item.val
-                              ? "bg-emerald-500/5 border-emerald-500 text-emerald-400"
-                              : "bg-slate-900/50 border-slate-800 hover:border-slate-700 text-slate-300"
+                          key={range}
+                          onClick={() => setSqFtRange(range)}
+                          className={`py-3.5 rounded-xl border text-center transition-all ${
+                            sqFtRange === range
+                              ? "bg-sky-500/10 border-sky-500 text-sky-400 font-bold"
+                              : "bg-slate-950 border-slate-850 text-slate-400 hover:text-slate-200"
                           }`}
                         >
-                          <span className="font-display font-bold text-sm text-white">{item.label}</span>
-                          <span className="text-xs text-slate-400 leading-normal mt-2">{item.desc}</span>
+                          {range}
                         </button>
                       ))}
                     </div>
+                  </div>
 
-                    <div className="space-y-4">
-                      <div className="flex justify-between items-center">
-                        <label htmlFor="area-range-input" className="font-display text-sm font-bold text-white">Estimated Size</label>
-                        <span className="font-mono text-emerald-400 font-bold text-sm bg-emerald-500/5 px-2.5 py-1 rounded-lg border border-emerald-500/10">
-                          {quoteState.areaSize.toLocaleString()} sqm
-                        </span>
-                      </div>
-                      <p className="text-xs text-slate-400">
-                        Enter the estimated size of your building or land area in square meters.
-                      </p>
-                      <input 
-                        type="range" 
-                        id="area-range-input"
-                        min={50} 
-                        max={10000} 
-                        step={50}
-                        value={quoteState.areaSize}
-                        onChange={(e) => setQuoteState(prev => ({ ...prev, areaSize: parseInt(e.target.value) }))}
-                        className="w-full accent-emerald-500 h-1 bg-slate-900 rounded-lg appearance-none cursor-pointer"
-                      />
-                      <div className="flex justify-between text-[10px] text-slate-500 font-mono">
-                        <span>50 sqm</span>
-                        <span>5,000 sqm</span>
-                        <span>10,000 sqm+</span>
-                      </div>
-                    </div>
+                  {/* Base Clean Selector */}
+                  <div className="space-y-2">
+                    <label className="text-[10px] text-slate-400 font-mono uppercase tracking-wide block">Standard, Deep, or Move Clean</label>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                      {/* Standard Clean */}
+                      <button
+                        onClick={() => setCleanType("standard")}
+                        className={`p-4 rounded-2xl border text-left transition-all flex flex-col justify-between gap-4 ${
+                          cleanType === "standard"
+                            ? "bg-sky-500/5 border-sky-500 text-sky-400"
+                            : "bg-slate-950 border-slate-850 text-slate-400 hover:text-slate-200"
+                        }`}
+                      >
+                        <div className="space-y-1">
+                          <span className="font-display font-bold text-white block text-sm">Standard Clean</span>
+                          <p className="text-[10px] text-slate-500 leading-normal">
+                            Perfect for regular maintenance. Includes dust, mop, vacuum, and trash empty.
+                          </p>
+                        </div>
+                        <span className="font-mono text-xs font-semibold">Multiplier: 1.0x</span>
+                      </button>
 
-                    <div className="space-y-4">
-                      <h3 className="font-display text-sm font-bold text-white">Risk Category</h3>
-                      <p className="text-xs text-slate-400">
-                        Select the risk level of your facility. This helps us prepare the right safety equipment and products.
-                      </p>
+                      {/* Deep Clean */}
+                      <button
+                        onClick={() => setCleanType("deep")}
+                        className={`p-4 rounded-2xl border text-left transition-all flex flex-col justify-between gap-4 ${
+                          cleanType === "deep"
+                            ? "bg-emerald-500/5 border-emerald-500 text-emerald-400"
+                            : "bg-slate-950 border-slate-850 text-slate-400 hover:text-slate-200"
+                        }`}
+                      >
+                        <div className="space-y-1">
+                          <span className="font-display font-bold text-white block text-sm">Deep Clean</span>
+                          <p className="text-[10px] text-slate-500 leading-normal">
+                            Intense detailed sanitize. Adds wet wipe baseboards, heavy scrub zones and light fixtures.
+                          </p>
+                        </div>
+                        <span className="font-mono text-xs font-semibold text-emerald-400">Multiplier: 1.5x</span>
+                      </button>
 
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                        {[
-                          { val: RiskClass.Low, label: "Low Risk", desc: "Standard office spaces, homes, and common walkways." },
-                          { val: RiskClass.Medium, label: "Medium Risk", desc: "Kitchens, restaurants, warehouses, and compounds." },
-                          { val: RiskClass.High, label: "High Risk", desc: "Hospitals, medical clinics, and chemical storage areas." }
-                        ].map((item) => (
-                          <button
-                            key={item.val}
-                            type="button"
-                            onClick={() => setQuoteState(prev => ({ ...prev, riskClass: item.val as RiskClass }))}
-                            className={`p-4 rounded-xl text-left border transition-all space-y-2 ${
-                              quoteState.riskClass === item.val
-                                ? "bg-emerald-500/5 border-emerald-500"
-                                : "bg-slate-900/50 border-slate-800 text-slate-300"
-                            }`}
-                          >
-                            <span className="block font-semibold text-xs text-white">{item.label}</span>
-                            <span className="block text-[10px] text-slate-500 leading-normal">{item.desc}</span>
-                          </button>
-                        ))}
-                      </div>
+                      {/* Move-In/Out Clean */}
+                      <button
+                        onClick={() => setCleanType("move-in-out")}
+                        className={`p-4 rounded-2xl border text-left transition-all flex flex-col justify-between gap-4 ${
+                          cleanType === "move-in-out"
+                            ? "bg-purple-500/5 border-purple-500 text-purple-400"
+                            : "bg-slate-950 border-slate-850 text-slate-400 hover:text-slate-200"
+                        }`}
+                      >
+                        <div className="space-y-1">
+                          <span className="font-display font-bold text-white block text-sm">Move-In / Out</span>
+                          <p className="text-[10px] text-slate-500 leading-normal">
+                            Prepare your property for moving. Includes empty cabinets, stove interior and deep closet vacuum.
+                          </p>
+                        </div>
+                        <span className="font-mono text-xs font-semibold text-purple-400">Multiplier: 1.25x + $50</span>
+                      </button>
                     </div>
                   </div>
-                )}
 
-                {/* STEP 2: SUPPLIES INTEGRATION */}
-                {activeStep === 2 && (
-                  <div className="space-y-6 animate-fadeIn" id="step-2-content">
-                    <div className="space-y-2">
-                      <h3 className="font-display text-lg font-bold text-white">Add Eco-Friendly Products</h3>
-                      <p className="text-xs text-slate-400">
-                        Add any recommended safe cleaning products or disinfectants you would like to include in your quote.
-                      </p>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      {PRODUCTS.map((prod) => {
-                        const currentQty = cartProducts[prod.id] || 0;
+                  {/* Toggleable Add-on Cards */}
+                  <div className="space-y-3">
+                    <label className="text-[10px] text-slate-400 font-mono uppercase tracking-wide block">Select Special Add-ons</label>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 font-sans">
+                      {ADDONS_LIST.map((addon) => {
+                        const isSelected = selectedAddons.includes(addon.name);
                         return (
-                          <div key={prod.id} className="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex gap-3 items-center justify-between">
-                            <div className="flex items-center gap-3">
-                              <img 
-                                src={prod.image} 
-                                alt={prod.name} 
-                                className="w-14 h-14 rounded-lg object-cover bg-slate-950 border border-slate-800"
-                                referrerPolicy="no-referrer"
-                              />
-                              <div>
-                                <span className="block text-xs font-bold text-white">{prod.name}</span>
-                                <span className="block text-[10px] text-emerald-400 font-mono mt-0.5">${prod.price.toFixed(2)} / {prod.unit.split(" ")[0]}</span>
-                              </div>
+                          <button
+                            key={addon.name}
+                            onClick={() => handleToggleAddon(addon.name)}
+                            className={`p-3.5 rounded-xl border text-left transition-all flex flex-col justify-between gap-3 ${
+                              isSelected
+                                ? "bg-sky-500/10 border-sky-500 text-sky-400 font-bold"
+                                : "bg-slate-950 border-slate-850 text-slate-300 hover:text-white"
+                            }`}
+                          >
+                            <div className="flex justify-between items-center w-full">
+                              <span className="text-lg">{addon.icon}</span>
+                              <span className="font-mono text-[10px] text-slate-400 font-semibold">+${addon.price}</span>
                             </div>
-
-                            <div className="flex items-center gap-2 bg-slate-950 border border-slate-850 px-2 py-1 rounded-lg">
-                              <button
-                                type="button"
-                                onClick={() => onUpdateCartQuantity(prod.id, Math.max(0, currentQty - 1))}
-                                className="text-slate-400 hover:text-white p-1"
-                              >
-                                <Minus className="w-3 h-3" />
-                              </button>
-                              <span className="font-mono text-xs font-semibold text-white px-1">{currentQty}</span>
-                              <button
-                                type="button"
-                                onClick={() => onUpdateCartQuantity(prod.id, currentQty + 1)}
-                                className="text-slate-400 hover:text-white p-1"
-                              >
-                                <Plus className="w-3 h-3" />
-                              </button>
-                            </div>
-                          </div>
+                            <span className="text-[11px] font-semibold tracking-wide leading-none">{addon.name}</span>
+                          </button>
                         );
                       })}
                     </div>
+                  </div>
 
-                    <div className="bg-slate-900 p-4 rounded-2xl border border-slate-800 flex items-center justify-between text-xs">
-                      <div className="text-slate-400">
-                        Total Supplies Added: <span className="text-white font-semibold font-mono">{cartItems.reduce((acc, i) => acc + i.quantity, 0)} units</span>
-                      </div>
-                      <span className="text-emerald-400 font-mono font-bold">${suppliesCost.toFixed(2)}</span>
+                  {step1Error && (
+                    <p className="text-red-400 font-mono text-[10px] text-center animate-pulse">{step1Error}</p>
+                  )}
+
+                  {/* Bottom Navigation CTAs */}
+                  <div className="pt-4 flex justify-between">
+                    <button
+                      onClick={() => setActiveView(ActiveView.Home)}
+                      className="px-5 py-3 border border-slate-800 rounded-xl hover:bg-slate-850 text-xs font-semibold text-slate-300 transition-colors"
+                    >
+                      Back to Home
+                    </button>
+                    <button
+                      onClick={handleGoToStep2}
+                      className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-display font-extrabold text-xs px-8 py-3.5 rounded-xl transition-colors shadow-lg shadow-emerald-500/10 flex items-center gap-1.5"
+                    >
+                      Select Schedule
+                      <ArrowRight className="w-4 h-4" />
+                    </button>
+                  </div>
+
+                </div>
+              )}
+
+              {activeStep === 2 && (
+                /* STEP 2: FREQUENCY & SCHEDULING FORM */
+                <div className="space-y-6 animate-fadeIn" id="step2-scheduling">
+                  
+                  {/* Step Title */}
+                  <div className="space-y-1">
+                    <span className="text-sky-400 font-mono text-[10px] uppercase font-bold tracking-wider">// STEP 2 OF 3: SCHEDULING & FREQUENCY</span>
+                    <h2 className="font-display text-xl font-bold text-white">Choose frequency &amp; date</h2>
+                    <p className="text-xs text-slate-400">Lock in a subscription schedule to unlock percentage discounts.</p>
+                  </div>
+
+                  {/* Subscription Frequencies */}
+                  <div className="space-y-2">
+                    <label className="text-[10px] text-slate-400 font-mono uppercase tracking-wide block">Subscription Frequency (Discounts applied instantly)</label>
+                    <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs font-sans">
+                      {/* One Time */}
+                      <button
+                        onClick={() => setFrequency("one-time")}
+                        className={`p-3.5 rounded-xl border text-left transition-all flex flex-col justify-between min-h-[90px] ${
+                          frequency === "one-time"
+                            ? "bg-sky-500/10 border-sky-500 text-sky-400 font-bold"
+                            : "bg-slate-950 border-slate-850 text-slate-300 hover:text-white"
+                        }`}
+                      >
+                        <span className="font-bold text-white block">One-Time</span>
+                        <span className="text-[9px] font-mono text-slate-500 uppercase block">Base Price</span>
+                      </button>
+
+                      {/* Weekly */}
+                      <button
+                        onClick={() => setFrequency("weekly")}
+                        className={`p-3.5 rounded-xl border text-left transition-all flex flex-col justify-between min-h-[90px] ${
+                          frequency === "weekly"
+                            ? "bg-emerald-500/10 border-emerald-500 text-emerald-400 font-bold"
+                            : "bg-slate-950 border-slate-850 text-slate-300 hover:text-white"
+                        }`}
+                      >
+                        <div className="flex justify-between items-center w-full">
+                          <span className="font-bold text-white">Weekly</span>
+                          <span className="text-[9px] font-mono font-bold bg-emerald-500 text-slate-950 px-1 py-0.2 rounded">-20%</span>
+                        </div>
+                        <span className="text-[9px] font-mono text-emerald-400 uppercase block">Best Value</span>
+                      </button>
+
+                      {/* Bi-Weekly */}
+                      <button
+                        onClick={() => setFrequency("bi-weekly")}
+                        className={`p-3.5 rounded-xl border text-left transition-all flex flex-col justify-between min-h-[90px] ${
+                          frequency === "bi-weekly"
+                            ? "bg-emerald-500/10 border-emerald-500 text-emerald-400 font-bold"
+                            : "bg-slate-950 border-slate-300/40 text-slate-300 hover:text-white"
+                        }`}
+                      >
+                        <div className="flex justify-between items-center w-full">
+                          <span className="font-bold text-white">Bi-Weekly</span>
+                          <span className="text-[9px] font-mono font-bold bg-emerald-500 text-slate-950 px-1 py-0.2 rounded">-15%</span>
+                        </div>
+                        <span className="text-[9px] font-mono text-emerald-400 uppercase block">Most Popular</span>
+                      </button>
+
+                      {/* Monthly */}
+                      <button
+                        onClick={() => setFrequency("monthly")}
+                        className={`p-3.5 rounded-xl border text-left transition-all flex flex-col justify-between min-h-[90px] ${
+                          frequency === "monthly"
+                            ? "bg-sky-500/10 border-sky-500 text-sky-400 font-bold"
+                            : "bg-slate-950 border-slate-850 text-slate-300 hover:text-white"
+                        }`}
+                      >
+                        <div className="flex justify-between items-center w-full">
+                          <span className="font-bold text-white">Monthly</span>
+                          <span className="text-[9px] font-mono font-bold bg-emerald-500 text-slate-950 px-1 py-0.2 rounded">-10%</span>
+                        </div>
+                        <span className="text-[9px] font-mono text-slate-500 uppercase block">Regular Clean</span>
+                      </button>
                     </div>
                   </div>
-                )}
 
-                {/* STEP 3: LOCATION SELECTOR */}
-                {activeStep === 3 && (
-                  <div className="space-y-6 animate-fadeIn" id="step-3-content">
+                  {/* Calendar Picker Layout */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                    
+                    {/* Visual 7-day picker list */}
                     <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <Compass className="w-5 h-5 text-emerald-400" />
-                        <h3 className="font-display text-lg font-bold text-white">Select Your Location on the Map</h3>
+                      <label className="text-[10px] text-slate-400 font-mono uppercase tracking-wide block">Select Date Slot</label>
+                      <div className="grid grid-cols-3 gap-2.5">
+                        {getNextDays().map((day) => {
+                          const dateStr = day.toISOString().split("T")[0];
+                          const isSelected = selectedDate === dateStr;
+                          return (
+                            <button
+                              key={dateStr}
+                              onClick={() => setSelectedDate(dateStr)}
+                              className={`p-2.5 rounded-xl border text-center flex flex-col gap-1 transition-all ${
+                                isSelected
+                                  ? "bg-sky-500/10 border-sky-500 text-sky-400 font-bold"
+                                  : "bg-slate-950 border-slate-850 text-slate-400 hover:text-slate-200"
+                              }`}
+                            >
+                              <span className="text-[9px] font-mono text-slate-500 uppercase block">
+                                {day.toLocaleDateString("en-US", { weekday: 'short' })}
+                              </span>
+                              <span className="font-display font-bold text-sm block">{day.getDate()}</span>
+                              <span className="text-[8px] text-slate-500 uppercase block">
+                                {day.toLocaleDateString("en-US", { month: 'short' })}
+                              </span>
+                            </button>
+                          );
+                        })}
                       </div>
-                      <p className="text-xs text-slate-400">
-                        Click on the Juba map or select a district below to set your location pin. This helps us find your home or business easily.
-                      </p>
                     </div>
 
-                    {/* District selector shortcut */}
-                    <div className="space-y-2">
-                      <span className="block text-[10px] text-slate-400 font-mono uppercase tracking-wider">Juba Districts:</span>
-                      <div className="flex flex-wrap gap-1.5">
-                        {JUBA_LOCATIONS.map((loc) => (
+                    {/* Preferred Arrival Window */}
+                    <div className="space-y-3">
+                      <label className="text-[10px] text-slate-400 font-mono uppercase tracking-wide block">Arrival Time Window</label>
+                      <div className="grid grid-cols-1 gap-2 text-xs">
+                        {[
+                          "09:00 AM - 12:00 PM",
+                          "01:00 PM - 04:00 PM",
+                          "04:00 PM - 07:00 PM"
+                        ].map((slot) => (
                           <button
-                            key={loc.name}
-                            type="button"
-                            onClick={() => handleDistrictSelect(loc.name)}
-                            className={`px-3 py-1.5 rounded-lg text-xs font-mono transition-all border ${
-                              quoteState.locationName === loc.name || quoteState.locationName.includes(loc.name)
-                                ? "bg-emerald-500/10 border-emerald-500 text-emerald-400 font-bold"
-                                : "bg-slate-900 border-slate-800 text-slate-400 hover:text-white"
+                            key={slot}
+                            onClick={() => setSelectedTimeSlot(slot)}
+                            className={`py-3 px-4 rounded-xl border text-left font-mono text-[11px] transition-all flex justify-between items-center ${
+                              selectedTimeSlot === slot
+                                ? "bg-sky-500/10 border-sky-500 text-sky-400 font-bold"
+                                : "bg-slate-950 border-slate-850 text-slate-400 hover:text-slate-200"
                             }`}
                           >
-                            {loc.name}
+                            <span>{slot}</span>
+                            <span className="text-[9px] text-emerald-400 uppercase font-mono font-bold">AVAILABLE</span>
                           </button>
                         ))}
                       </div>
                     </div>
 
-                    {/* Interactive map box */}
-                    <div className="relative border-2 border-slate-800 rounded-3xl overflow-hidden shadow-2xl bg-slate-950">
-                      
-                      {/* Bounding box containing map image */}
-                      <div 
-                        ref={mapContainerRef}
-                        onClick={handleMapClick}
-                        className="h-80 w-full cursor-crosshair relative bg-slate-900 select-none overflow-hidden"
-                        id="interactive-map-canvas"
-                      >
-                        <img 
-                          src="https://lh3.googleusercontent.com/aida-public/AB6AXuBxVrMYT8wpL3aRCLWoO_pusUPYws7ExTbjZ9Wm6_Cw0A3AT1w0s1mDW8lr_8hGRzpvA2ccLuwO0M5O0UGAi0JJbiVxMbUpCCycM6iIXH9FAE-sjszDwYpM_hfDoURIhIuyYGEh71ESzemtqcDhYnPkAxev-pxAYZczuQ-KFtN_VU52Lx4Fcaok5n44AqJu5sd3DYvPZ95JM9qG-0jFKxLwtD0lz7uLzUrZIwHp0FJWO4ComTXw104LYu3JNzKVO9qKhdHFMgZ449A" 
-                          alt="Juba Facility Map Grid" 
-                          className="w-full h-full object-cover opacity-80 pointer-events-none"
-                          referrerPolicy="no-referrer"
-                        />
-
-                        {/* Interactive overlay grid */}
-                        <div className="absolute inset-0 grid grid-cols-6 grid-rows-4 opacity-5 pointer-events-none border border-white">
-                          {[...Array(24)].map((_, i) => (
-                            <div key={i} className="border border-white/40"></div>
-                          ))}
-                        </div>
-
-                        {/* Interactive floating neon pin */}
-                        <div 
-                          className="absolute h-8 w-8 -ml-4 -mt-8 flex items-center justify-center transition-all duration-300 pointer-events-none"
-                          style={{ left: `${mapPinPos.x}%`, top: `${mapPinPos.y}%` }}
-                        >
-                          <div className="absolute h-3 w-3 bg-emerald-400 rounded-full animate-ping opacity-75"></div>
-                          <MapPin className="w-8 h-8 text-emerald-400 drop-shadow-[0_2px_8px_rgba(52,211,153,0.5)]" />
-                        </div>
-
-                        {/* Real-time coordinates HUD inside map */}
-                        <div className="absolute bottom-3 left-3 bg-slate-950/90 backdrop-blur border border-slate-800 px-3 py-1.5 rounded-xl font-mono text-[10px] text-emerald-400 space-y-0.5">
-                          <div>GPS Lat: {quoteState.lat}° N</div>
-                          <div>GPS Lng: {quoteState.lng}° E</div>
-                          <div>Zone: Juba Sector AX-9</div>
-                        </div>
-
-                      </div>
-
-                    </div>
-
-                    {/* Protocol notice box */}
-                    <div className="bg-emerald-950/20 border border-emerald-500/20 p-4 rounded-2xl flex items-start gap-3">
-                      <ShieldAlert className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5 animate-pulse" />
-                      <div className="space-y-1">
-                        <span className="block font-semibold text-xs text-white uppercase tracking-wider">Note on Location Selection</span>
-                        <p className="text-[11px] text-slate-400 leading-relaxed">
-                          Providing your location helps us coordinate with you and ensures our cleaning team arrives at your property on time.
-                        </p>
-                      </div>
-                    </div>
                   </div>
-                )}
 
-                {/* STEP 4: REVIEW & DISPATCH */}
-                {activeStep === 4 && (
-                  <form onSubmit={handleFormSubmission} className="space-y-6 animate-fadeIn" id="step-4-form">
-                    <div className="space-y-2">
-                      <h3 className="font-display text-lg font-bold text-white">Enter Your Details to Complete Your Quote Request</h3>
-                      <p className="text-xs text-slate-400">
-                        Please enter your contact information below so we can contact you to finalize your quote.
-                      </p>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div>
-                        <label htmlFor="quote-facility" className="block text-xs font-mono text-slate-400 uppercase tracking-wider mb-2">Your Business / Home Name *</label>
-                        <input 
-                          type="text" 
-                          id="quote-facility"
-                          required
-                          value={quoteState.facilityName}
-                          onChange={(e) => setQuoteState(prev => ({ ...prev, facilityName: e.target.value }))}
-                          placeholder="e.g. My Home / My Business Juba"
-                          className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-xs text-slate-100 placeholder-slate-600 focus:outline-none focus:border-emerald-500"
-                        />
-                      </div>
-
-                      <div>
-                        <label htmlFor="quote-contact" className="block text-xs font-mono text-slate-400 uppercase tracking-wider mb-2">Contact Person *</label>
-                        <input 
-                          type="text" 
-                          id="quote-contact"
-                          required
-                          value={quoteState.contactName}
-                          onChange={(e) => setQuoteState(prev => ({ ...prev, contactName: e.target.value }))}
-                          placeholder="e.g. Kevina Aber"
-                          className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-xs text-slate-100 placeholder-slate-600 focus:outline-none focus:border-emerald-500"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div>
-                        <label htmlFor="quote-phone" className="block text-xs font-mono text-slate-400 uppercase tracking-wider mb-2">Phone Number *</label>
-                        <input 
-                          type="tel" 
-                          id="quote-phone"
-                          required
-                          value={quoteState.contactPhone}
-                          onChange={(e) => setQuoteState(prev => ({ ...prev, contactPhone: e.target.value }))}
-                          placeholder="e.g. +211 928 300 400"
-                          className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-xs text-slate-100 placeholder-slate-600 focus:outline-none focus:border-emerald-500"
-                        />
-                      </div>
-
-                      <div>
-                        <label htmlFor="quote-email" className="block text-xs font-mono text-slate-400 uppercase tracking-wider mb-2">Email Address *</label>
-                        <input 
-                          type="email" 
-                          id="quote-email"
-                          required
-                          value={quoteState.contactEmail}
-                          onChange={(e) => setQuoteState(prev => ({ ...prev, contactEmail: e.target.value }))}
-                          placeholder="e.g. example@gmail.com"
-                          className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-xs text-slate-100 placeholder-slate-600 focus:outline-none focus:border-emerald-500"
-                        />
-                      </div>
-                    </div>
-
-                    <div>
-                      <label htmlFor="quote-notes" className="block text-xs font-mono text-slate-400 uppercase tracking-wider mb-2">Special Requests &amp; Instructions (Optional)</label>
-                      <textarea 
-                        id="quote-notes"
-                        rows={3}
-                        value={quoteState.notes}
-                        onChange={(e) => setQuoteState(prev => ({ ...prev, notes: e.target.value }))}
-                        placeholder="Tell us about any specific details, preferred visit times, or cleaning requests..."
-                        className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-xs text-slate-100 placeholder-slate-600 focus:outline-none focus:border-emerald-500 resize-none"
-                      />
-                    </div>
-
-                    <div className="flex justify-between items-center pt-2 border-t border-slate-900">
-                      <span className="text-[10px] text-slate-500 max-w-sm text-left">
-                        By submitting, you request a free assessment by Clean World Inc. to prepare your service plan.
-                      </span>
-                      <button
-                        type="submit"
-                        disabled={isSubmitting}
-                        className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-display font-bold text-xs px-6 py-3.5 rounded-xl transition-all shadow-lg shadow-emerald-500/10"
-                      >
-                        {isSubmitting ? "Sending..." : "Submit Request"}
-                      </button>
-                    </div>
-
-                  </form>
-                )}
-
-                {/* Wizard navigation bar at bottom */}
-                {activeStep < 4 && (
-                  <div className="flex items-center justify-between pt-8 border-t border-slate-900/60 mt-8" id="wizard-nav-buttons">
+                  {/* Bottom Navigation CTAs */}
+                  <div className="pt-4 flex justify-between">
                     <button
-                      type="button"
-                      onClick={handlePrevStep}
-                      disabled={activeStep === 1}
-                      className={`text-xs font-bold font-display flex items-center gap-1 transition-all ${
-                        activeStep === 1 ? "text-slate-700 cursor-not-allowed" : "text-slate-400 hover:text-white"
-                      }`}
+                      onClick={() => setActiveStep(1)}
+                      className="px-5 py-3 border border-slate-800 rounded-xl hover:bg-slate-850 text-xs font-semibold text-slate-300 transition-colors"
                     >
-                      <ArrowLeft className="w-4 h-4" />
-                      Back
+                      Back to Scoping
                     </button>
-
                     <button
-                      type="button"
-                      onClick={handleNextStep}
-                      className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-display font-bold text-xs px-6 py-3 rounded-xl transition-all flex items-center gap-1 shadow-md shadow-emerald-500/5"
+                      onClick={handleGoToStep3}
+                      className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-display font-extrabold text-xs px-8 py-3.5 rounded-xl transition-colors shadow-lg shadow-emerald-500/10 flex items-center gap-1.5"
                     >
-                      Continue
+                      Proceed to Checkout
                       <ArrowRight className="w-4 h-4" />
                     </button>
                   </div>
-                )}
 
-              </div>
+                </div>
+              )}
 
-              {/* Real-time Draft sidebar (Right Column) */}
-              <div className="lg:col-span-4 space-y-6 sticky top-28" id="wizard-sidebar-summary">
-                <div className="bg-slate-950 border border-slate-800 rounded-3xl p-6 space-y-6 shadow-xl">
+              {activeStep === 3 && (
+                /* STEP 3: CONTACT & CHECKOUT FORM */
+                <form onSubmit={handleSubmitBooking} className="space-y-6 animate-fadeIn" id="step3-checkout">
                   
-                  <div className="pb-3 border-b border-slate-900">
-                    <h4 className="font-display text-sm font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                      <Clipboard className="w-4 h-4 text-emerald-400" />
-                      Your Quote Details
-                    </h4>
-                    <span className="text-[10px] text-slate-500 mt-1 block">Estimated price details</span>
+                  {/* Step Title */}
+                  <div className="space-y-1">
+                    <span className="text-sky-400 font-mono text-[10px] uppercase font-bold tracking-wider">// STEP 3 OF 3: REGISTRATION & SECURE BILLING</span>
+                    <h2 className="font-display text-xl font-bold text-white">Complete booking checkout</h2>
+                    <p className="text-xs text-slate-400">Card details are authorized on file before cleaning dispatch is approved.</p>
                   </div>
 
-                  <div className="space-y-4 text-xs font-sans">
-                    
-                    <div>
-                      <span className="text-[10px] text-slate-500 font-mono uppercase tracking-wider block">Selected Service:</span>
-                      <span className="text-white font-semibold mt-1 block">{quoteState.servicePillar} Program</span>
+                  {/* Delivery Info */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-sans">
+                    <div className="space-y-1">
+                      <label className="text-[10px] text-slate-400 font-mono uppercase">Full Name *</label>
+                      <input 
+                        type="text" 
+                        required 
+                        value={clientName}
+                        onChange={(e) => setClientName(e.target.value)}
+                        placeholder="e.g. Rebecca Nyandeng"
+                        className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-sky-500"
+                      />
                     </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] text-slate-400 font-mono uppercase">Email Address *</label>
+                      <input 
+                        type="email" 
+                        required 
+                        value={clientEmail}
+                        onChange={(e) => setClientEmail(e.target.value)}
+                        placeholder="e.g. rebecca@juba.com"
+                        className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-sky-500"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] text-slate-400 font-mono uppercase">Phone Number *</label>
+                      <input 
+                        type="text" 
+                        required 
+                        value={clientPhone}
+                        onChange={(e) => setClientPhone(e.target.value)}
+                        placeholder="e.g. +211 912 400 300"
+                        className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-sky-500"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[10px] text-slate-400 font-mono uppercase">Street Address *</label>
+                      <input 
+                        type="text" 
+                        required 
+                        value={address}
+                        onChange={(e) => setAddress(e.target.value)}
+                        placeholder="e.g. Plot 42, Airport Road, Tongping"
+                        className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-sky-500"
+                      />
+                    </div>
+                  </div>
 
-                    <div className="grid grid-cols-2 gap-3 py-3 border-t border-b border-slate-900">
-                      <div>
-                        <span className="text-[10px] text-slate-500 font-mono uppercase tracking-wider block">Estimated Size:</span>
-                        <span className="text-white font-semibold mt-0.5 block">{quoteState.areaSize.toLocaleString()} sqm</span>
+                  {/* Access Key codes instructions */}
+                  <div className="space-y-1.5 font-sans">
+                    <label className="text-[10px] text-slate-400 font-mono uppercase">Access or Key box entry instructions</label>
+                    <textarea 
+                      value={entryInstructions}
+                      onChange={(e) => setEntryInstructions(e.target.value)}
+                      placeholder="Specify if gatekeeper is present, code for lockbox, or any gate entry instructions..."
+                      className="w-full h-16 bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-sky-500 resize-none font-sans"
+                    ></textarea>
+                  </div>
+
+                  {/* Stripe Card Integration Panel */}
+                  <div className="p-5 bg-slate-950 border border-slate-850 rounded-2xl space-y-4">
+                    <h4 className="text-white font-semibold font-display text-xs flex items-center gap-1.5 uppercase tracking-wide">
+                      <CreditCard className="w-4 h-4 text-sky-400" />
+                      Secure Credit Card (Authorized on File)
+                    </h4>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-sans">
+                      <div className="space-y-1">
+                        <label className="text-[10px] text-slate-500 font-mono uppercase">Card Number</label>
+                        <input 
+                          type="text" 
+                          required
+                          value={cardNumber}
+                          onChange={(e) => setCardNumber(e.target.value)}
+                          placeholder="4111 2222 3333 4242"
+                          maxLength={19}
+                          className="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-sky-500 font-mono"
+                        />
                       </div>
-                      <div>
-                        <span className="text-[10px] text-slate-500 font-mono uppercase tracking-wider block">Risk Category:</span>
-                        <span className="text-white font-semibold mt-0.5 block">{quoteState.riskClass.split(" ")[2] || "Low"} Risk</span>
+                      <div className="space-y-1">
+                        <label className="text-[10px] text-slate-500 font-mono uppercase">Card Holder</label>
+                        <input 
+                          type="text" 
+                          required
+                          value={cardHolder}
+                          onChange={(e) => setCardHolder(e.target.value)}
+                          placeholder="e.g. Rebecca Nyandeng"
+                          className="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-sky-500"
+                        />
                       </div>
-                    </div>
-
-                    <div className="flex justify-between items-center">
-                      <span className="text-[10px] text-slate-500 font-mono uppercase tracking-wider">Recommended Team:</span>
-                      <span className="text-white font-semibold font-mono flex items-center gap-1.5">
-                        <Users className="w-4 h-4 text-emerald-400" />
-                        {suggestedPersonnel} Specialists
-                      </span>
-                    </div>
-
-                    {/* Geolocation Coordinate Readout */}
-                    <div className="bg-slate-900/50 p-3 rounded-xl border border-slate-800/80 space-y-1">
-                      <span className="text-[9px] text-slate-500 font-mono uppercase tracking-wider block">Location Coordinates:</span>
-                      <span className="text-emerald-400 font-mono text-[10px] font-semibold block truncate">
-                        {quoteState.locationName}
-                      </span>
-                      <span className="text-[10px] text-slate-400 font-mono block">
-                        {quoteState.lat}° N , {quoteState.lng}° E
-                      </span>
-                    </div>
-
-                    {/* Procurement supplies cart summary inside sidebar */}
-                    {cartItems.length > 0 && (
-                      <div className="space-y-2 border-t border-slate-900 pt-3">
-                        <span className="text-[10px] text-slate-500 font-mono uppercase tracking-wider block">Selected Products:</span>
-                        <div className="max-h-24 overflow-y-auto space-y-1 pr-1">
-                          {cartItems.map((item) => (
-                            <div key={item.product.id} className="flex justify-between text-[10px] text-slate-300">
-                              <span>{item.product.name} (x{item.quantity})</span>
-                              <span className="font-mono">${(item.product.price * item.quantity).toFixed(2)}</span>
-                            </div>
-                          ))}
+                      <div className="grid grid-cols-2 gap-3 sm:col-span-2">
+                        <div className="space-y-1">
+                          <label className="text-[10px] text-slate-500 font-mono uppercase">Expiry Date</label>
+                          <input 
+                            type="text" 
+                            required
+                            value={cardExpiry}
+                            onChange={(e) => setCardExpiry(e.target.value)}
+                            placeholder="MM/YY"
+                            maxLength={5}
+                            className="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-sky-500 font-mono"
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-[10px] text-slate-500 font-mono uppercase">CVV Code</label>
+                          <input 
+                            type="password" 
+                            required
+                            value={cardCvv}
+                            onChange={(e) => setCardCvv(e.target.value)}
+                            placeholder="•••"
+                            maxLength={3}
+                            className="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-sky-500 font-mono"
+                          />
                         </div>
                       </div>
-                    )}
+                    </div>
+                  </div>
 
-                    {/* Price computation */}
-                    <div className="space-y-2 border-t border-slate-900 pt-4">
-                      <div className="flex justify-between text-slate-400">
-                        <span>Estimated Service Price</span>
-                        <span className="font-mono">${serviceBaseCost.toFixed(2)}</span>
-                      </div>
-                      {suppliesCost > 0 && (
-                        <div className="flex justify-between text-slate-400">
-                          <span>Products Added</span>
-                          <span className="font-mono">${suppliesCost.toFixed(2)}</span>
-                        </div>
+                  {step3Error && (
+                    <p className="text-red-400 font-mono text-[10px] text-center animate-pulse">{step3Error}</p>
+                  )}
+
+                  {/* Bottom Navigation CTAs */}
+                  <div className="pt-4 flex justify-between">
+                    <button
+                      type="button"
+                      onClick={() => setActiveStep(2)}
+                      className="px-5 py-3 border border-slate-800 rounded-xl hover:bg-slate-850 text-xs font-semibold text-slate-300 transition-colors"
+                    >
+                      Back to Schedule
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-display font-black text-xs px-10 py-3.5 rounded-xl transition-colors shadow-lg shadow-emerald-500/10 flex items-center gap-1.5 uppercase tracking-wider"
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <div className="h-4 w-4 border-2 border-slate-950 border-t-transparent rounded-full animate-spin"></div>
+                          Verifying...
+                        </>
+                      ) : (
+                        <>
+                          Authorize &amp; Book
+                          <ShieldCheck className="w-4 h-4" />
+                        </>
                       )}
-                      <div className="flex justify-between items-center text-white font-bold text-sm pt-2 border-t border-slate-900">
-                        <span>Total Estimated Price</span>
-                        <span className="font-mono text-emerald-400 text-base">${estimatedScopeTotal.toFixed(2)}</span>
-                      </div>
-                    </div>
+                    </button>
+                  </div>
 
+                </form>
+              )}
+
+            </div>
+
+            {/* Persistent Sidebar (Sticky Dynamic Invoice) */}
+            <div className="lg:col-span-4 space-y-6">
+              
+              <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 space-y-6 sticky top-24 shadow-xl" id="invoice-sidebar">
+                
+                <h3 className="font-display text-sm font-bold text-white uppercase tracking-wider pb-2.5 border-b border-slate-800 flex items-center gap-2">
+                  <FileText className="w-4 h-4 text-sky-400" />
+                  Estimated Invoice
+                </h3>
+
+                {/* Scoping details items list */}
+                <div className="space-y-3 font-sans text-xs">
+                  
+                  {/* Area Details line */}
+                  <div className="flex justify-between text-slate-400">
+                    <span>Property Size ({bedrooms} Bed, {bathrooms} Bath)</span>
+                    <span className="font-mono text-white">${baseSizePrice}</span>
+                  </div>
+
+                  {/* Clean Type modifier line */}
+                  {cleanType !== "standard" && (
+                    <div className="flex justify-between text-slate-400">
+                      <span className="capitalize">Modifier ({cleanType} Clean)</span>
+                      <span className="font-mono text-emerald-400">
+                        {cleanType === "deep" ? "+50% rate multiplier" : "+$50 Flat Fee"}
+                      </span>
+                    </div>
+                  )}
+
+                  {/* Add-ons line */}
+                  {selectedAddons.length > 0 && (
+                    <div className="space-y-1 pb-1 pt-1">
+                      <span className="text-[10px] text-slate-500 font-mono uppercase block">Add-ons detail:</span>
+                      {selectedAddons.map((addon) => (
+                        <div key={addon} className="flex justify-between text-[11px] text-slate-400 pl-2">
+                          <span>• {addon}</span>
+                          <span className="font-mono">${getAddonPrice(addon)}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  <div className="border-t border-slate-800/80 pt-3 flex justify-between font-bold text-slate-300">
+                    <span>Subtotal</span>
+                    <span className="font-mono">${totalSubtotal.toFixed(2)}</span>
+                  </div>
+
+                  {/* Subscription discount line */}
+                  {discountPercentage > 0 && (
+                    <div className="flex justify-between text-emerald-400 text-xs font-semibold">
+                      <span className="capitalize">Sub Discount ({frequency})</span>
+                      <span className="font-mono">-${discountAmount.toFixed(2)}</span>
+                    </div>
+                  )}
+
+                  {/* Local Tax line */}
+                  <div className="flex justify-between text-[11px] text-slate-500">
+                    <span>Juba Local Tax (5%)</span>
+                    <span className="font-mono">${localTax.toFixed(2)}</span>
+                  </div>
+
+                  {/* Estimated Grand Total */}
+                  <div className="border-t border-slate-800 pt-3.5 flex justify-between items-end">
+                    <div>
+                      <span className="block text-[10px] text-slate-500 uppercase font-mono leading-none mb-1">Total Clean Price:</span>
+                      <span className="text-white font-display text-2xl font-extrabold font-mono tracking-tight">${finalPrice.toFixed(2)}</span>
+                    </div>
+                    <span className="text-[10px] text-sky-400 font-mono capitalize tracking-wide bg-sky-500/10 border border-sky-500/20 px-2 py-0.5 rounded font-bold">
+                      {frequency}
+                    </span>
                   </div>
 
                 </div>
+
+                {/* Explicit Trust Integration Section */}
+                <div className="pt-4 border-t border-slate-800 space-y-3 font-sans text-[11px] text-slate-400 bg-slate-950/20 p-3 rounded-2xl">
+                  <div className="flex gap-2">
+                    <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+                    <span><strong>Licensed, Bonded &amp; Insured:</strong> Fully vetted, background-screened team.</span>
+                  </div>
+                  <div className="flex gap-2">
+                    <Heart className="w-4 h-4 text-emerald-400 shrink-0" />
+                    <span><strong>24-Hour Happiness Guarantee:</strong> We'll reclean for free if you are unsatisfied.</span>
+                  </div>
+                </div>
+
               </div>
 
             </div>

@@ -25,6 +25,60 @@ export default function LandingPage({ setActiveView, setQuotePillar }: LandingPa
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
 
+  // Neighborhood Gatekeeper states
+  const [neighborhoodInput, setNeighborhoodInput] = useState("");
+  const [neighborhoodCheckResult, setNeighborhoodCheckResult] = useState<"match" | "no-match" | null>(null);
+  const [matchedDistrict, setMatchedDistrict] = useState("");
+  const [matchedZip, setMatchedZip] = useState("");
+  const [notificationEmail, setNotificationEmail] = useState("");
+  const [emailCaptured, setEmailCaptured] = useState(false);
+
+  const SERVED_TERRITORIES = [
+    { zip: "61101", name: "Tongping" },
+    { zip: "61102", name: "Gudele" },
+    { zip: "61103", name: "Munuki" },
+    { zip: "61104", name: "Amarat" },
+    { zip: "61105", name: "Kololo" },
+    { zip: "61106", name: "Kator" },
+    { zip: "61107", name: "Juba 3" },
+  ];
+
+  const handleCheckNeighborhood = (inputStr: string) => {
+    if (!inputStr) return;
+    const normalizedInput = inputStr.trim().toLowerCase();
+    const match = SERVED_TERRITORIES.find(t => 
+      t.name.toLowerCase() === normalizedInput || 
+      t.name.toLowerCase().includes(normalizedInput) ||
+      t.zip === normalizedInput
+    );
+    if (match) {
+      setNeighborhoodCheckResult("match");
+      setMatchedDistrict(match.name);
+      setMatchedZip(match.zip);
+    } else {
+      setNeighborhoodCheckResult("no-match");
+      setMatchedDistrict("");
+      setMatchedZip("");
+    }
+  };
+
+  const handleCheckNeighborhoodSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    handleCheckNeighborhood(neighborhoodInput);
+  };
+
+  const handleBookWithNeighborhood = () => {
+    sessionStorage.setItem("validatedZipCode", matchedZip || "61101");
+    sessionStorage.setItem("validatedNeighborhood", matchedDistrict);
+    setActiveView(ActiveView.QuoteFlow);
+  };
+
+  const handleCaptureEmail = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!notificationEmail) return;
+    setEmailCaptured(true);
+  };
+
   React.useEffect(() => {
     return () => {
       if (typeof window !== "undefined" && window.speechSynthesis) {
@@ -112,20 +166,84 @@ export default function LandingPage({ setActiveView, setQuotePillar }: LandingPa
             South Sudan's premier environmental cleaning and facility ecology firm. Our core business is delivering professional, top-tier deep cleaning services for residential and commercial clients, alongside eco-fumigation, landscaping, and environmental consultancy.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-            <button
-              onClick={() => setActiveView(ActiveView.QuoteFlow)}
-              className="w-full sm:w-auto bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-display font-bold px-8 py-4 rounded-xl shadow-lg shadow-emerald-500/20 transform hover:-translate-y-0.5 transition-all duration-150 flex items-center justify-center gap-2 text-base"
-            >
-              Get a Free Service Quote
-              <ArrowRight className="w-5 h-5" />
-            </button>
-            <button
-              onClick={() => setActiveView(ActiveView.Services)}
-              className="w-full sm:w-auto bg-slate-800 hover:bg-slate-700 text-white font-sans font-semibold px-8 py-4 rounded-xl border border-slate-700 hover:border-slate-600 transition-all flex items-center justify-center gap-1.5"
-            >
-              Our 4 Main Services
-            </button>
+          {/* Neighborhood Service Area Gatekeeper Component */}
+          <div className="max-w-2xl mx-auto bg-slate-950/80 border border-slate-800 p-6 rounded-3xl space-y-4 shadow-2xl backdrop-blur-md" id="zip-gatekeeper-card">
+            <div className="text-center">
+              <span className="text-emerald-400 font-mono text-[10px] font-bold uppercase tracking-wider block mb-1">Check Coverage Area</span>
+              <h2 className="text-lg font-display font-extrabold text-white">Do we serve your Juba neighborhood?</h2>
+            </div>
+
+            {neighborhoodCheckResult === null ? (
+              <div className="space-y-4 max-w-md mx-auto">
+                <form onSubmit={handleCheckNeighborhoodSubmit} className="flex flex-col sm:flex-row gap-3">
+                  <input 
+                    type="text" 
+                    placeholder="Search Juba neighborhood (e.g. Tongping, Gudele...)" 
+                    value={neighborhoodInput}
+                    onChange={(e) => setNeighborhoodInput(e.target.value)}
+                    className="bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-xs text-center font-semibold text-emerald-400 placeholder-slate-500 focus:outline-none focus:border-emerald-500 flex-grow"
+                  />
+                  <button 
+                    type="submit"
+                    className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-display font-extrabold text-xs px-6 py-3 rounded-xl transition-all shadow-md shadow-emerald-500/10 flex items-center justify-center gap-1.5"
+                  >
+                    Verify Area
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+                </form>
+              </div>
+            ) : neighborhoodCheckResult === "match" ? (
+              <div className="space-y-3 animate-fadeIn text-center">
+                <div className="text-emerald-400 font-sans text-sm font-semibold flex items-center justify-center gap-1.5">
+                  <CheckCircle className="w-4 h-4" />
+                  We have active service coverage in {matchedDistrict}! (ZIP: {matchedZip})
+                </div>
+                <button
+                  onClick={handleBookWithNeighborhood}
+                  className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 font-display font-bold text-xs px-8 py-3.5 rounded-xl shadow-lg transition-all"
+                >
+                  Advance to Booking Wizard
+                </button>
+              </div>
+            ) : (
+              <div className="space-y-4 animate-fadeIn text-center">
+                <p className="text-red-400 font-sans text-xs">
+                  We don't serve "{neighborhoodInput}" yet! Tell us where you are to notify you on expansion:
+                </p>
+                {!emailCaptured ? (
+                  <form onSubmit={handleCaptureEmail} className="flex flex-col sm:flex-row gap-2 max-w-md mx-auto">
+                    <input 
+                      type="email" 
+                      required
+                      placeholder="Enter your email address" 
+                      value={notificationEmail}
+                      onChange={(e) => setNotificationEmail(e.target.value)}
+                      className="bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-left text-slate-200 focus:outline-none focus:border-sky-500 flex-grow"
+                    />
+                    <button 
+                      type="submit"
+                      className="bg-sky-500 hover:bg-sky-400 text-slate-950 font-sans font-bold text-xs px-5 py-2.5 rounded-xl"
+                    >
+                      Notify Me
+                    </button>
+                  </form>
+                ) : (
+                  <div className="text-emerald-400 font-mono text-xs animate-pulse">
+                    Thank you! We will email you at {notificationEmail} as soon as Clean World launches in your area.
+                  </div>
+                )}
+                <button 
+                  onClick={() => {
+                    setNeighborhoodCheckResult(null);
+                    setNeighborhoodInput("");
+                    setEmailCaptured(false);
+                  }}
+                  className="text-[10px] text-slate-500 hover:text-slate-300 underline font-mono"
+                >
+                  Check another neighborhood
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Quick Metrics Overlay Bar */}

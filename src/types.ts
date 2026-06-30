@@ -3,7 +3,39 @@ export enum ActiveView {
   Services = "services",
   Shop = "shop",
   QuoteFlow = "quote-flow",
-  Academy = "academy"
+  Academy = "academy",
+  ClientDashboard = "client-dashboard",
+  CleanerPortal = "cleaner-portal"
+}
+
+export enum UserRole {
+  Client = "client",
+  Cleaner = "cleaner"
+}
+
+export interface Booking {
+  id: string;
+  clientName: string;
+  clientEmail: string;
+  clientPhone: string;
+  address: string;
+  zipCode: string;
+  entryInstructions: string;
+  bedrooms: number;
+  bathrooms: number;
+  sqFtRange: string; // e.g. "< 1000", "1000 - 1999", etc.
+  cleanType: "standard" | "deep" | "move-in-out";
+  addons: string[];
+  frequency: "one-time" | "weekly" | "bi-weekly" | "monthly";
+  date: string;
+  timeSlot: string;
+  price: number;
+  status: "pending" | "completed" | "cancelled";
+  tipAmount: number;
+  beforePhoto: string | null;
+  afterPhoto: string | null;
+  checkedTasks: string[];
+  createdAt: string;
 }
 
 export enum ServicePillar {
