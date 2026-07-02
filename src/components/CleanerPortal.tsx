@@ -175,11 +175,11 @@ export default function CleanerPortal({ bookings, setBookings, setActiveView }: 
   };
 
   return (
-    <div className="bg-slate-900 text-slate-100 min-h-screen py-8 px-4" id="cleaner-portal-root">
-      <div className="max-w-md mx-auto bg-slate-950 border-4 border-slate-800 rounded-[40px] overflow-hidden relative shadow-2xl flex flex-col h-[820px] font-sans">
+    <div className="bg-slate-900 text-slate-100 min-h-screen py-0 md:py-8 px-0 md:px-4" id="cleaner-portal-root">
+      <div className="w-full md:max-w-md mx-auto bg-slate-950 border-0 md:border-4 border-slate-800 rounded-none md:rounded-[40px] overflow-hidden relative shadow-2xl flex flex-col h-screen md:h-[820px] font-sans">
         
         {/* Mobile Device Camera Notch / Bar */}
-        <div className="bg-slate-950 h-6 flex justify-center items-center relative shrink-0">
+        <div className="hidden md:flex bg-slate-955 h-6 justify-center items-center relative shrink-0">
           <div className="w-20 h-4 bg-slate-900 rounded-full border border-slate-800/80 mt-1 flex justify-center items-center">
             <span className="w-1.5 h-1.5 rounded-full bg-slate-800 mr-2"></span>
             <span className="w-8 h-1 bg-slate-800 rounded-full"></span>
@@ -187,7 +187,7 @@ export default function CleanerPortal({ bookings, setBookings, setActiveView }: 
         </div>
 
         {/* Local Juba Network Signals & Telemetry Bar */}
-        <div className="bg-slate-900 px-4 py-1 flex items-center justify-between border-b border-slate-950 text-[10px] text-slate-400 font-mono shrink-0 select-none">
+        <div className="hidden md:flex bg-slate-900 px-4 py-1 items-center justify-between border-b border-slate-950 text-[14px] text-slate-400 font-mono shrink-0 select-none">
           <div className="flex items-center gap-1 cursor-pointer hover:text-white" onClick={() => {
             setSignalCarrier(prev => {
               if (prev === "Zain-SSD") return "MTN-SSD";
@@ -197,25 +197,25 @@ export default function CleanerPortal({ bookings, setBookings, setActiveView }: 
           }} title="Click to switch Juba cellular carriers">
             <Signal className="w-3 h-3 text-sky-400" />
             <span className="font-bold text-sky-400">{signalCarrier}</span>
-            <span className="text-[8px] px-1 bg-slate-800 rounded text-slate-400 font-sans">LTE</span>
+            <span className="text-[14px] px-1 bg-slate-800 rounded text-slate-400 font-sans">LTE</span>
           </div>
           <div>09:41 AM</div>
           <div className="flex items-center gap-1.5">
             {offlineMode ? (
-              <span className="text-[8px] bg-red-500/20 text-red-400 border border-red-500/30 px-1 rounded animate-pulse font-sans">OFFLINE</span>
+              <span className="text-[14px] bg-red-500/20 text-red-400 border border-red-500/30 px-1 rounded animate-pulse font-sans">OFFLINE</span>
             ) : (
               <Wifi className="w-3 h-3 text-emerald-400" />
             )}
             <Battery className="w-3.5 h-3.5 text-slate-300" />
-            <span className="text-[9px]">87%</span>
+            <span className="text-[15px]">87%</span>
           </div>
         </div>
 
         {/* Offline Sync Command Center bar */}
         <div className="bg-slate-900/60 border-b border-slate-800/80 px-4 py-1.5 flex items-center justify-between gap-2 shrink-0">
           <div className="flex items-center gap-1.5">
-            <Database className="w-3.5 h-3.5 text-slate-500" />
-            <span className="text-[10px] text-slate-300 font-sans">
+            <Database className="w-3.5 h-3.5 text-slate-400" />
+            <span className="text-[14px] text-slate-300 font-sans">
               {isSyncing ? "Syncing data to Juba server..." : (offlineMode ? "Cached offline queue (2 tickets)" : "Database Online")}
             </span>
           </div>
@@ -233,7 +233,7 @@ export default function CleanerPortal({ bookings, setBookings, setActiveView }: 
               }
             }}
             disabled={isSyncing}
-            className={`px-2 py-0.5 rounded text-[9px] font-mono font-bold uppercase border transition-all ${
+            className={`px-2 py-0.5 rounded text-[15px] font-mono font-bold uppercase border transition-all ${
               offlineMode
                 ? "bg-red-500/20 text-red-400 border-red-500/40 hover:bg-red-500/30"
                 : "bg-slate-800 text-slate-400 border-slate-700 hover:border-slate-500"
@@ -263,8 +263,8 @@ export default function CleanerPortal({ bookings, setBookings, setActiveView }: 
           )}
 
           <div className="text-right">
-            <span className="text-[10px] font-mono text-emerald-400 font-bold block">CLEANER PORTAL</span>
-            <span className="text-[9px] font-mono text-slate-400 uppercase">Juba Region #928</span>
+            <span className="text-[14px] font-mono text-emerald-400 font-bold block">CLEANER PORTAL</span>
+            <span className="text-[15px] font-mono text-slate-400 uppercase">Juba Region #928</span>
           </div>
         </div>
 
@@ -276,14 +276,14 @@ export default function CleanerPortal({ bookings, setBookings, setActiveView }: 
             <div className="space-y-4 animate-fadeIn">
               <div className="space-y-1">
                 <h2 className="font-display text-lg font-extrabold text-white">Today's Assigned Route</h2>
-                <p className="text-[11px] text-slate-400">Tap an assigned job ticket to view entry details and checklists.</p>
+                <p className="text-[15px] text-slate-400">Tap an assigned job ticket to view entry details and checklists.</p>
               </div>
 
               {/* Segmented Tab Control */}
               <div className="flex bg-slate-900/80 p-1 rounded-xl border border-slate-800 shrink-0">
                 <button
                   onClick={() => setActiveTab("list")}
-                  className={`flex-1 py-1.5 text-[10px] font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 ${
+                  className={`flex-1 py-1.5 text-[14px] font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 ${
                     activeTab === "list"
                       ? "bg-slate-800 text-white shadow-sm"
                       : "text-slate-400 hover:text-slate-200"
@@ -294,7 +294,7 @@ export default function CleanerPortal({ bookings, setBookings, setActiveView }: 
                 </button>
                 <button
                   onClick={() => setActiveTab("map")}
-                  className={`flex-1 py-1.5 text-[10px] font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 ${
+                  className={`flex-1 py-1.5 text-[14px] font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 ${
                     activeTab === "map"
                       ? "bg-slate-800 text-white shadow-sm"
                       : "text-slate-400 hover:text-slate-200"
@@ -325,7 +325,7 @@ export default function CleanerPortal({ bookings, setBookings, setActiveView }: 
                       >
                         <div className="flex justify-between items-center w-full">
                           <span className="font-mono text-xs font-bold text-sky-400">{booking.id}</span>
-                          <span className={`text-[9px] font-mono font-bold uppercase px-2 py-0.5 rounded ${
+                          <span className={`text-[15px] font-mono font-bold uppercase px-2 py-0.5 rounded ${
                             booking.status === "completed"
                               ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
                               : "bg-yellow-500/10 text-yellow-400 border border-yellow-500/20"
@@ -337,22 +337,22 @@ export default function CleanerPortal({ bookings, setBookings, setActiveView }: 
                         <div className="space-y-1">
                           <span className="block font-display font-extrabold text-white text-sm capitalize">{booking.cleanType} Clean</span>
                           <div className="flex items-center gap-1.5 text-xs text-slate-300">
-                            <MapPin className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                            <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                             <span className="truncate">{booking.address}</span>
                           </div>
                           {booking.landmark && (
-                            <div className="text-[10px] text-slate-400 italic font-medium pl-5 mt-0.5">
+                            <div className="text-[14px] text-slate-400 italic font-medium pl-5 mt-0.5">
                               📍 Landmark: {booking.landmark}
                             </div>
                           )}
                         </div>
 
                         <div className="flex flex-wrap gap-1.5 mt-0.5">
-                          <span className="text-[9px] font-mono font-bold px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700/50 flex items-center gap-1 select-none">
+                          <span className="text-[15px] font-mono font-bold px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700/50 flex items-center gap-1 select-none">
                             {booking.transportMode === "boda" ? "🏍️ Boda-Boda" : "🚚 Crew Truck"}
                           </span>
                           {booking.roadCondition && (
-                            <span className={`text-[9px] font-mono font-bold px-2 py-0.5 rounded border flex items-center gap-1 select-none ${
+                            <span className={`text-[15px] font-mono font-bold px-2 py-0.5 rounded border flex items-center gap-1 select-none ${
                               booking.roadCondition === "clear"
                                 ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
                                 : booking.roadCondition === "muddy"
@@ -364,11 +364,11 @@ export default function CleanerPortal({ bookings, setBookings, setActiveView }: 
                           )}
                         </div>
 
-                        <div className="flex justify-between items-center border-t border-slate-800/60 pt-2.5 mt-1 text-[10px] font-mono text-slate-400 w-full">
+                        <div className="flex justify-between items-center border-t border-slate-800/60 pt-2.5 mt-1 text-[14px] font-mono text-slate-400 w-full">
                           <span>Time: {booking.timeSlot.split(" ")[0]} {booking.timeSlot.split(" ")[1]}</span>
                           <div className="text-right">
                             <span className="text-white font-bold block">${booking.price.toFixed(0)}</span>
-                            <span className="text-emerald-400 text-[9px] font-bold block">SSP {(booking.price * 1300).toLocaleString()}</span>
+                            <span className="text-emerald-400 text-[15px] font-bold block">SSP {(booking.price * 1300).toLocaleString()}</span>
                           </div>
                         </div>
                       </button>
@@ -393,7 +393,7 @@ export default function CleanerPortal({ bookings, setBookings, setActiveView }: 
               <div className="bg-slate-900 border border-slate-850 rounded-2xl p-4 space-y-3">
                 <div className="flex justify-between items-center">
                   <span className="font-mono text-xs font-bold text-sky-400">{selectedJob.id}</span>
-                  <span className={`text-[9px] font-mono font-bold uppercase px-2 py-0.5 rounded ${
+                  <span className={`text-[15px] font-mono font-bold uppercase px-2 py-0.5 rounded ${
                     selectedJob.status === "completed"
                       ? "bg-emerald-500/20 text-emerald-400"
                       : "bg-yellow-500/20 text-yellow-400"
@@ -406,30 +406,30 @@ export default function CleanerPortal({ bookings, setBookings, setActiveView }: 
                   <div>
                     <h3 className="font-display font-black text-base text-white capitalize leading-tight">{selectedJob.cleanType} Cleaning Service</h3>
                     {selectedJob.landmark && (
-                      <span className="text-[10px] text-slate-400 italic block mt-1">📍 Landmark: {selectedJob.landmark}</span>
+                      <span className="text-[14px] text-slate-400 italic block mt-1">📍 Landmark: {selectedJob.landmark}</span>
                     )}
                   </div>
                   <div className="text-right shrink-0">
                     <span className="text-white font-mono font-bold text-sm block">${selectedJob.price.toFixed(0)}</span>
-                    <span className="text-emerald-400 font-mono font-bold text-[10px] block">SSP {(selectedJob.price * 1300).toLocaleString()}</span>
+                    <span className="text-emerald-400 font-mono font-bold text-[14px] block">SSP {(selectedJob.price * 1300).toLocaleString()}</span>
                   </div>
                 </div>
 
                 <div className="flex flex-wrap gap-2 pt-1 border-t border-slate-800/40">
-                  <div className="text-[10px] text-slate-300 font-sans flex items-center gap-1">
-                    <span className="text-slate-500">Dispatch:</span>
+                  <div className="text-[14px] text-slate-300 font-sans flex items-center gap-1">
+                    <span className="text-slate-450">Dispatch:</span>
                     <span className="font-bold text-sky-400">{selectedJob.transportMode === "boda" ? "🏍️ Boda-Boda (Rapid)" : "🚚 Crew Truck (Heavy)"}</span>
                   </div>
-                  <div className="text-[10px] text-slate-300 font-sans flex items-center gap-1">
-                    <span className="text-slate-500">Road:</span>
+                  <div className="text-[14px] text-slate-300 font-sans flex items-center gap-1">
+                    <span className="text-slate-450">Road:</span>
                     <span className={`font-bold uppercase ${selectedJob.roadCondition === "clear" ? "text-emerald-400" : "text-amber-400 animate-pulse"}`}>{selectedJob.roadCondition || "clear"}</span>
                   </div>
                 </div>
                 
                 <div className="space-y-1.5 text-xs text-slate-300 font-sans border-t border-slate-800/40 pt-2">
                   <div className="flex items-start gap-1.5">
-                    <MapPin className="w-4 h-4 text-slate-500 shrink-0 mt-0.5" />
-                    <span>{selectedJob.address} <span className="font-mono text-[10px] text-slate-500">({selectedJob.zipCode})</span></span>
+                    <MapPin className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
+                    <span>{selectedJob.address} <span className="font-mono text-[14px] text-slate-400">({selectedJob.zipCode})</span></span>
                   </div>
                   <div className="flex items-center gap-1.5 pl-5.5">
                     <Navigation className="w-4 h-4 text-emerald-400 shrink-0" />
@@ -437,7 +437,7 @@ export default function CleanerPortal({ bookings, setBookings, setActiveView }: 
                       href={`https://maps.google.com/?q=${encodeURIComponent(selectedJob.address)}`} 
                       target="_blank" 
                       rel="noopener noreferrer" 
-                      className="text-emerald-400 hover:underline font-mono text-[10px]"
+                      className="text-emerald-400 hover:underline font-mono text-[14px]"
                     >
                       OPEN IN GOOGLE MAPS
                     </a>
@@ -449,7 +449,7 @@ export default function CleanerPortal({ bookings, setBookings, setActiveView }: 
               <div className="flex bg-slate-900/60 p-0.5 rounded-xl border border-slate-800/80 shrink-0">
                 <button
                   onClick={() => setMapMode("routing")}
-                  className={`flex-1 py-1.5 text-[9px] font-mono font-bold uppercase rounded-lg transition-all flex items-center justify-center gap-1 ${
+                  className={`flex-1 py-1.5 text-[15px] font-mono font-bold uppercase rounded-lg transition-all flex items-center justify-center gap-1 ${
                     mapMode === "routing"
                       ? "bg-slate-800 text-sky-400 border border-slate-700/50 shadow-sm"
                       : "text-slate-400 hover:text-slate-200"
@@ -460,7 +460,7 @@ export default function CleanerPortal({ bookings, setBookings, setActiveView }: 
                 </button>
                 <button
                   onClick={() => setMapMode("tracking")}
-                  className={`flex-1 py-1.5 text-[9px] font-mono font-bold uppercase rounded-lg transition-all flex items-center justify-center gap-1 ${
+                  className={`flex-1 py-1.5 text-[15px] font-mono font-bold uppercase rounded-lg transition-all flex items-center justify-center gap-1 ${
                     mapMode === "tracking"
                       ? "bg-slate-800 text-emerald-400 border border-slate-700/50 shadow-sm"
                       : "text-slate-400 hover:text-slate-200"
@@ -483,11 +483,11 @@ export default function CleanerPortal({ bookings, setBookings, setActiveView }: 
 
               {/* Customer Instructions Panel */}
               <div className="bg-slate-900 border border-slate-850 rounded-2xl p-4 space-y-2 font-sans">
-                <span className="font-mono text-slate-500 text-[9px] uppercase tracking-wider block">Access &amp; Entry Code</span>
+                <span className="font-mono text-slate-400 text-[14px] uppercase tracking-wider block">Access &amp; Entry Code</span>
                 <p className="text-xs text-slate-200 leading-normal bg-slate-950 p-2.5 rounded-xl border border-slate-850 font-mono">
                   🔑 Entry instructions: {selectedJob.entryInstructions || "No special code. Ring front doorbell."}
                 </p>
-                <div className="text-[11px] text-slate-400">
+                <div className="text-[15px] text-slate-400">
                   <span className="font-semibold text-slate-300">Client:</span> {selectedJob.clientName} ({selectedJob.clientPhone})
                 </div>
               </div>
@@ -519,7 +519,7 @@ export default function CleanerPortal({ bookings, setBookings, setActiveView }: 
                           readOnly
                           className="mt-0.5 accent-emerald-500 h-4 w-4 shrink-0 rounded"
                         />
-                        <span className={`text-[11px] leading-snug ${isChecked ? "line-through" : ""}`}>
+                        <span className={`text-[15px] leading-snug ${isChecked ? "line-through" : ""}`}>
                           {task}
                         </span>
                       </button>
@@ -538,7 +538,7 @@ export default function CleanerPortal({ bookings, setBookings, setActiveView }: 
                 <div className="grid grid-cols-2 gap-3">
                   {/* Before Photo */}
                   <div className="bg-slate-900 border border-slate-850 rounded-2xl p-3 flex flex-col justify-between items-center text-center gap-2.5 min-h-[140px]">
-                    <span className="text-[10px] font-mono text-slate-400 uppercase tracking-wide">BEFORE PHOTO</span>
+                    <span className="text-[14px] font-mono text-slate-400 uppercase tracking-wide">BEFORE PHOTO</span>
                     
                     {beforePreview ? (
                       <div className="relative h-20 w-full rounded-xl overflow-hidden border border-slate-800">
@@ -555,10 +555,10 @@ export default function CleanerPortal({ bookings, setBookings, setActiveView }: 
                     ) : (
                       <button
                         onClick={() => setUploadMode("before")}
-                        className="p-3 bg-slate-950 border border-dashed border-slate-800 hover:border-slate-700 rounded-xl text-slate-500 hover:text-slate-300 transition-all flex flex-col items-center gap-1.5 w-full"
+                        className="p-3 bg-slate-950 border border-dashed border-slate-800 hover:border-slate-700 rounded-xl text-slate-400 hover:text-slate-200 transition-all flex flex-col items-center gap-1.5 w-full"
                       >
                         <Upload className="w-4 h-4" />
-                        <span className="text-[9px] font-mono uppercase">Upload</span>
+                        <span className="text-[15px] font-mono uppercase">Upload</span>
                       </button>
                     )}
                   </div>
@@ -567,7 +567,7 @@ export default function CleanerPortal({ bookings, setBookings, setActiveView }: 
                   <div className={`bg-slate-900 border rounded-2xl p-3 flex flex-col justify-between items-center text-center gap-2.5 min-h-[140px] ${
                     afterPreview ? "border-slate-850" : "border-emerald-500/30 shadow-lg shadow-emerald-500/5"
                   }`}>
-                    <span className="text-[10px] font-mono text-slate-400 uppercase tracking-wide">AFTER PHOTO *</span>
+                    <span className="text-[14px] font-mono text-slate-400 uppercase tracking-wide">AFTER PHOTO *</span>
                     
                     {afterPreview ? (
                       <div className="relative h-20 w-full rounded-xl overflow-hidden border border-slate-800">
@@ -587,7 +587,7 @@ export default function CleanerPortal({ bookings, setBookings, setActiveView }: 
                         className="p-3 bg-emerald-500/5 border border-dashed border-emerald-500/40 hover:border-emerald-500 rounded-xl text-emerald-400 hover:text-emerald-300 transition-all flex flex-col items-center gap-1.5 w-full"
                       >
                         <Camera className="w-4 h-4 animate-pulse" />
-                        <span className="text-[9px] font-mono uppercase font-bold">SNAP *</span>
+                        <span className="text-[15px] font-mono uppercase font-bold">SNAP *</span>
                       </button>
                     )}
                   </div>
@@ -596,7 +596,7 @@ export default function CleanerPortal({ bookings, setBookings, setActiveView }: 
 
               {/* Complete Action Area */}
               {errorMessage && (
-                <div className="bg-red-950/20 border border-red-500/30 p-3 rounded-xl text-[11px] text-red-400 font-sans flex items-start gap-2">
+                <div className="bg-red-950/20 border border-red-500/30 p-3 rounded-xl text-[15px] text-red-400 font-sans flex items-start gap-2">
                   <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
                   <span>{errorMessage}</span>
                 </div>
@@ -605,7 +605,7 @@ export default function CleanerPortal({ bookings, setBookings, setActiveView }: 
               {selectedJob.status !== "completed" ? (
                 <button
                   onClick={handleCompleteJob}
-                  className="w-full py-4.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-display font-black text-xs tracking-wider rounded-2xl shadow-lg shadow-emerald-500/15 transition-all flex items-center justify-center gap-2 uppercase shrink-0"
+                  className="w-full py-4.5 bg-emerald-500 hover:bg-emerald-400 text-slate-955 font-display font-black text-xs tracking-wider rounded-2xl shadow-lg shadow-emerald-500/15 transition-all flex items-center justify-center gap-2 uppercase shrink-0"
                 >
                   <ShieldCheck className="w-5 h-5" />
                   Complete Dispatch Ticket
@@ -614,7 +614,7 @@ export default function CleanerPortal({ bookings, setBookings, setActiveView }: 
                 <div className="bg-emerald-500/10 border border-emerald-500/30 p-4 rounded-2xl text-center space-y-1.5 font-sans shrink-0">
                   <CheckCircle className="w-6 h-6 text-emerald-400 mx-auto" />
                   <p className="text-xs font-bold text-white">Job Completed Successfully</p>
-                  <p className="text-[10px] text-slate-400 leading-normal">Proof of clean submitted and validated. Work is verified on client billing system.</p>
+                  <p className="text-[14px] text-slate-400 leading-normal">Proof of clean submitted and validated. Work is verified on client billing system.</p>
                 </div>
               )}
 
@@ -627,7 +627,7 @@ export default function CleanerPortal({ bookings, setBookings, setActiveView }: 
         {uploadMode && (
           <div className="absolute inset-0 bg-black/95 z-40 p-6 flex flex-col justify-between font-sans">
             <div className="flex justify-between items-center">
-              <span className="text-xs font-mono text-slate-500 tracking-wider">CAMERA INTERFACE</span>
+              <span className="text-xs font-mono text-slate-450 tracking-wider">CAMERA INTERFACE</span>
               <button 
                 onClick={() => setUploadMode(null)} 
                 className="p-1.5 text-slate-400 hover:text-white rounded-full bg-slate-900 border border-slate-800"
@@ -645,12 +645,12 @@ export default function CleanerPortal({ bookings, setBookings, setActiveView }: 
               <div className="space-y-6">
                 <div className="text-center space-y-1">
                   <h4 className="font-display font-bold text-sm text-white">Capture Proof of Clean</h4>
-                  <p className="text-[10px] text-slate-500">Choose a predefined pristine test image or click snap to simulate camera capture.</p>
+                  <p className="text-[15px] text-slate-400">Choose a predefined pristine test image or click snap to simulate camera capture.</p>
                 </div>
 
                 {/* Predefined mock picker */}
                 <div className="space-y-2">
-                  <span className="text-[9px] font-mono text-slate-500 uppercase block text-center">Available Test Frames</span>
+                  <span className="text-[14px] font-mono text-slate-450 uppercase block text-center">Available Test Frames</span>
                   <div className="grid grid-cols-2 gap-3">
                     {uploadMode === "before" ? (
                       samplePhotosBefore.map((url, i) => (
@@ -688,14 +688,14 @@ export default function CleanerPortal({ bookings, setBookings, setActiveView }: 
               </div>
             )}
 
-            <div className="text-[9px] text-slate-600 text-center font-mono uppercase tracking-widest leading-none">
+            <div className="text-[15px] text-slate-600 text-center font-mono uppercase tracking-widest leading-none">
               Clean World Mobile Dispatch Client v2.26
             </div>
           </div>
         )}
 
         {/* Fake PWA bottom bar */}
-        <div className="bg-slate-900 border-t border-slate-800/60 px-4 py-2 flex justify-around shrink-0 text-slate-400 text-[10px] font-sans">
+        <div className="bg-slate-900 border-t border-slate-800/60 px-4 py-2 flex justify-around shrink-0 text-slate-400 text-[14px] font-sans">
           <button 
             disabled={!selectedJob}
             onClick={() => setSelectedJob(null)}

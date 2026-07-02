@@ -209,7 +209,7 @@ export default function ClientDashboard({ bookings, setBookings, setActiveView, 
               <ShoppingBag className="w-4.5 h-4.5" />
               Product Orders
               {productOrders.length > 0 && (
-                <span className="bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 text-[10px] px-1.5 py-0.5 rounded-full font-mono font-bold">
+                <span className="bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 text-[14px] px-1.5 py-0.5 rounded-full font-mono font-bold">
                   {productOrders.length}
                 </span>
               )}
@@ -236,7 +236,7 @@ export default function ClientDashboard({ bookings, setBookings, setActiveView, 
 
                 {bookings.length === 0 ? (
                   <div className="bg-slate-900 border border-slate-800 rounded-3xl p-12 text-center space-y-6">
-                    <div className="h-16 w-16 bg-slate-800 text-slate-500 rounded-full flex items-center justify-center mx-auto">
+                    <div className="h-16 w-16 bg-slate-800 text-slate-400 rounded-full flex items-center justify-center mx-auto">
                       <Calendar className="w-8 h-8" />
                     </div>
                     <div className="space-y-1">
@@ -263,10 +263,10 @@ export default function ClientDashboard({ bookings, setBookings, setActiveView, 
                         >
                           <div className="space-y-4 flex-1">
                             <div className="flex flex-wrap items-center gap-3">
-                              <span className="font-mono text-[11px] font-bold text-sky-400 bg-sky-500/10 px-2.5 py-1 rounded border border-sky-500/20">
+                              <span className="font-mono text-[15px] font-bold text-sky-400 bg-sky-500/10 px-2.5 py-1 rounded border border-sky-500/20">
                                 {booking.id}
                               </span>
-                              <span className={`font-mono text-[10px] font-bold px-2 py-0.5 rounded uppercase ${
+                              <span className={`font-mono text-[14px] font-bold px-2 py-0.5 rounded uppercase ${
                                 booking.cleanType === "deep" 
                                   ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
                                   : booking.cleanType === "move-in-out"
@@ -275,7 +275,7 @@ export default function ClientDashboard({ bookings, setBookings, setActiveView, 
                               }`}>
                                 {booking.cleanType === "deep" ? "Deep Clean" : booking.cleanType === "move-in-out" ? "Move-In/Out Clean" : "Standard Clean"}
                               </span>
-                              <span className={`font-mono text-[10px] font-semibold px-2 py-0.5 rounded capitalize ${
+                              <span className={`font-mono text-[14px] font-semibold px-2 py-0.5 rounded capitalize ${
                                 booking.status === "completed"
                                   ? "bg-emerald-500/20 text-emerald-400"
                                   : booking.status === "cancelled"
@@ -289,37 +289,37 @@ export default function ClientDashboard({ bookings, setBookings, setActiveView, 
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-sans text-slate-300">
                               <div className="space-y-2">
                                 <div className="flex items-center gap-2">
-                                  <Calendar className="w-4 h-4 text-slate-500" />
+                                  <Calendar className="w-4 h-4 text-slate-400" />
                                   <span>{new Date(`${booking.date}T00:00:00`).toLocaleDateString("en-US", { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' })}</span>
                                 </div>
                                 <div className="flex items-center gap-2">
-                                  <Clock className="w-4 h-4 text-slate-500" />
+                                  <Clock className="w-4 h-4 text-slate-400" />
                                   <span className="font-mono">{booking.timeSlot}</span>
                                 </div>
                                 <div className="flex items-start gap-2">
-                                  <MapPin className="w-4 h-4 text-slate-500 shrink-0 mt-0.5" />
-                                  <span>{booking.address} <span className="text-[10px] text-slate-500 font-mono">({booking.zipCode})</span></span>
+                                  <MapPin className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
+                                  <span>{booking.address} <span className="text-[15px] text-slate-400 font-mono">({booking.zipCode})</span></span>
                                 </div>
                               </div>
 
                               <div className="space-y-2 border-t sm:border-t-0 sm:border-l border-slate-800 pt-2 sm:pt-0 sm:pl-4">
                                 <div>
-                                  <span className="text-slate-500 font-mono text-[10px] uppercase block">House size:</span>
-                                  <span className="font-semibold">{booking.bedrooms} Bed, {booking.bathrooms} Bath • <span className="text-[11px] text-slate-400">{booking.sqFtRange}</span></span>
+                                  <span className="text-slate-400 font-mono text-[14px] uppercase block">House size:</span>
+                                  <span className="font-semibold">{booking.bedrooms} Bed, {booking.bathrooms} Bath • <span className="text-[15px] text-slate-400">{booking.sqFtRange}</span></span>
                                 </div>
                                 {booking.addons.length > 0 && (
                                   <div>
-                                    <span className="text-slate-500 font-mono text-[10px] uppercase block">Add-ons:</span>
-                                    <span className="text-[11px] text-slate-400">{booking.addons.join(", ")}</span>
+                                    <span className="text-slate-400 font-mono text-[14px] uppercase block">Add-ons:</span>
+                                    <span className="text-[15px] text-slate-400">{booking.addons.join(", ")}</span>
                                   </div>
                                 )}
                                 <div>
-                                  <span className="text-slate-500 font-mono text-[10px] uppercase block">Frequency:</span>
+                                  <span className="text-slate-400 font-mono text-[14px] uppercase block">Frequency:</span>
                                   <span className="font-semibold text-sky-400 capitalize">{booking.frequency}</span>
                                 </div>
                                 {booking.paymentMethod && (
                                   <div>
-                                    <span className="text-slate-500 font-mono text-[10px] uppercase block">Payment Method:</span>
+                                    <span className="text-slate-400 font-mono text-[14px] uppercase block">Payment Method:</span>
                                     <span className="font-semibold text-emerald-400">{booking.paymentMethod} {booking.paymentPhone ? `(${booking.paymentPhone})` : ""}</span>
                                   </div>
                                 )}
@@ -327,21 +327,21 @@ export default function ClientDashboard({ bookings, setBookings, setActiveView, 
                             </div>
 
                             {booking.entryInstructions && (
-                              <div className="bg-slate-950 px-3.5 py-2.5 rounded-lg border border-slate-850 text-[11px] text-slate-400 leading-normal">
-                                <span className="font-mono text-slate-500 uppercase text-[9px] block mb-0.5">Entry Instructions:</span>
+                              <div className="bg-slate-950 px-3.5 py-2.5 rounded-lg border border-slate-850 text-[15px] text-slate-400 leading-normal">
+                                <span className="font-mono text-slate-400 uppercase text-[15px] block mb-0.5">Entry Instructions:</span>
                                 "{booking.entryInstructions}"
                               </div>
                             )}
 
                             {booking.status === "completed" && (booking.beforePhoto || booking.afterPhoto) && (
                               <div className="space-y-2 pt-2">
-                                <span className="text-slate-500 font-mono text-[10px] uppercase block">Proof of Clean:</span>
+                                <span className="text-slate-400 font-mono text-[14px] uppercase block">Proof of Clean:</span>
                                 <div className="flex gap-4">
                                   {booking.beforePhoto && (
                                     <div className="space-y-1">
-                                      <div className="h-20 w-28 bg-slate-950 rounded-lg overflow-hidden border border-slate-850 relative">
+                                      <div className="h-20 w-28 bg-slate-950 rounded-lg overflow-hidden border border-slate-855 relative">
                                         <img src={booking.beforePhoto} alt="Before" className="h-full w-full object-cover" referrerPolicy="no-referrer" />
-                                        <span className="absolute bottom-1 right-1 bg-black/70 text-[8px] font-mono font-bold text-red-400 px-1 py-0.2 rounded">BEFORE</span>
+                                        <span className="absolute bottom-1 right-1 bg-black/70 text-[14px] font-mono font-bold text-red-400 px-1 py-0.2 rounded">BEFORE</span>
                                       </div>
                                     </div>
                                   )}
@@ -349,7 +349,7 @@ export default function ClientDashboard({ bookings, setBookings, setActiveView, 
                                     <div className="space-y-1">
                                       <div className="h-20 w-28 bg-slate-950 rounded-lg overflow-hidden border border-emerald-500/30 relative">
                                         <img src={booking.afterPhoto} alt="After" className="h-full w-full object-cover" referrerPolicy="no-referrer" />
-                                        <span className="absolute bottom-1 right-1 bg-emerald-950/80 text-[8px] font-mono font-bold text-emerald-400 px-1 py-0.2 rounded">AFTER</span>
+                                        <span className="absolute bottom-1 right-1 bg-emerald-950/80 text-[14px] font-mono font-bold text-emerald-400 px-1 py-0.2 rounded">AFTER</span>
                                       </div>
                                     </div>
                                   )}
@@ -360,13 +360,13 @@ export default function ClientDashboard({ bookings, setBookings, setActiveView, 
 
                           <div className="flex flex-row md:flex-col justify-between items-end md:items-end md:justify-between border-t md:border-t-0 md:border-l border-slate-800 pt-4 md:pt-0 md:pl-6 shrink-0 md:w-44 text-right">
                             <div className="space-y-1 text-right">
-                              <span className="text-slate-500 font-mono text-[10px] uppercase block">Total Cost:</span>
+                              <span className="text-slate-400 font-mono text-[14px] uppercase block">Total Cost:</span>
                               <span className="text-white font-mono text-base sm:text-lg font-bold block">${booking.price.toFixed(2)}</span>
-                              <span className="text-emerald-400 font-mono text-[10px] block font-semibold">SSP {(booking.price * 1300).toLocaleString()}</span>
+                              <span className="text-emerald-400 font-mono text-[14px] block font-semibold">SSP {(booking.price * 1300).toLocaleString()}</span>
                               {booking.tipAmount > 0 && (
                                 <div className="text-right">
-                                  <span className="block font-mono text-[10px] text-sky-400 font-semibold">+ ${booking.tipAmount.toFixed(2)} Tip</span>
-                                  <span className="block font-mono text-[9px] text-sky-500/80 font-medium">+ SSP {(booking.tipAmount * 1300).toLocaleString()}</span>
+                                  <span className="block font-mono text-[14px] text-sky-400 font-semibold">+ ${booking.tipAmount.toFixed(2)} Tip</span>
+                                  <span className="block font-mono text-[15px] text-sky-500/80 font-medium">+ SSP {(booking.tipAmount * 1300).toLocaleString()}</span>
                                 </div>
                               )}
                             </div>
@@ -396,7 +396,7 @@ export default function ClientDashboard({ bookings, setBookings, setActiveView, 
                                       >
                                         Reschedule Lock
                                       </button>
-                                      <span className="text-[9px] text-red-400 font-mono block">Less than 24h: call support</span>
+                                      <span className="text-[15px] text-red-400 font-mono block">Less than 24h: call support</span>
                                     </div>
                                   )}
                                 </>
@@ -430,13 +430,13 @@ export default function ClientDashboard({ bookings, setBookings, setActiveView, 
                     >
                       <div className="space-y-4 flex-1">
                         <div className="flex flex-wrap items-center gap-3">
-                          <span className="font-mono text-[11px] font-bold text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded border border-emerald-500/20">
+                          <span className="font-mono text-[15px] font-bold text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded border border-emerald-500/20">
                             {order.id}
                           </span>
-                          <span className="font-mono text-[10px] font-bold px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700 uppercase">
+                          <span className="font-mono text-[14px] font-bold px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700 uppercase">
                             {order.paymentMethod}
                           </span>
-                          <span className={`font-mono text-[10px] font-semibold px-2 py-0.5 rounded capitalize ${
+                          <span className={`font-mono text-[14px] font-semibold px-2 py-0.5 rounded capitalize ${
                             order.status === "delivered"
                               ? "bg-emerald-500/20 text-emerald-400"
                               : order.status === "dispatched"
@@ -460,11 +460,11 @@ export default function ClientDashboard({ bookings, setBookings, setActiveView, 
                           
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-slate-800">
                             <div>
-                              <span className="text-slate-500 font-mono text-[10px] uppercase block">Paid via Phone:</span>
+                              <span className="text-slate-400 font-mono text-[14px] uppercase block">Paid via Phone:</span>
                               <span className="font-semibold font-mono text-slate-300">{order.phonePaid}</span>
                             </div>
                             <div>
-                              <span className="text-slate-500 font-mono text-[10px] uppercase block">Delivery Address:</span>
+                              <span className="text-slate-400 font-mono text-[14px] uppercase block">Delivery Address:</span>
                               <span className="font-semibold text-slate-300">{order.deliveryLocation} - {order.deliveryAddress}</span>
                             </div>
                           </div>
@@ -473,13 +473,13 @@ export default function ClientDashboard({ bookings, setBookings, setActiveView, 
 
                       <div className="flex flex-row md:flex-col justify-between items-end md:items-end md:justify-between border-t md:border-t-0 md:border-l border-slate-800 pt-4 md:pt-0 md:pl-6 shrink-0 md:w-44 text-right">
                         <div className="space-y-1 text-right">
-                          <span className="text-slate-500 font-mono text-[10px] uppercase block">Total Paid:</span>
+                          <span className="text-slate-400 font-mono text-[14px] uppercase block">Total Paid:</span>
                           <span className="text-white font-mono text-lg font-bold">
                             {order.currencyPaid === "USD" 
                               ? `$${order.totalUSD.toFixed(2)}` 
                               : `SSP ${order.totalSSP.toLocaleString()}`}
                           </span>
-                          <span className="block text-[10px] text-slate-500 font-mono">Ref: {order.transactionRef}</span>
+                          <span className="block text-[14px] text-slate-400 font-mono">Ref: {order.transactionRef}</span>
                         </div>
 
                         <button
@@ -493,7 +493,7 @@ export default function ClientDashboard({ bookings, setBookings, setActiveView, 
                     </div>
                   ))
                 ) : (
-                  <div className="p-12 text-center text-slate-500 bg-slate-900 border border-slate-800 rounded-2xl">
+                  <div className="p-12 text-center text-slate-400 bg-slate-900 border border-slate-800 rounded-2xl">
                     No product orders found.
                   </div>
                 )}
@@ -540,7 +540,7 @@ export default function ClientDashboard({ bookings, setBookings, setActiveView, 
                   <div className="absolute -left-8 -bottom-8 h-24 w-24 bg-black/5 rounded-full blur-2xl"></div>
                   
                   <div className="flex justify-between items-start z-10">
-                    <span className={`font-display font-black text-[10px] tracking-wider uppercase ${
+                    <span className={`font-display font-black text-[14px] tracking-wider uppercase ${
                       paymentProfile.method === "MTN MoMo" ? "text-slate-900/70" : "text-white/70"
                     }`}>
                       {paymentProfile.method === "Cash" ? "CASH ON SERVICE" : "MOBILE MONEY PROFILE"}
@@ -564,7 +564,7 @@ export default function ClientDashboard({ bookings, setBookings, setActiveView, 
 
                   <div className="flex justify-between items-end z-10 font-mono">
                     <div>
-                      <span className={`block text-[8px] uppercase font-mono ${
+                      <span className={`block text-[14px] uppercase font-mono ${
                         paymentProfile.method === "MTN MoMo" ? "text-slate-900/60" : "text-slate-300/60"
                       }`}>Profile Holder</span>
                       <span className={`text-xs font-bold tracking-wide uppercase truncate block max-w-[120px] ${
@@ -572,7 +572,7 @@ export default function ClientDashboard({ bookings, setBookings, setActiveView, 
                       }`}>{paymentProfile.holder}</span>
                     </div>
                     <div className="text-right">
-                      <span className={`block text-[8px] uppercase font-mono ${
+                      <span className={`block text-[14px] uppercase font-mono ${
                         paymentProfile.method === "MTN MoMo" ? "text-slate-900/60" : "text-slate-300/60"
                       }`}>Channel</span>
                       <span className={`text-xs font-bold block ${
@@ -585,7 +585,7 @@ export default function ClientDashboard({ bookings, setBookings, setActiveView, 
                 /* Profile editing form */
                 <form onSubmit={handleUpdateProfile} className="space-y-3 font-sans text-xs">
                   <div className="space-y-1">
-                    <label className="text-[10px] text-slate-400 font-mono uppercase">Profile Holder Name</label>
+                    <label className="text-[14px] text-slate-400 font-mono uppercase">Profile Holder Name</label>
                     <input 
                       type="text" 
                       required
@@ -597,7 +597,7 @@ export default function ClientDashboard({ bookings, setBookings, setActiveView, 
                   </div>
                   
                   <div className="space-y-1">
-                    <label className="text-[10px] text-slate-400 font-mono uppercase">Payment Channel</label>
+                    <label className="text-[14px] text-slate-400 font-mono uppercase">Payment Channel</label>
                     <select
                       value={profileEditForm.method}
                       onChange={(e) => setProfileEditForm({...profileEditForm, method: e.target.value as any})}
@@ -612,7 +612,7 @@ export default function ClientDashboard({ bookings, setBookings, setActiveView, 
 
                   {profileEditForm.method !== "Cash" && (
                     <div className="space-y-1">
-                      <label className="text-[10px] text-slate-400 font-mono uppercase">Mobile Number</label>
+                      <label className="text-[14px] text-slate-400 font-mono uppercase">Mobile Number</label>
                       <input 
                         type="text" 
                         required
@@ -625,7 +625,7 @@ export default function ClientDashboard({ bookings, setBookings, setActiveView, 
                   )}
 
                   {profileUpdateSuccess && (
-                    <p className="text-emerald-400 font-mono text-[10px] text-center animate-pulse pt-1">Profile updated successfully!</p>
+                    <p className="text-emerald-400 font-mono text-[14px] text-center animate-pulse pt-1">Profile updated successfully!</p>
                   )}
 
                   <div className="flex gap-2 pt-2 justify-end">
@@ -660,7 +660,7 @@ export default function ClientDashboard({ bookings, setBookings, setActiveView, 
                   </div>
                   <div>
                     <span className="block font-bold text-slate-200">24-Hour Happiness Guarantee</span>
-                    <p className="text-[11px] text-slate-400 leading-normal mt-0.5">
+                    <p className="text-[15px] text-slate-400 leading-normal mt-0.5">
                       If you're not 100% satisfied with our clean, we'll return and reclean the area absolutely free.
                     </p>
                   </div>
@@ -672,7 +672,7 @@ export default function ClientDashboard({ bookings, setBookings, setActiveView, 
                   </div>
                   <div>
                     <span className="block font-bold text-slate-200">Ministry Registered &amp; Licensed</span>
-                    <p className="text-[11px] text-slate-400 leading-normal mt-0.5">
+                    <p className="text-[15px] text-slate-400 leading-normal mt-0.5">
                       Fully registered under the Republic of South Sudan Ministry of Environment &amp; Forestry.
                     </p>
                   </div>
@@ -684,7 +684,7 @@ export default function ClientDashboard({ bookings, setBookings, setActiveView, 
                   </div>
                   <div>
                     <span className="block font-bold text-slate-200">NCA &amp; Trinity Tech Verified</span>
-                    <p className="text-[11px] text-slate-400 leading-normal mt-0.5">
+                    <p className="text-[15px] text-slate-400 leading-normal mt-0.5">
                       NCA approved mobile billing merchant, integrated with Zain Cash, MTN MoMo, and m-GURUSH.
                     </p>
                   </div>
@@ -726,7 +726,7 @@ export default function ClientDashboard({ bookings, setBookings, setActiveView, 
               </button>
 
               <div className="space-y-2">
-                <span className="text-sky-400 font-mono text-[10px] uppercase font-bold tracking-wider block">RESCHEDULE APPOINTMENT</span>
+                <span className="text-sky-400 font-mono text-[14px] uppercase font-bold tracking-wider block">RESCHEDULE APPOINTMENT</span>
                 <h3 className="font-display text-xl font-bold text-white">Choose New Appointment Time</h3>
                 <p className="text-xs text-slate-400">
                   Rescheduling booking <span className="font-mono text-white">{selectedBookingForReschedule.id}</span>.
@@ -735,7 +735,7 @@ export default function ClientDashboard({ bookings, setBookings, setActiveView, 
 
               <div className="space-y-4 text-xs font-sans">
                 <div className="space-y-1">
-                  <label className="text-slate-400 font-mono text-[10px] uppercase">New Date</label>
+                  <label className="text-slate-400 font-mono text-[14px] uppercase">New Date</label>
                   <input 
                     type="date" 
                     value={newDate}
@@ -745,14 +745,14 @@ export default function ClientDashboard({ bookings, setBookings, setActiveView, 
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-slate-400 font-mono text-[10px] uppercase block mb-1">Preferred Time Window</label>
+                  <label className="text-slate-400 font-mono text-[14px] uppercase block mb-1">Preferred Time Window</label>
                   <div className="grid grid-cols-1 gap-2">
                     {timeSlots.map((slot) => (
                       <button
                         key={slot}
                         type="button"
                         onClick={() => setNewTimeSlot(slot)}
-                        className={`w-full py-2.5 px-3 rounded-lg border text-left font-mono text-[11px] transition-all ${
+                        className={`w-full py-2.5 px-3 rounded-lg border text-left font-mono text-[15px] transition-all ${
                           newTimeSlot === slot
                             ? "bg-sky-500/10 border-sky-500 text-sky-400 font-bold"
                             : "bg-slate-950 border-slate-850 text-slate-400 hover:text-slate-200"
@@ -765,7 +765,7 @@ export default function ClientDashboard({ bookings, setBookings, setActiveView, 
                 </div>
 
                 {rescheduleError && (
-                  <p className="text-red-400 font-mono text-[10px] text-center">{rescheduleError}</p>
+                  <p className="text-red-400 font-mono text-[14px] text-center">{rescheduleError}</p>
                 )}
               </div>
 
@@ -823,7 +823,7 @@ export default function ClientDashboard({ bookings, setBookings, setActiveView, 
                   <ThumbsUp className="w-6 h-6 animate-pulse" />
                 </div>
                 <div className="space-y-1">
-                  <span className="text-emerald-400 font-mono text-[10px] uppercase font-bold tracking-wider block">SUPPORT OUR CREW</span>
+                  <span className="text-emerald-400 font-mono text-[14px] uppercase font-bold tracking-wider block">SUPPORT OUR CREW</span>
                   <h3 className="font-display text-xl font-bold text-white">Add a Professional Tip</h3>
                   <p className="text-xs text-slate-400">
                     Add a tip for the Clean World team who completed job <span className="font-mono text-white">{selectedBookingForTip.id}</span>.
@@ -853,9 +853,9 @@ export default function ClientDashboard({ bookings, setBookings, setActiveView, 
 
                   {/* Custom tip input */}
                   <div className="space-y-2">
-                    <label className="text-[10px] text-slate-400 font-mono uppercase block text-center">Custom Tip Amount</label>
+                    <label className="text-[14px] text-slate-400 font-mono uppercase block text-center">Custom Tip Amount</label>
                     <div className="relative max-w-[150px] mx-auto">
-                      <span className="absolute left-3 top-3.5 text-slate-500 font-mono">$</span>
+                      <span className="absolute left-3 top-3.5 text-slate-400 font-mono">$</span>
                       <input 
                         type="number" 
                         value={tipAmount}
@@ -887,7 +887,7 @@ export default function ClientDashboard({ bookings, setBookings, setActiveView, 
                 <div className="py-6 text-center space-y-2 animate-fadeIn">
                   <ThumbsUp className="w-12 h-12 text-emerald-400 mx-auto animate-bounce" />
                   <p className="text-emerald-400 font-bold text-sm">Tip Added Successfully!</p>
-                  <p className="text-xs text-slate-500">Thank you for supporting Clean World experts!</p>
+                  <p className="text-xs text-slate-400">Thank you for supporting Clean World experts!</p>
                 </div>
               )}
 
@@ -924,7 +924,7 @@ export default function ClientDashboard({ bookings, setBookings, setActiveView, 
               </button>
 
               <div className="space-y-1 text-left">
-                <span className="text-emerald-400 font-mono text-[10px] uppercase font-bold tracking-wider block">LIVE VEHICLE DISPATCH TRACKER</span>
+                <span className="text-emerald-400 font-mono text-[14px] uppercase font-bold tracking-wider block">LIVE VEHICLE DISPATCH TRACKER</span>
                 <h3 className="font-display text-xl font-bold text-white flex items-center gap-2">
                   <span className="relative flex h-2 w-2">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
@@ -945,31 +945,29 @@ export default function ClientDashboard({ bookings, setBookings, setActiveView, 
                   targetLng={selectedBookingForTracking.lng || 31.58100} 
                   crewName="Clean World Alpha Crew"
                 />
-              </div>
-
-              {/* Dispatch telemetry status card */}
+              </div>              {/* Dispatch telemetry status card */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs bg-slate-950 border border-slate-850 p-4 rounded-2xl font-sans text-left">
                 <div className="space-y-1 border-b sm:border-b-0 sm:border-r border-slate-850 pb-2 sm:pb-0 sm:pr-4">
-                  <span className="text-[10px] text-slate-500 font-mono uppercase">ESTIMATED ARRIVAL</span>
+                  <span className="text-[14px] text-slate-400 font-mono uppercase">ESTIMATED ARRIVAL</span>
                   <div className="text-lg font-bold text-emerald-400 font-mono animate-pulse">{etaMinutes} mins</div>
-                  <span className="text-[10px] text-slate-400 block">Juba traffic included</span>
+                  <span className="text-[14px] text-slate-400 block">Juba traffic included</span>
                 </div>
                 <div className="space-y-1 border-b sm:border-b-0 sm:border-r border-slate-850 pb-2 sm:pb-0 sm:pr-4">
-                  <span className="text-[10px] text-slate-500 font-mono uppercase">DISPATCH CREW</span>
+                  <span className="text-[14px] text-slate-400 font-mono uppercase">DISPATCH CREW</span>
                   <div className="font-semibold text-white">Deng Lual &amp; Team Alpha</div>
-                  <span className="text-[10px] text-slate-400 block">3 Certified HSE Technicians</span>
+                  <span className="text-[14px] text-slate-400 block">3 Certified HSE Technicians</span>
                 </div>
                 <div className="space-y-1">
-                  <span className="text-[10px] text-slate-500 font-mono uppercase">VEHICLE DETAILS</span>
+                  <span className="text-[14px] text-slate-400 font-mono uppercase">VEHICLE DETAILS</span>
                   <div className="font-semibold text-white">Toyota Land Cruiser</div>
-                  <span className="text-[10px] text-slate-400 font-mono block">Juba Plate: SSD-309A</span>
+                  <span className="text-[14px] text-slate-400 font-mono block">Juba Plate: SSD-309A</span>
                 </div>
               </div>
 
               <div className="flex justify-end pt-2">
                 <button
                   onClick={() => setSelectedBookingForTracking(null)}
-                  className="w-full sm:w-auto px-6 py-2.5 bg-slate-800 hover:bg-slate-700 text-white font-semibold text-xs rounded-xl transition-colors border border-slate-750"
+                  className="w-full sm:w-auto px-6 py-2.5 bg-slate-800 hover:bg-slate-700 text-white font-semibold text-xs rounded-xl transition-colors border border-slate-755"
                 >
                   Close Tracker
                 </button>
@@ -1014,7 +1012,7 @@ export default function ClientDashboard({ bookings, setBookings, setActiveView, 
                       <Receipt className="w-5 h-5 text-emerald-400" />
                       OFFICIAL INVOICE
                     </h3>
-                    <p className="text-[10px] text-slate-500 font-mono mt-0.5">CLEAN WORLD INC. JUBA OFFICE</p>
+                    <p className="text-[14px] text-slate-400 font-mono mt-0.5">CLEAN WORLD INC. JUBA OFFICE</p>
                   </div>
                   <span className="font-mono text-xs font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded">
                     {selectedOrderForInvoice.id}
@@ -1025,17 +1023,17 @@ export default function ClientDashboard({ bookings, setBookings, setActiveView, 
               {/* Telemetry info */}
               <div className="grid grid-cols-2 gap-4 text-xs font-sans">
                 <div>
-                  <span className="text-[9px] text-slate-500 font-mono uppercase block">TRANSACTION REF</span>
+                  <span className="text-[14px] text-slate-400 font-mono uppercase block">TRANSACTION REF</span>
                   <span className="font-mono font-bold text-white">{selectedOrderForInvoice.transactionRef}</span>
                 </div>
                 <div>
-                  <span className="text-[9px] text-slate-500 font-mono uppercase block">DATE</span>
+                  <span className="text-[14px] text-slate-400 font-mono uppercase block">DATE</span>
                   <span className="font-semibold text-white">
                     {new Date(selectedOrderForInvoice.createdAt).toLocaleString("en-US", { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
                   </span>
                 </div>
                 <div>
-                  <span className="text-[9px] text-slate-500 font-mono uppercase block">PAYMENT METHOD</span>
+                  <span className="text-[14px] text-slate-400 font-mono uppercase block">PAYMENT METHOD</span>
                   <span className="font-semibold text-white">
                     {selectedOrderForInvoice.paymentMethod === "Cash" 
                       ? "Cash (Pay on Delivery)" 
@@ -1043,19 +1041,19 @@ export default function ClientDashboard({ bookings, setBookings, setActiveView, 
                   </span>
                 </div>
                 <div>
-                  <span className="text-[9px] text-slate-500 font-mono uppercase block">PHONE PAID</span>
+                  <span className="text-[14px] text-slate-400 font-mono uppercase block">PHONE PAID</span>
                   <span className="font-mono font-bold text-white">{selectedOrderForInvoice.phonePaid}</span>
                 </div>
               </div>
 
               <div className="border-t border-b border-slate-800 py-4 space-y-2.5">
-                <span className="text-[9px] text-slate-500 font-mono uppercase block">ORDER ITEMS</span>
+                <span className="text-[14px] text-slate-400 font-mono uppercase block">ORDER ITEMS</span>
                 <div className="space-y-2">
                   {selectedOrderForInvoice.items.map((item, idx) => (
                     <div key={idx} className="flex justify-between items-center text-xs">
                       <div className="flex flex-col">
                         <span className="font-medium text-white">{item.product.name}</span>
-                        <span className="text-[10px] text-slate-500 font-mono">{item.product.unit} (x{item.quantity})</span>
+                        <span className="text-[15px] text-slate-400 font-mono">{item.product.unit} (x{item.quantity})</span>
                       </div>
                       <span className="font-mono text-slate-300">
                         ${(item.product.price * item.quantity).toFixed(2)}
@@ -1078,18 +1076,18 @@ export default function ClientDashboard({ bookings, setBookings, setActiveView, 
                         ? `$${selectedOrderForInvoice.totalUSD.toFixed(2)}` 
                         : `SSP ${selectedOrderForInvoice.totalSSP.toLocaleString()}`}
                     </span>
-                    <span className="block text-[8px] text-slate-500 font-mono">Simulated Exchange Rate: 1 USD = 1,300 SSP</span>
+                    <span className="block text-[14px] text-slate-400 font-mono">Simulated Exchange Rate: 1 USD = 1,300 SSP</span>
                   </div>
                 </div>
               </div>
 
-              <div className="bg-slate-950/40 border border-slate-800 p-3.5 rounded-xl text-[10px] text-slate-400 leading-normal space-y-1.5">
+              <div className="bg-slate-955/40 border border-slate-800 p-3.5 rounded-xl text-[14px] text-slate-400 leading-normal space-y-1.5">
                 <div>
-                  <span className="font-mono text-slate-500 uppercase text-[8px] block">DELIVERY TARGET:</span>
+                  <span className="font-mono text-slate-400 text-[15px] uppercase block">DELIVERY TARGET:</span>
                   <span className="font-semibold text-white">{selectedOrderForInvoice.deliveryLocation} District</span>
                 </div>
                 <div>
-                  <span className="font-mono text-slate-500 uppercase text-[8px] block">STREET ADDRESS:</span>
+                  <span className="font-mono text-slate-400 text-[15px] uppercase block">STREET ADDRESS:</span>
                   <span>{selectedOrderForInvoice.deliveryAddress}</span>
                 </div>
               </div>

@@ -321,10 +321,10 @@ export default function AcademyPage({ setActiveView }: AcademyPageProps) {
                 >
                   <div className="space-y-4">
                     <div className="flex justify-between items-start gap-2">
-                      <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/25 font-mono text-[9px] font-bold px-2 py-0.5 rounded uppercase">
+                      <span className="bg-emerald-500/10 text-emerald-400 border border-emerald-500/25 font-mono text-[15px] font-bold px-2 py-0.5 rounded uppercase">
                         {deliveryMode === "on-site" ? course.certOnSite : course.certDigital}
                       </span>
-                      <span className="flex items-center gap-1 text-[10px] text-slate-400 font-mono shrink-0">
+                      <span className="flex items-center gap-1 text-[14px] text-slate-400 font-mono shrink-0">
                         <Clock className="w-3 h-3 text-emerald-400" /> 
                         {deliveryMode === "on-site" ? course.durationOnSite : course.durationDigital}
                       </span>
@@ -338,12 +338,12 @@ export default function AcademyPage({ setActiveView }: AcademyPageProps) {
                     </div>
 
                     <div className="space-y-2 pt-2 border-t border-slate-900">
-                      <span className="block text-[9px] text-slate-500 font-mono uppercase tracking-wider">
+                      <span className="block text-[14px] text-slate-400 font-mono uppercase tracking-wider">
                         {deliveryMode === "on-site" ? "Practical Drills Covered:" : "Low-Bandwidth Modules:"}
                       </span>
                       <div className="flex flex-wrap gap-1.5">
                         {(deliveryMode === "on-site" ? course.modulesOnSite : course.modulesDigital).map((m, idx) => (
-                          <span key={idx} className="text-[9px] text-slate-300 bg-slate-950 border border-slate-800/80 px-2 py-1 rounded-lg">
+                          <span key={idx} className="text-[15px] text-slate-300 bg-slate-950 border border-slate-800/80 px-2 py-1 rounded-lg">
                             {m}
                           </span>
                         ))}
@@ -352,9 +352,9 @@ export default function AcademyPage({ setActiveView }: AcademyPageProps) {
                   </div>
 
                   <div className="mt-4 pt-3 border-t border-slate-900/60 flex justify-between items-center">
-                    <span className="text-[10px] text-slate-500 font-mono">BASE PRICE</span>
+                    <span className="text-[14px] text-slate-400 font-mono">BASE PRICE</span>
                     <span className="text-sm font-mono font-bold text-emerald-400">
-                      ${deliveryMode === "on-site" ? course.basePriceOnSitePerPerson : course.basePriceDigitalPerPerson} <span className="text-[9px] text-slate-500 font-normal">/ trainee</span>
+                      ${deliveryMode === "on-site" ? course.basePriceOnSitePerPerson : course.basePriceDigitalPerPerson} <span className="text-[15px] text-slate-450 font-normal">/ trainee</span>
                     </span>
                   </div>
                 </motion.div>
@@ -376,9 +376,9 @@ export default function AcademyPage({ setActiveView }: AcademyPageProps) {
                       Clean World deploys instructors directly to major hubs and facilities. We cover Central Equatoria and remote states (Wau, Malakal, Yei) as well as Uganda &amp; Kenya base offices.
                     </p>
                     <div className="flex flex-wrap gap-1.5 pt-2">
-                      <span className="text-[9px] text-slate-400 bg-slate-950 px-2.5 py-1 rounded-md border border-slate-800">Juba HQ</span>
-                      <span className="text-[9px] text-slate-400 bg-slate-950 px-2.5 py-1 rounded-md border border-slate-800">UN/NGO Audited</span>
-                      <span className="text-[9px] text-slate-400 bg-slate-950 px-2.5 py-1 rounded-md border border-slate-800">EAC Certified</span>
+                      <span className="text-[15px] text-slate-400 bg-slate-950 px-2.5 py-1 rounded-md border border-slate-800">Juba HQ</span>
+                      <span className="text-[15px] text-slate-400 bg-slate-950 px-2.5 py-1 rounded-md border border-slate-800">UN/NGO Audited</span>
+                      <span className="text-[15px] text-slate-400 bg-slate-950 px-2.5 py-1 rounded-md border border-slate-800">EAC Certified</span>
                     </div>
                   </div>
                 ) : (
@@ -392,13 +392,13 @@ export default function AcademyPage({ setActiveView }: AcademyPageProps) {
                       Tailored for low-bandwidth cellular environments. Receive manuals as small PDF downloads, complete text-quizzes, and get immediate certificate verification updates on WhatsApp.
                     </p>
                     <div className="flex flex-wrap gap-1.5 pt-2">
-                      <span className="text-[9px] text-slate-400 bg-slate-950 px-2.5 py-1 rounded-md border border-slate-800">Offline PDFs</span>
-                      <span className="text-[9px] text-slate-400 bg-slate-950 px-2.5 py-1 rounded-md border border-slate-800">WhatsApp Alerts</span>
-                      <span className="text-[9px] text-slate-400 bg-slate-950 px-2.5 py-1 rounded-md border border-slate-800">SMS Verification</span>
+                      <span className="text-[15px] text-slate-400 bg-slate-950 px-2.5 py-1 rounded-md border border-slate-800">Offline PDFs</span>
+                      <span className="text-[15px] text-slate-400 bg-slate-950 px-2.5 py-1 rounded-md border border-slate-800">WhatsApp Alerts</span>
+                      <span className="text-[15px] text-slate-400 bg-slate-950 px-2.5 py-1 rounded-md border border-slate-800">SMS Verification</span>
                     </div>
                   </div>
                 )}
-                <div className="pt-3 border-t border-slate-900 text-[10px] text-slate-500 font-mono">
+                <div className="pt-3 border-t border-slate-900 text-[14px] text-slate-400 font-mono">
                   Clean World Compliance Bureau
                 </div>
               </motion.div>
@@ -422,7 +422,7 @@ export default function AcademyPage({ setActiveView }: AcademyPageProps) {
                       <h4 className="font-display text-lg font-bold text-white mt-1">Manager Compliance Dashboard</h4>
                       <p className="text-xs text-slate-400 mt-0.5">Real-time low-data overview of your team's compliance metrics and credentials.</p>
                     </div>
-                    <span className="bg-slate-800/80 text-emerald-400 font-mono text-[9px] px-2.5 py-1 rounded-full border border-emerald-500/20 uppercase font-bold shrink-0">
+                    <span className="bg-slate-800/80 text-emerald-400 font-mono text-[15px] px-2.5 py-1 rounded-full border border-emerald-500/20 uppercase font-bold shrink-0">
                       Juba Portal Active
                     </span>
                   </div>
@@ -431,18 +431,18 @@ export default function AcademyPage({ setActiveView }: AcademyPageProps) {
                     {/* Mock employees */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       
-                      <div className="bg-slate-950 border border-slate-800/50 p-4 rounded-2xl flex flex-col justify-between space-y-3">
+                      <div className="bg-slate-955 border border-slate-800/50 p-4 rounded-2xl flex flex-col justify-between space-y-3">
                         <div className="flex justify-between items-start">
                           <div>
                             <span className="text-xs font-bold text-white">John Garang</span>
-                            <span className="block text-[10px] text-slate-500 font-mono">Vector Control • Field Op</span>
+                            <span className="block text-[14px] text-slate-400 font-mono">Vector Control • Field Op</span>
                           </div>
-                          <span className="bg-emerald-500/10 text-emerald-400 text-[9px] font-mono px-2 py-0.5 rounded border border-emerald-500/25">
+                          <span className="bg-emerald-500/10 text-emerald-400 text-[15px] font-mono px-2 py-0.5 rounded border border-emerald-500/25">
                             Certified
                           </span>
                         </div>
                         <div className="space-y-1">
-                          <div className="flex justify-between text-[9px] text-slate-500">
+                          <div className="flex justify-between text-[14px] text-slate-400">
                             <span>Quiz Progress</span>
                             <span>100%</span>
                           </div>
@@ -450,21 +450,21 @@ export default function AcademyPage({ setActiveView }: AcademyPageProps) {
                             <div className="bg-emerald-500 h-full w-full" />
                           </div>
                         </div>
-                        <span className="text-[9px] font-mono text-slate-500">CREDENTIAL: CW-CERT-8921</span>
+                        <span className="text-[14px] font-mono text-slate-400">CREDENTIAL: CW-CERT-8921</span>
                       </div>
 
-                      <div className="bg-slate-950 border border-slate-800/50 p-4 rounded-2xl flex flex-col justify-between space-y-3">
+                      <div className="bg-slate-955 border border-slate-800/50 p-4 rounded-2xl flex flex-col justify-between space-y-3">
                         <div className="flex justify-between items-start">
                           <div>
                             <span className="text-xs font-bold text-white">Rebecca Nyandeng</span>
-                            <span className="block text-[10px] text-slate-500 font-mono">Chemical Safety • Sanitation Lead</span>
+                            <span className="block text-[14px] text-slate-400 font-mono">Chemical Safety • Sanitation Lead</span>
                           </div>
-                          <span className="bg-emerald-500/10 text-emerald-400 text-[9px] font-mono px-2 py-0.5 rounded border border-emerald-500/25">
+                          <span className="bg-emerald-500/10 text-emerald-400 text-[15px] font-mono px-2 py-0.5 rounded border border-emerald-500/25">
                             Certified
                           </span>
                         </div>
                         <div className="space-y-1">
-                          <div className="flex justify-between text-[9px] text-slate-500">
+                          <div className="flex justify-between text-[14px] text-slate-400">
                             <span>Quiz Progress</span>
                             <span>100%</span>
                           </div>
@@ -472,21 +472,21 @@ export default function AcademyPage({ setActiveView }: AcademyPageProps) {
                             <div className="bg-emerald-500 h-full w-full" />
                           </div>
                         </div>
-                        <span className="text-[9px] font-mono text-slate-500">CREDENTIAL: CW-CERT-4201</span>
+                        <span className="text-[14px] font-mono text-slate-400">CREDENTIAL: CW-CERT-4201</span>
                       </div>
 
-                      <div className="bg-slate-950 border border-slate-800/50 p-4 rounded-2xl flex flex-col justify-between space-y-3">
+                      <div className="bg-slate-955 border border-slate-800/50 p-4 rounded-2xl flex flex-col justify-between space-y-3">
                         <div className="flex justify-between items-start">
                           <div>
                             <span className="text-xs font-bold text-white">Emmanuel Deng</span>
-                            <span className="block text-[10px] text-slate-500 font-mono">Waste Logistics • Dispatcher</span>
+                            <span className="block text-[14px] text-slate-400 font-mono">Waste Logistics • Dispatcher</span>
                           </div>
-                          <span className="bg-emerald-500/10 text-emerald-400 text-[9px] font-mono px-2 py-0.5 rounded border border-emerald-500/25">
+                          <span className="bg-emerald-500/10 text-emerald-400 text-[15px] font-mono px-2 py-0.5 rounded border border-emerald-500/25">
                             Certified
                           </span>
                         </div>
                         <div className="space-y-1">
-                          <div className="flex justify-between text-[9px] text-slate-500">
+                          <div className="flex justify-between text-[14px] text-slate-400">
                             <span>Quiz Progress</span>
                             <span>100%</span>
                           </div>
@@ -494,21 +494,21 @@ export default function AcademyPage({ setActiveView }: AcademyPageProps) {
                             <div className="bg-emerald-500 h-full w-full" />
                           </div>
                         </div>
-                        <span className="text-[9px] font-mono text-slate-500">CREDENTIAL: CW-CERT-1002</span>
+                        <span className="text-[14px] font-mono text-slate-400">CREDENTIAL: CW-CERT-1002</span>
                       </div>
 
-                      <div className="bg-slate-950 border border-slate-800/50 p-4 rounded-2xl flex flex-col justify-between space-y-3">
+                      <div className="bg-slate-955 border border-slate-800/50 p-4 rounded-2xl flex flex-col justify-between space-y-3">
                         <div className="flex justify-between items-start">
                           <div>
                             <span className="text-xs font-bold text-white">Kevin Aber Jr.</span>
-                            <span className="block text-[10px] text-slate-500 font-mono">Chemical Safety • Field Op</span>
+                            <span className="block text-[14px] text-slate-400 font-mono">Chemical Safety • Field Op</span>
                           </div>
-                          <span className="bg-amber-500/10 text-amber-400 text-[9px] font-mono px-2 py-0.5 rounded border border-amber-500/25">
+                          <span className="bg-amber-500/10 text-amber-400 text-[15px] font-mono px-2 py-0.5 rounded border border-amber-500/25">
                             In Progress
                           </span>
                         </div>
                         <div className="space-y-1">
-                          <div className="flex justify-between text-[9px] text-slate-500">
+                          <div className="flex justify-between text-[14px] text-slate-400">
                             <span>Quiz Progress</span>
                             <span>60%</span>
                           </div>
@@ -516,7 +516,7 @@ export default function AcademyPage({ setActiveView }: AcademyPageProps) {
                             <div className="bg-amber-500 h-full w-[60%]" />
                           </div>
                         </div>
-                        <span className="text-[9px] font-mono text-slate-500">2/3 Modules Completed (SMS Reminders Sent)</span>
+                        <span className="text-[14px] font-mono text-slate-400">2/3 Modules Completed (SMS Reminders Sent)</span>
                       </div>
 
                     </div>
@@ -536,7 +536,7 @@ export default function AcademyPage({ setActiveView }: AcademyPageProps) {
                   <GraduationCap className="w-4 h-4 text-emerald-400" />
                   B2B Group Estimator
                 </h4>
-                <span className="text-[10px] text-slate-500 mt-1 block">
+                <span className="text-[15px] text-slate-400 mt-1 block">
                   {deliveryMode === "on-site" ? "On-Site Team Bootcamp Sizer" : "Low-Data Digital Seats Estimator"}
                 </span>
               </div>
@@ -554,7 +554,7 @@ export default function AcademyPage({ setActiveView }: AcademyPageProps) {
                   
                   {/* Trainee Counter */}
                   <div className="space-y-2">
-                    <label className="text-[9px] text-slate-400 font-mono uppercase tracking-wider block">
+                    <label className="text-[15px] text-slate-400 font-mono uppercase tracking-wider block">
                       {deliveryMode === "on-site" ? "Trainees for Bootcamp:" : "Digital Seat Licenses:"}
                     </label>
                     <div className="flex justify-between items-center bg-slate-950 border border-slate-800/60 px-4 py-2.5 rounded-2xl">
@@ -582,7 +582,7 @@ export default function AcademyPage({ setActiveView }: AcademyPageProps) {
                   {/* On-Site Territory Surcharge Selection */}
                   {deliveryMode === "on-site" && (
                     <div className="space-y-2">
-                      <label className="text-[9px] text-slate-400 font-mono uppercase tracking-wider block">Dispatch Location / State:</label>
+                      <label className="text-[15px] text-slate-400 font-mono uppercase tracking-wider block">Dispatch Location / State:</label>
                       <select 
                         value={dispatchTerritory}
                         onChange={(e) => setDispatchTerritory(e.target.value)}
@@ -603,7 +603,7 @@ export default function AcademyPage({ setActiveView }: AcademyPageProps) {
                     <div className="flex items-center justify-between p-3 bg-slate-950 border border-slate-800/50 rounded-2xl">
                       <div className="flex flex-col">
                         <span className="text-xs font-semibold text-white">Include Physical EHS Kits</span>
-                        <span className="text-[9px] text-slate-500 font-mono">PPE &amp; Spill containment starter kits</span>
+                        <span className="text-[15px] text-slate-400 font-mono">PPE &amp; Spill containment starter kits</span>
                       </div>
                       <input 
                         type="checkbox"
@@ -666,7 +666,7 @@ export default function AcademyPage({ setActiveView }: AcademyPageProps) {
                         <div className="flex justify-between items-center text-white font-bold pt-2 border-t border-slate-900">
                           <span>ESTIMATED TOTAL</span>
                           <span className="text-emerald-400 font-mono text-base font-extrabold">
-                            ${estimatedTotalUSD.toFixed(2)} <span className="text-[9px] text-slate-500 font-normal">USD</span>
+                            ${estimatedTotalUSD.toFixed(2)} <span className="text-[15px] text-slate-400 font-normal">/ trainee</span>
                           </span>
                         </div>
                       </>
@@ -675,9 +675,9 @@ export default function AcademyPage({ setActiveView }: AcademyPageProps) {
 
                   {/* Form fields */}
                   <div className="space-y-3">
-                    <span className="block text-[9px] text-slate-400 font-mono uppercase tracking-wider">Corporate Dispatch Details:</span>
+                    <span className="block text-[15px] text-slate-400 font-mono uppercase tracking-wider">Corporate Dispatch Details:</span>
                     <div>
-                      <label className="text-[9px] text-slate-500 block mb-1">Company / Organization Name *</label>
+                      <label className="text-[14px] text-slate-400 block mb-1">Company / Organization Name *</label>
                       <input 
                         type="text" 
                         required
@@ -688,7 +688,7 @@ export default function AcademyPage({ setActiveView }: AcademyPageProps) {
                       />
                     </div>
                     <div>
-                      <label className="text-[9px] text-slate-500 block mb-1">Official Email Address *</label>
+                      <label className="text-[14px] text-slate-400 block mb-1">Official Email Address *</label>
                       <input 
                         type="email" 
                         required
@@ -699,7 +699,7 @@ export default function AcademyPage({ setActiveView }: AcademyPageProps) {
                       />
                     </div>
                     <div>
-                      <label className="text-[9px] text-slate-500 block mb-1">Contact Phone Number *</label>
+                      <label className="text-[14px] text-slate-400 block mb-1">Contact Phone Number *</label>
                       <input 
                         type="tel" 
                         required
@@ -720,8 +720,8 @@ export default function AcademyPage({ setActiveView }: AcademyPageProps) {
                     <Send className="w-3.5 h-3.5" />
                   </button>
 
-                  <div className="flex items-start gap-2 text-[9px] text-slate-500 leading-normal pt-1">
-                    <ShieldAlert className="w-4 h-4 shrink-0 text-slate-600 mt-0.5" />
+                  <div className="flex items-start gap-2 text-[14px] text-slate-400 leading-normal pt-1">
+                    <ShieldAlert className="w-4 h-4 shrink-0 text-slate-450 mt-0.5" />
                     <span>
                       {deliveryMode === "on-site" 
                         ? "Training schedules align with South Sudan environmental codes. Physical evaluations are required for certified completion stamps."
@@ -789,7 +789,7 @@ export default function AcademyPage({ setActiveView }: AcademyPageProps) {
                               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                               <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                             </span>
-                            <span className="text-emerald-400 font-mono text-[9px] uppercase font-bold tracking-wider">VALID CERTIFICATE LEDGER</span>
+                            <span className="text-emerald-400 font-mono text-[15px] uppercase font-bold tracking-wider">VALID CERTIFICATE LEDGER</span>
                           </div>
                           
                           <div className="flex flex-col sm:flex-row sm:justify-between items-start gap-4">
@@ -798,37 +798,37 @@ export default function AcademyPage({ setActiveView }: AcademyPageProps) {
                               <p className="text-xs text-slate-300 font-sans mt-0.5">Course: <strong className="text-white">{certResult.course}</strong></p>
                             </div>
                             <div className="bg-slate-900 border border-slate-800/80 p-2.5 rounded-xl text-left shrink-0">
-                              <div className="text-[9px] text-slate-500 font-mono uppercase">CERTIFICATE ID</div>
+                              <div className="text-[14px] text-slate-400 font-mono uppercase">CERTIFICATE ID</div>
                               <div className="text-xs font-mono font-bold text-white tracking-wider">{certResult.id}</div>
                             </div>
                           </div>
 
                           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-3 border-t border-slate-900 text-left">
                             <div>
-                              <span className="block text-[9px] text-slate-500 font-mono uppercase">Theory Exam</span>
+                              <span className="block text-[14px] text-slate-400 font-mono uppercase">Theory Exam</span>
                               <span className="text-xs font-mono font-semibold text-white">{certResult.theoryScore}</span>
                             </div>
                             <div>
-                              <span className="block text-[9px] text-slate-500 font-mono uppercase">Physical Drills</span>
+                              <span className="block text-[14px] text-slate-400 font-mono uppercase">Physical Drills</span>
                               <span className="text-xs font-mono font-semibold text-white">{certResult.practicalScore}</span>
                             </div>
                             <div>
-                              <span className="block text-[9px] text-slate-500 font-mono uppercase">Registration Date</span>
+                              <span className="block text-[14px] text-slate-400 font-mono uppercase">Registration Date</span>
                               <span className="text-xs font-mono font-semibold text-white">{certResult.date}</span>
                             </div>
                             <div>
-                              <span className="block text-[9px] text-slate-500 font-mono uppercase">Expiration</span>
+                              <span className="block text-[14px] text-slate-400 font-mono uppercase">Expiration</span>
                               <span className="text-xs font-mono font-semibold text-white">{certResult.expiration}</span>
                             </div>
                           </div>
 
-                          <div className="text-[9px] font-mono text-slate-500 pt-2 border-t border-slate-900 flex items-center gap-1.5">
+                          <div className="text-[14px] font-mono text-slate-400 pt-2 border-t border-slate-900 flex items-center gap-1.5">
                             <Shield className="w-3 h-3 text-emerald-500" />
                             AUDITING BUREAU: {certResult.agency}
                           </div>
                         </div>
 
-                        <div className="flex flex-col items-center gap-2 bg-emerald-500/10 border border-emerald-500/25 px-4 py-3 rounded-2xl text-emerald-400 font-mono text-[10px] font-bold shrink-0 self-stretch md:self-auto justify-center">
+                        <div className="flex flex-col items-center gap-2 bg-emerald-500/10 border border-emerald-500/25 px-4 py-3 rounded-2xl text-emerald-400 font-mono text-[14px] font-bold shrink-0 self-stretch md:self-auto justify-center">
                           <Award className="w-5 h-5 text-emerald-400" />
                           <span>RSS MOE &amp; WHO</span>
                           <span>APPROVED STAMP</span>

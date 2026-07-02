@@ -81,7 +81,7 @@ export default function Navbar({ activeView, setActiveView, cartCount }: NavbarP
                 }`}>
                   CLEAN WORLD
                 </span>
-                <span className={`text-[9px] tracking-wider px-1 py-0.5 font-bold leading-none ml-1 shadow-sm select-none self-center ${
+                <span className={`text-[15px] tracking-wider px-1 py-0.5 font-bold leading-none ml-1 shadow-sm select-none self-center ${
                   isCyberGrid 
                     ? "bg-emerald-400 text-slate-950 border border-emerald-400 rounded-none" 
                     : "text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 rounded"
@@ -142,7 +142,7 @@ export default function Navbar({ activeView, setActiveView, cartCount }: NavbarP
               >
                 <ShoppingBag className="w-5 h-5" />
                 {cartCount > 0 && (
-                  <span className={`absolute -top-1 -right-1 font-mono text-[9px] font-extrabold h-5 w-5 flex items-center justify-center animate-pulse ${
+                  <span className={`absolute -top-1 -right-1 font-mono text-[15px] font-extrabold h-5 w-5 flex items-center justify-center animate-pulse ${
                     isCyberGrid 
                       ? "bg-emerald-400 text-slate-950 border border-emerald-400 rounded-none"
                       : "bg-emerald-500 text-slate-950 rounded-full border border-slate-950"
@@ -179,7 +179,7 @@ export default function Navbar({ activeView, setActiveView, cartCount }: NavbarP
               >
                 <ShoppingBag className="w-5 h-5" />
                 {cartCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-emerald-500 text-slate-950 font-mono text-[9px] font-extrabold h-4 h-4 min-w-4 rounded-full flex items-center justify-center border border-slate-900 px-1">
+                  <span className="absolute -top-1 -right-1 bg-emerald-500 text-slate-950 font-mono text-[15px] font-extrabold h-4 h-4 min-w-4 rounded-full flex items-center justify-center border border-slate-900 px-1">
                     {cartCount}
                   </span>
                 )}
@@ -230,10 +230,10 @@ export default function Navbar({ activeView, setActiveView, cartCount }: NavbarP
               <div className="pt-3 border-t border-slate-900 space-y-3">
                 {/* Trust Badge for Mobile View */}
                 <div className={`text-center p-3 ${isCyberGrid ? "bg-slate-900 border border-slate-800 rounded-none" : "bg-emerald-500/5 border border-emerald-500/10 rounded-xl"}`}>
-                  <p className="text-[10px] font-mono text-emerald-400 font-semibold tracking-wider">
+                  <p className="text-[14px] font-mono text-emerald-400 font-semibold tracking-wider">
                     ★ 24-HOUR HAPPINESS GUARANTEE
                   </p>
-                  <p className="text-[9px] font-mono text-slate-400 mt-0.5">
+                  <p className="text-[15px] font-mono text-slate-400 mt-0.5">
                     LICENSED, BONDED & INSURED
                   </p>
                 </div>

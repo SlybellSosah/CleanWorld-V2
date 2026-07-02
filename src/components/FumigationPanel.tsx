@@ -196,10 +196,10 @@ function BioThreatRadar() {
 
       {/* Floating labels outside SVG */}
       <div className="absolute inset-0 pointer-events-none">
-        <span className="absolute top-1 left-1/2 -translate-x-1/2 text-[8px] font-mono font-bold text-violet-300/80 tracking-widest uppercase">VECTOR</span>
-        <span className="absolute top-1/2 right-0 -translate-y-1/2 text-[8px] font-mono font-bold text-violet-400/70 tracking-widest uppercase">COLONY</span>
-        <span className="absolute bottom-1 left-1/2 -translate-x-1/2 text-[8px] font-mono font-bold text-indigo-400/60 tracking-widest uppercase">NETWORK</span>
-        <span className="absolute top-1/2 left-0 -translate-y-1/2 text-[8px] font-mono font-bold text-violet-300/50 tracking-widest uppercase">DENGUE</span>
+        <span className="absolute top-1 left-1/2 -translate-x-1/2 text-[14px] font-mono font-bold text-violet-300/80 tracking-widest uppercase">VECTOR</span>
+        <span className="absolute top-1/2 right-0 -translate-y-1/2 text-[14px] font-mono font-bold text-violet-400/70 tracking-widest uppercase">COLONY</span>
+        <span className="absolute bottom-1 left-1/2 -translate-x-1/2 text-[14px] font-mono font-bold text-indigo-400/60 tracking-widest uppercase">NETWORK</span>
+        <span className="absolute top-1/2 left-0 -translate-y-1/2 text-[14px] font-mono font-bold text-violet-300/50 tracking-widest uppercase">DENGUE</span>
       </div>
     </div>
   );
@@ -312,7 +312,7 @@ export default function FumigationPanel({
         <div className="space-y-3">
           <div className="flex items-center gap-2">
             <span className="h-px w-8" style={{ background: "#c9adf3" }} />
-            <span className="text-[10px] font-mono font-semibold tracking-[0.2em] uppercase" style={{ color: "#c9adf3" }}>
+            <span className="text-[14px] font-mono font-semibold tracking-[0.2em] uppercase" style={{ color: "#c9adf3" }}>
               Elite Risk Mitigation
             </span>
           </div>
@@ -334,7 +334,7 @@ export default function FumigationPanel({
             <div key={label} className="pl-3 py-1 flex flex-col border-l-2" style={{ borderColor: "rgba(201,173,243,0.4)" }}>
               <span className="font-display text-xl font-bold text-white leading-none">{value}</span>
               <span className="font-display text-xs font-semibold leading-none mt-1" style={{ color: "#c9adf3" }}>{label}</span>
-              <span className="text-[9px] font-mono text-slate-500 uppercase tracking-wide leading-none mt-1.5">{sub}</span>
+              <span className="text-[14px] font-mono text-slate-400 uppercase tracking-wide leading-none mt-1.5">{sub}</span>
             </div>
           ))}
         </div>
@@ -354,7 +354,7 @@ export default function FumigationPanel({
             {THREAT_NODES.map(node => (
               <div key={node.id} className="flex items-center gap-2">
                 <span className="inline-block h-2 w-2 rounded-sm shrink-0" style={{ backgroundColor: node.color }} />
-                <span className="text-[10px] font-mono text-slate-400">{node.abbr}</span>
+                <span className="text-[14px] font-mono text-slate-400">{node.abbr}</span>
               </div>
             ))}
           </div>
@@ -362,8 +362,8 @@ export default function FumigationPanel({
 
         {/* Vector service checklist */}
         <div className="space-y-2">
-          <span className="text-[9px] font-mono uppercase tracking-[0.2em] text-slate-500 flex items-center gap-2">
-            <Bug className="w-3 h-3 text-slate-600" />
+          <span className="text-[14px] font-mono uppercase tracking-[0.2em] text-slate-400 flex items-center gap-2">
+            <Bug className="w-3 h-3 text-slate-500" />
             Treatment Vectors
           </span>
           <ul className="space-y-3" role="list">
@@ -407,8 +407,8 @@ export default function FumigationPanel({
                 >
                   <td className="px-6 py-3.5 w-[40%]">
                     <div className="flex items-center gap-2">
-                      <span className="transition-colors shrink-0 text-slate-600 group-hover:text-violet-400/60">{icon}</span>
-                      <span className="text-[10px] font-mono font-semibold text-slate-500 tracking-widest uppercase">{metric}</span>
+                      <span className="transition-colors shrink-0 text-slate-500 group-hover:text-violet-400/60">{icon}</span>
+                      <span className="text-[14px] font-mono font-semibold text-slate-400 tracking-widest uppercase">{metric}</span>
                     </div>
                   </td>
                   <td className="px-6 py-3.5 text-xs text-white font-medium">
@@ -424,7 +424,7 @@ export default function FumigationPanel({
 
         {/* Treatment Tier Selector */}
         <div className="rounded-xl border p-5 space-y-4" style={{ background: "rgba(15,23,42,0.6)", borderColor: "rgba(201,173,243,0.14)" }}>
-          <span className="text-[9px] font-mono uppercase tracking-[0.2em] text-slate-500 block">Treatment Intensity Class</span>
+          <span className="text-[14px] font-mono uppercase tracking-[0.2em] text-slate-400 block">Treatment Intensity Class</span>
           <div className="space-y-2">
             {TREATMENT_TIERS.map(tier => {
               const isActive = treatmentClass === tier.val;
@@ -447,7 +447,7 @@ export default function FumigationPanel({
                     </span>
                     {isActive && <Check className="w-3.5 h-3.5" style={{ color: "#c9adf3" }} />}
                   </div>
-                  <p className="text-[11px] text-slate-500 font-sans leading-snug">{tier.desc}</p>
+                  <p className="text-[15px] text-slate-400 font-sans leading-snug">{tier.desc}</p>
                 </button>
               );
             })}
@@ -457,14 +457,14 @@ export default function FumigationPanel({
         {/* Equipment tags */}
         <div className="rounded-xl border px-5 py-4 space-y-3 shadow-md" style={{ background: "rgba(15,23,42,0.5)", borderColor: "rgba(201,173,243,0.12)" }}>
           <div className="flex items-center gap-2">
-            <Cpu className="w-3.5 h-3.5 text-slate-600" />
-            <span className="text-[9px] font-mono uppercase tracking-[0.2em] text-slate-500">Deployed Equipment</span>
+            <Cpu className="w-3.5 h-3.5 text-slate-500" />
+            <span className="text-[14px] font-mono uppercase tracking-[0.2em] text-slate-400">Deployed Equipment</span>
           </div>
           <div className="flex flex-wrap gap-2">
             {["ULV Thermal Foggers", "Pneumatic Sprayers", "Eco-safe Larvicides"].map((eq, i) => (
               <span
                 key={i}
-                className="inline-flex items-center gap-1.5 text-[10px] font-mono font-medium px-2.5 py-1 rounded-md border transition-colors"
+                className="inline-flex items-center gap-1.5 text-[14px] font-mono font-medium px-2.5 py-1 rounded-md border transition-colors"
                 style={{ color: "#c9adf3", background: "rgba(201,173,243,0.05)", borderColor: "rgba(201,173,243,0.2)" }}
               >
                 <Cpu className="w-3 h-3 shrink-0 opacity-75" />
@@ -519,7 +519,7 @@ export default function FumigationPanel({
                 <div className="space-y-1.5">
                   <div className="flex items-center gap-1.5">
                     <span className="h-2 w-2 rounded-full animate-pulse" style={{ background: "#c9adf3" }} />
-                    <span className="font-mono text-[9px] uppercase tracking-widest font-extrabold" style={{ color: "#c9adf3" }}>
+                    <span className="font-mono text-[15px] uppercase tracking-widest font-extrabold" style={{ color: "#c9adf3" }}>
                       SECURE FACILITY DISPATCH
                     </span>
                   </div>
@@ -534,7 +534,7 @@ export default function FumigationPanel({
                       <Building className="w-3.5 h-3.5 text-slate-600" /> Site & Threat Parameters
                     </h4>
                     <div className="space-y-1">
-                      <label className="text-[10px] text-slate-400 font-mono uppercase tracking-wide block">Facility / Compound Name *</label>
+                      <label className="text-[14px] text-slate-400 font-mono uppercase tracking-wide block">Facility / Compound Name *</label>
                       <input
                         type="text" required value={facilityName} onChange={e => setFacilityName(e.target.value)}
                         placeholder="e.g. Nilepet Depot, UN Base, Embassy Compound"
@@ -546,11 +546,11 @@ export default function FumigationPanel({
                     </div>
 
                     <div className="space-y-1">
-                      <label className="text-[10px] text-slate-400 font-mono uppercase tracking-wide block">Facility Area (sq ft) *</label>
+                      <label className="text-[14px] text-slate-400 font-mono uppercase tracking-wide block">Facility Area (sq ft) *</label>
                       <div className="space-y-1.5">
                         <div className="flex justify-between items-center text-xs">
-                          <span className="text-slate-500 font-mono text-[10px]">SIZE</span>
-                          <span className="font-mono font-bold text-white text-[11px] px-2 py-0.5 rounded border" style={{ background: "rgba(15,23,42,0.9)", borderColor: "rgba(201,173,243,0.15)" }}>
+                          <span className="text-slate-500 font-mono text-[14px]">SIZE</span>
+                          <span className="font-mono font-bold text-white text-[15px] px-2 py-0.5 rounded border" style={{ background: "rgba(15,23,42,0.9)", borderColor: "rgba(201,173,243,0.15)" }}>
                             {areaSize.toLocaleString()} SQ FT
                           </span>
                         </div>
@@ -560,15 +560,15 @@ export default function FumigationPanel({
                           className="w-full h-1.5 rounded-lg appearance-none cursor-pointer border"
                           style={{ background: "rgba(15,23,42,0.9)", borderColor: "rgba(201,173,243,0.1)", accentColor: "#c9adf3" }}
                         />
-                        <div className="flex justify-between text-[9px] font-mono text-slate-500 uppercase">
+                        <div className="flex justify-between text-[15px] font-mono text-slate-500 uppercase">
                           <span>500</span><span>4,000</span><span>8,000 sq ft</span>
                         </div>
                       </div>
                     </div>
 
                     <div className="space-y-1">
-                      <label className="text-[10px] text-slate-400 font-mono uppercase tracking-wide block">Treatment Intensity</label>
-                      <div className="grid grid-cols-3 gap-1.5 text-[9px] font-mono font-bold">
+                      <label className="text-[14px] text-slate-400 font-mono uppercase tracking-wide block">Treatment Intensity</label>
+                      <div className="grid grid-cols-3 gap-1.5 text-[15px] font-mono font-bold">
                         {TREATMENT_TIERS.map(t => (
                           <button
                             type="button" key={t.val}
@@ -587,7 +587,7 @@ export default function FumigationPanel({
                     </div>
 
                     <div className="space-y-1">
-                      <label className="text-[10px] text-slate-400 font-mono uppercase tracking-wide block">Juba Operating District *</label>
+                      <label className="text-[14px] text-slate-400 font-mono uppercase tracking-wide block">Juba Operating District *</label>
                       <div className="relative">
                         <select
                           value={locationName} onChange={e => setLocationName(e.target.value)}
@@ -598,12 +598,12 @@ export default function FumigationPanel({
                         </select>
                         <ChevronDown className="w-3.5 h-3.5 text-slate-500 absolute right-3 top-3.5 pointer-events-none" />
                       </div>
-                      <div className="mt-2 p-3 rounded-xl font-mono text-[9px] text-slate-400 space-y-1.5" style={{ background: "rgba(15,23,42,0.7)", border: "1px solid rgba(201,173,243,0.08)" }}>
+                      <div className="mt-2 p-3 rounded-xl font-mono text-[15px] text-slate-400 space-y-1.5" style={{ background: "rgba(15,23,42,0.7)", border: "1px solid rgba(201,173,243,0.08)" }}>
                         <div className="flex justify-between">
                           <span>COORDINATES:</span>
                           <span className="font-semibold" style={{ color: "#c9adf3" }}>LAT {activeLocObj.lat.toFixed(5)} / LNG {activeLocObj.lng.toFixed(5)}</span>
                         </div>
-                        <div className="text-[9px] text-slate-500 leading-normal border-t pt-1" style={{ borderColor: "rgba(201,173,243,0.08)" }}>{activeLocObj.description}</div>
+                        <div className="text-[15px] text-slate-500 leading-normal border-t pt-1" style={{ borderColor: "rgba(201,173,243,0.08)" }}>{activeLocObj.description}</div>
                       </div>
                     </div>
                   </div>
@@ -614,7 +614,7 @@ export default function FumigationPanel({
                       <ClipboardList className="w-3.5 h-3.5 text-slate-600" /> Threat Vectors & Focal Point
                     </h4>
                     <div className="space-y-2">
-                      <label className="text-[10px] text-slate-400 font-mono uppercase tracking-wide block">Required Treatment Vectors</label>
+                      <label className="text-[14px] text-slate-400 font-mono uppercase tracking-wide block">Required Treatment Vectors</label>
                       <div className="space-y-2">
                         {VECTOR_SERVICES.map(srv => {
                           const isChecked = selectedVectors.includes(srv.label);
@@ -630,7 +630,7 @@ export default function FumigationPanel({
                             >
                               <div className="flex items-center gap-2">
                                 <span style={{ color: isChecked ? "#c9adf3" : "#475569" }}>{srv.icon}</span>
-                                <span className="text-[11px] truncate max-w-[200px] sm:max-w-xs" style={{ color: isChecked ? "white" : "#94a3b8" }}>{srv.label}</span>
+                                <span className="text-[15px] truncate max-w-[200px] sm:max-w-xs" style={{ color: isChecked ? "white" : "#94a3b8" }}>{srv.label}</span>
                               </div>
                               <span
                                 className="w-4 h-4 rounded border flex items-center justify-center shrink-0 transition-all"
@@ -650,7 +650,7 @@ export default function FumigationPanel({
                     <div className="space-y-2.5 text-xs font-sans">
                       <div className="grid grid-cols-2 gap-3">
                         <div className="space-y-1">
-                          <label className="text-[10px] text-slate-400 font-mono uppercase block">Focal Point Name *</label>
+                          <label className="text-[14px] text-slate-400 font-mono uppercase block">Focal Point Name *</label>
                           <input
                             type="text" required value={contactName} onChange={e => setContactName(e.target.value)}
                             placeholder="e.g. James Mading"
@@ -661,7 +661,7 @@ export default function FumigationPanel({
                           />
                         </div>
                         <div className="space-y-1">
-                          <label className="text-[10px] text-slate-400 font-mono uppercase block">Official Email *</label>
+                          <label className="text-[14px] text-slate-400 font-mono uppercase block">Official Email *</label>
                           <input
                             type="email" required value={contactEmail} onChange={e => setContactEmail(e.target.value)}
                             placeholder="james@nilepet.com"
@@ -673,7 +673,7 @@ export default function FumigationPanel({
                         </div>
                       </div>
                       <div className="space-y-1">
-                        <label className="text-[10px] text-slate-400 font-mono uppercase block">Direct Contact Phone *</label>
+                        <label className="text-[14px] text-slate-400 font-mono uppercase block">Direct Contact Phone *</label>
                         <input
                           type="text" required value={contactPhone} onChange={e => setContactPhone(e.target.value)}
                           placeholder="+211 920 000 000"
@@ -684,7 +684,7 @@ export default function FumigationPanel({
                         />
                       </div>
                       <div className="space-y-1">
-                        <label className="text-[10px] text-slate-400 font-mono uppercase block">Threat Assessment Notes</label>
+                        <label className="text-[14px] text-slate-400 font-mono uppercase block">Threat Assessment Notes</label>
                         <textarea
                           value={notes} onChange={e => setNotes(e.target.value)}
                           placeholder="Describe existing infestation signs, target species, or specific sectors to treat..."
@@ -698,14 +698,14 @@ export default function FumigationPanel({
                   </div>
                 </div>
 
-                {errorMsg && <p className="text-red-400 font-mono text-[10px] text-center animate-pulse">{errorMsg}</p>}
+                {errorMsg && <p className="text-red-400 font-mono text-[14px] text-center animate-pulse">{errorMsg}</p>}
 
                 <div className="pt-4 border-t flex flex-col sm:flex-row items-center justify-between gap-4" style={{ borderColor: "rgba(201,173,243,0.1)" }}>
                   <div className="flex items-center gap-2">
                     <StickyNote className="w-4 h-4 shrink-0" style={{ color: "#c9adf3" }} />
                     <div className="text-left font-mono">
-                      <span className="text-[8px] text-slate-500 uppercase block leading-none">TREATMENT CLASS</span>
-                      <span className="text-[10px] font-bold tracking-wide" style={{ color: "#c9adf3" }}>{activeTier.label} — {areaSize.toLocaleString()} sq ft</span>
+                      <span className="text-[14px] text-slate-500 uppercase block leading-none">TREATMENT CLASS</span>
+                      <span className="text-[14px] font-bold tracking-wide" style={{ color: "#c9adf3" }}>{activeTier.label} — {areaSize.toLocaleString()} sq ft</span>
                     </div>
                   </div>
                   <div className="flex gap-3 w-full sm:w-auto">
@@ -747,11 +747,11 @@ export default function FumigationPanel({
                   <Shield className="w-10 h-10 animate-bounce" style={{ color: "#c9adf3" }} />
                 </div>
                 <div className="space-y-1">
-                  <span className="font-mono text-[9px] uppercase tracking-widest font-extrabold block" style={{ color: "#c9adf3" }}>FACILITY SECURED — DISPATCH REGISTERED</span>
+                  <span className="font-mono text-[15px] uppercase tracking-widest font-extrabold block" style={{ color: "#c9adf3" }}>FACILITY SECURED — DISPATCH REGISTERED</span>
                   <h3 className="font-display text-2xl font-black text-white">Treatment Order Confirmed</h3>
                   <p className="text-xs text-slate-400 leading-relaxed font-sans">Your fumigation & risk mitigation request has been logged and assigned to a certified technician team in Juba.</p>
                 </div>
-                <div className="p-5 rounded-2xl text-left font-mono text-[11px] text-slate-300 space-y-3.5" style={{ background: "rgba(15,23,42,0.9)", border: "1px solid rgba(201,173,243,0.15)" }}>
+                <div className="p-5 rounded-2xl text-left font-mono text-[15px] text-slate-300 space-y-3.5" style={{ background: "rgba(15,23,42,0.9)", border: "1px solid rgba(201,173,243,0.15)" }}>
                   <div className="flex justify-between border-b pb-2" style={{ borderColor: "rgba(201,173,243,0.08)" }}>
                     <span className="text-slate-500">DISPATCH REFERENCE</span>
                     <span className="text-white font-bold">{quoteId}</span>
@@ -781,7 +781,7 @@ export default function FumigationPanel({
                     <span>&lt; 4 Hours Callout</span>
                   </div>
                 </div>
-                <p className="text-[10px] text-slate-500 leading-relaxed font-sans max-w-sm mx-auto">
+                <p className="text-[14px] text-slate-500 leading-relaxed font-sans max-w-sm mx-auto">
                   Our Senior Fumigation Technician will contact <strong className="text-slate-300 font-mono">{contactPhone}</strong> within 4 hours to confirm the dispatch window and pre-treatment site protocol.
                 </p>
                 <button

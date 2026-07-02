@@ -177,7 +177,7 @@ function BentoCard({ p, onCta }: { p: typeof PILLARS[0]; onCta: () => void; key?
         <span className={`p-2 rounded-xl border backdrop-blur-sm shadow-lg ${p.accentIcon}`}>
           <Icon className="w-4 h-4" />
         </span>
-        <span className={`text-[10px] font-mono uppercase tracking-widest px-3 py-1 rounded-full border backdrop-blur-md ${p.accentIcon} bg-slate-950/40`}>
+        <span className={`text-[14px] font-mono uppercase tracking-widest px-3 py-1 rounded-full border backdrop-blur-md ${p.accentIcon} bg-slate-950/40`}>
           {p.badge}
         </span>
       </div>
@@ -201,7 +201,7 @@ function BentoCard({ p, onCta }: { p: typeof PILLARS[0]; onCta: () => void; key?
 
         <div className="flex flex-wrap gap-2">
           {p.tags.map(tag => (
-            <span key={tag} className="text-[11px] font-mono text-white/85 bg-slate-950/55 border border-white/10 px-3 py-1.5 rounded-lg backdrop-blur-md">
+            <span key={tag} className="text-[15px] font-mono text-white/85 bg-slate-950/55 border border-white/10 px-3 py-1.5 rounded-lg backdrop-blur-md">
               {tag}
             </span>
           ))}
@@ -442,7 +442,7 @@ export default function LandingPage({ setActiveView, setQuotePillar }: LandingPa
             id="zip-gatekeeper-card"
           >
             <div className="text-center">
-              <span className="text-emerald-400 font-mono text-[10px] font-bold uppercase tracking-wider block mb-1">Check Coverage Area</span>
+              <span className="text-emerald-400 font-mono text-[14px] font-bold uppercase tracking-wider block mb-1">Check Coverage Area</span>
               <h2 className="text-lg font-display font-extrabold text-white">Do We Cover Your Area in Juba?</h2>
             </div>
 
@@ -511,7 +511,7 @@ export default function LandingPage({ setActiveView, setQuotePillar }: LandingPa
                     setNeighborhoodInput("");
                     setEmailCaptured(false);
                   }}
-                  className="text-[10px] text-slate-500 hover:text-slate-300 underline font-mono"
+                  className="text-[14px] text-slate-500 hover:text-slate-300 underline font-mono"
                 >
                   Check another neighborhood
                 </button>
@@ -556,7 +556,7 @@ export default function LandingPage({ setActiveView, setQuotePillar }: LandingPa
         <div className="max-w-7xl mx-auto space-y-12">
           
           <div className="max-w-2xl">
-            <span className="text-emerald-500 font-mono text-[10px] font-semibold tracking-widest uppercase">THE CLEAN WORLD ADVANTAGE</span>
+            <span className="text-emerald-500 font-mono text-[14px] font-semibold tracking-widest uppercase">THE CLEAN WORLD ADVANTAGE</span>
             <h2 className="font-display text-3xl sm:text-4xl font-extrabold tracking-tight text-white mt-2">
               Why Choose Us
             </h2>
@@ -579,7 +579,7 @@ export default function LandingPage({ setActiveView, setQuotePillar }: LandingPa
                   </div>
                   <div>
                     <h4 className="text-xs sm:text-sm font-bold text-white">{item.title}</h4>
-                    <p className="text-[11px] text-slate-400 mt-1 leading-relaxed">{item.desc}</p>
+                    <p className="text-[15px] text-slate-400 mt-1 leading-relaxed">{item.desc}</p>
                   </div>
                 </div>
               </div>
@@ -664,7 +664,7 @@ export default function LandingPage({ setActiveView, setQuotePillar }: LandingPa
               </div>
               <div className="space-y-1">
                 <h3 className="font-display text-xl font-extrabold text-white">Inquiry Received Successfully</h3>
-                <p className="text-[10px] text-slate-400 font-mono">
+                <p className="text-[14px] text-slate-400 font-mono">
                   DISPATCH ID: <span className="text-emerald-400">CW-BOOK-{Math.floor(100000 + Math.random() * 900000)}</span>
                 </p>
               </div>
@@ -682,7 +682,7 @@ export default function LandingPage({ setActiveView, setQuotePillar }: LandingPa
             <div className="bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl grid grid-cols-1 lg:grid-cols-12 animate-fadeIn">
               <div className="p-8 sm:p-12 lg:col-span-7 space-y-6">
                 <div className="space-y-2">
-                  <span className="text-emerald-500 font-mono text-[10px] tracking-widest uppercase font-bold">INSTANT ONLINE INQUIRY</span>
+                  <span className="text-emerald-500 font-mono text-[14px] tracking-widest uppercase font-bold">INSTANT ONLINE INQUIRY</span>
                   <h3 className="font-display text-2xl sm:text-3xl font-bold text-white tracking-tight">
                     Book Your Clean World Today!
                   </h3>
@@ -694,7 +694,7 @@ export default function LandingPage({ setActiveView, setQuotePillar }: LandingPa
                 <form onSubmit={handleQuickSubmit} className="space-y-4">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-[10px] font-mono text-slate-400 uppercase mb-1.5">Home / Business Location</label>
+                      <label className="block text-[14px] font-mono text-slate-400 uppercase mb-1.5">Home / Business Location</label>
                       <input 
                         type="text" required value={formFacility} onChange={(e) => setFormFacility(e.target.value)}
                         placeholder="e.g. Compound or Office"
@@ -702,7 +702,7 @@ export default function LandingPage({ setActiveView, setQuotePillar }: LandingPa
                       />
                     </div>
                     <div>
-                      <label className="block text-[10px] font-mono text-slate-400 uppercase mb-1.5">Your Full Name</label>
+                      <label className="block text-[14px] font-mono text-slate-400 uppercase mb-1.5">Your Full Name</label>
                       <input 
                         type="text" required value={formContact} onChange={(e) => setFormContact(e.target.value)}
                         placeholder="e.g. James Deng"
@@ -713,7 +713,7 @@ export default function LandingPage({ setActiveView, setQuotePillar }: LandingPa
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-[10px] font-mono text-slate-400 uppercase mb-1.5">Phone Number</label>
+                      <label className="block text-[14px] font-mono text-slate-400 uppercase mb-1.5">Phone Number</label>
                       <input 
                         type="tel" required value={formPhone} onChange={(e) => setFormPhone(e.target.value)}
                         placeholder="+211 920 000 000"
@@ -721,7 +721,7 @@ export default function LandingPage({ setActiveView, setQuotePillar }: LandingPa
                       />
                     </div>
                     <div>
-                      <label className="block text-[10px] font-mono text-slate-400 uppercase mb-1.5">Primary Cleaning Service</label>
+                      <label className="block text-[14px] font-mono text-slate-400 uppercase mb-1.5">Primary Cleaning Service</label>
                       <select 
                         value={formPillar} onChange={(e) => setFormPillar(e.target.value as ServicePillar)}
                         className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-xs text-slate-200 focus:outline-none focus:border-emerald-500 transition-colors"
@@ -769,7 +769,7 @@ export default function LandingPage({ setActiveView, setQuotePillar }: LandingPa
                   </p>
                 </div>
                 
-                <div className="relative z-10 flex items-center gap-3 text-slate-400 text-[10px] font-mono">
+                <div className="relative z-10 flex items-center gap-3 text-slate-400 text-[14px] font-mono">
                   <Shield className="w-3.5 h-3.5 text-emerald-400" />
                   <span>ISO 14001 ENVIRONMENTAL PRACTICE</span>
                 </div>

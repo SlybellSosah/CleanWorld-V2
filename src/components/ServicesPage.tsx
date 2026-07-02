@@ -82,7 +82,7 @@ const EquipmentTag: React.FC<{ label: string }> = ({ label }) => {
     <span
       className="
         inline-flex items-center gap-1.5
-        text-[10px] font-mono font-medium
+        text-[14px] font-mono font-medium
         text-teal-300
         bg-teal-500/5 border border-teal-500/25
         px-2 py-0.5 rounded-md
@@ -270,16 +270,16 @@ function ConsultancyDonut() {
       </svg>
 
       <div className="absolute inset-0 pointer-events-none">
-        <span className="absolute top-1 left-1/2 -translate-x-1/2 text-[9px] font-mono font-bold text-emerald-400 tracking-widest uppercase">
+        <span className="absolute top-1 left-1/2 -translate-x-1/2 text-[15px] font-mono font-bold text-emerald-400 tracking-widest uppercase">
           EIA
         </span>
-        <span className="absolute top-1/2 right-0 -translate-y-1/2 text-[9px] font-mono font-bold text-emerald-400/82 tracking-widest uppercase">
+        <span className="absolute top-1/2 right-0 -translate-y-1/2 text-[15px] font-mono font-bold text-emerald-400/82 tracking-widest uppercase">
           WASTE
         </span>
-        <span className="absolute bottom-0 left-1/2 -translate-x-1/2 text-[9px] font-mono font-bold text-emerald-400/68 tracking-widest uppercase">
+        <span className="absolute bottom-0 left-1/2 -translate-x-1/2 text-[15px] font-mono font-bold text-emerald-400/68 tracking-widest uppercase">
           HSE
         </span>
-        <span className="absolute top-1/2 left-0 -translate-y-1/2 text-[9px] font-mono font-bold text-emerald-400/55 tracking-widest uppercase">
+        <span className="absolute top-1/2 left-0 -translate-y-1/2 text-[15px] font-mono font-bold text-emerald-400/55 tracking-widest uppercase">
           ESG
         </span>
       </div>
@@ -399,7 +399,7 @@ function ConsultancyPanel() {
         <div className="space-y-3">
           <div className="flex items-center gap-2">
             <span className="h-px w-8 bg-emerald-500/60" />
-            <span className="text-[10px] text-emerald-400 font-mono font-semibold tracking-[0.2em] uppercase">
+            <span className="text-[14px] text-emerald-400 font-mono font-semibold tracking-[0.2em] uppercase">
               Environmental Consultancy
             </span>
           </div>
@@ -411,13 +411,12 @@ function ConsultancyPanel() {
           </p>
         </div>
 
-        {/* Stats */}
         <div className="grid grid-cols-3 gap-3">
           {CREDIBILITY_STATS.map(({ value, label, sub }) => (
             <div key={label} className="border-l-2 border-emerald-500/30 pl-3 py-1 flex flex-col">
               <span className="font-display text-xl font-bold text-white leading-none">{value}</span>
               <span className="font-display text-xs font-semibold text-emerald-400 leading-none mt-1">{label}</span>
-              <span className="text-[9px] font-mono text-slate-500 uppercase tracking-wide leading-none mt-1.5">{sub}</span>
+              <span className="text-[14px] font-mono text-slate-400 uppercase tracking-wide leading-none mt-1.5">{sub}</span>
             </div>
           ))}
         </div>
@@ -435,7 +434,7 @@ function ConsultancyPanel() {
             {SERVICE_ARCS.map((arc) => (
               <div key={arc.abbr} className="flex items-center gap-2">
                 <span className="inline-block h-2 w-2 rounded-sm shrink-0" style={{ backgroundColor: arc.color, opacity: arc.opacity }} />
-                <span className="text-[10px] font-mono text-slate-400">{arc.abbr}</span>
+                <span className="text-[14px] font-mono text-slate-400">{arc.abbr}</span>
               </div>
             ))}
           </div>
@@ -443,8 +442,8 @@ function ConsultancyPanel() {
 
         {/* Bullet points */}
         <div className="space-y-2">
-          <span className="text-[9px] font-mono uppercase tracking-[0.2em] text-slate-500 flex items-center gap-2">
-            <Wrench className="w-3 h-3 text-slate-650" />
+          <span className="text-[14px] font-mono uppercase tracking-[0.2em] text-slate-400 flex items-center gap-2">
+            <Wrench className="w-3 h-3 text-slate-500" />
             Core Services
           </span>
           <ul className="space-y-3" role="list">
@@ -480,8 +479,8 @@ function ConsultancyPanel() {
                 <tr key={metric} className="group border-b last:border-0 border-slate-800/40 hover:bg-emerald-500/4 transition-colors">
                   <td className="px-6 py-3.5 w-[35%]">
                     <div className="flex items-center gap-2">
-                      <span className="text-slate-650 group-hover:text-emerald-500/60 transition-colors shrink-0">{icon}</span>
-                      <span className="text-[10px] font-mono font-semibold text-slate-500 tracking-widest uppercase">{metric}</span>
+                      <span className="text-slate-500 group-hover:text-emerald-500/60 transition-colors shrink-0">{icon}</span>
+                      <span className="text-[14px] font-mono font-semibold text-slate-400 tracking-widest uppercase">{metric}</span>
                     </div>
                   </td>
                   <td className="px-6 py-3.5 text-xs text-white font-medium text-wrap-balance">{value}</td>
@@ -494,8 +493,8 @@ function ConsultancyPanel() {
         {/* Machinery Tags */}
         <div className="rounded-xl border border-slate-800/50 bg-slate-950/40 backdrop-blur-sm px-5 py-4 space-y-3 shadow-md">
           <div className="flex items-center gap-2">
-            <Cpu className="w-3.5 h-3.5 text-slate-600" />
-            <span className="text-[9px] font-mono uppercase tracking-[0.2em] text-slate-500">
+            <Cpu className="w-3.5 h-3.5 text-slate-500" />
+            <span className="text-[14px] font-mono uppercase tracking-[0.2em] text-slate-400">
               Professional Equipment
             </span>
           </div>
@@ -532,7 +531,7 @@ function ConsultancyPanel() {
                 <div className="space-y-1.5">
                   <div className="flex items-center gap-1.5">
                     <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                    <span className="text-emerald-400 font-mono text-[9px] uppercase tracking-widest font-extrabold">
+                    <span className="text-emerald-400 font-mono text-[15px] uppercase tracking-widest font-extrabold">
                       NATIONAL COMPLIANCE AUDIT DISPATCH
                     </span>
                   </div>
@@ -542,58 +541,58 @@ function ConsultancyPanel() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
                   <div className="space-y-4">
-                    <h4 className="text-xs font-mono text-slate-500 uppercase tracking-wider border-b border-slate-800 pb-1 flex items-center gap-1.5">
+                    <h4 className="text-xs font-mono text-slate-400 uppercase tracking-wider border-b border-slate-800 pb-1 flex items-center gap-1.5">
                       <Building className="w-3.5 h-3.5 text-slate-650" /> Site &amp; Project Parameters
                     </h4>
                     <div className="space-y-1">
-                      <label className="text-[10px] text-slate-400 font-mono uppercase tracking-wide block">Organization / Ministry / Project Site Name *</label>
+                      <label className="text-[14px] text-slate-400 font-mono uppercase tracking-wide block">Organization / Ministry / Project Site Name *</label>
                       <input type="text" required value={facilityName} onChange={(e) => setFacilityName(e.target.value)} placeholder="e.g. Nilepet Depot, Dar Petroleum Compound, or UN/NGO Base" className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-xs text-slate-100 focus:outline-none focus:border-emerald-500 font-sans" />
                     </div>
 
                     <div className="grid grid-cols-2 gap-3">
                       <div className="space-y-1">
-                        <label className="text-[10px] text-slate-400 font-mono uppercase tracking-wide block">Facility Area (m²) *</label>
+                        <label className="text-[14px] text-slate-400 font-mono uppercase tracking-wide block">Facility Area (m²) *</label>
                         <input type="number" required value={areaSize} onChange={(e) => setAreaSize(parseInt(e.target.value) || 0)} className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-xs text-slate-100 focus:outline-none focus:border-emerald-500 font-mono font-semibold" />
                       </div>
                       <div className="space-y-1">
-                        <label className="text-[10px] text-slate-400 font-mono uppercase tracking-wide block">Risk Classification</label>
+                        <label className="text-[14px] text-slate-400 font-mono uppercase tracking-wide block">Risk Classification</label>
                         <div className="relative">
                           <select value={riskClass} onChange={(e) => setRiskClass(e.target.value as RiskClass)} className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-xs text-emerald-400 focus:outline-none focus:border-emerald-500 font-mono font-semibold cursor-pointer appearance-none">
                             <option value={RiskClass.Low}>Class I (Low)</option>
                             <option value={RiskClass.Medium}>Class II (Med)</option>
                             <option value={RiskClass.High}>Class III (High)</option>
                           </select>
-                          <ChevronDown className="w-3.5 h-3.5 text-slate-500 absolute right-3 top-3.5 pointer-events-none" />
+                          <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-3 top-3.5 pointer-events-none" />
                         </div>
                       </div>
                     </div>
 
                     <div className="space-y-1">
-                      <label className="text-[10px] text-slate-400 font-mono uppercase tracking-wide block">Juba Operating District *</label>
+                      <label className="text-[14px] text-slate-400 font-mono uppercase tracking-wide block">Juba Operating District *</label>
                       <div className="relative">
                         <select value={locationName} onChange={(e) => setLocationName(e.target.value)} className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-xs text-slate-100 focus:outline-none focus:border-emerald-500 font-sans cursor-pointer appearance-none">
                           {JUBA_LOCATIONS.map((loc) => (
                             <option key={loc.name} value={loc.name}>{loc.name}</option>
                           ))}
                         </select>
-                        <ChevronDown className="w-3.5 h-3.5 text-slate-500 absolute right-3 top-3.5 pointer-events-none" />
+                        <ChevronDown className="w-3.5 h-3.5 text-slate-400 absolute right-3 top-3.5 pointer-events-none" />
                       </div>
-                      <div className="mt-2 bg-slate-950/60 border border-slate-850 p-3 rounded-xl font-mono text-[9px] text-slate-400 space-y-1.5">
+                      <div className="mt-2 bg-slate-950/60 border border-slate-850 p-3 rounded-xl font-mono text-[15px] text-slate-400 space-y-1.5">
                         <div className="flex justify-between">
                           <span>COORDINATES:</span>
                           <span className="text-emerald-400 font-semibold">LAT {activeLocObj.lat.toFixed(5)} / LNG {activeLocObj.lng.toFixed(5)}</span>
                         </div>
-                        <div className="text-[9px] text-slate-500 leading-normal border-t border-slate-800/60 pt-1">{activeLocObj.description}</div>
+                        <div className="text-[15px] text-slate-400 leading-normal border-t border-slate-800/60 pt-1">{activeLocObj.description}</div>
                       </div>
                     </div>
                   </div>
 
                   <div className="space-y-4">
-                    <h4 className="text-xs font-mono text-slate-500 uppercase tracking-wider border-b border-slate-800 pb-1 flex items-center gap-1.5">
+                    <h4 className="text-xs font-mono text-slate-400 uppercase tracking-wider border-b border-slate-800 pb-1 flex items-center gap-1.5">
                       <ClipboardList className="w-3.5 h-3.5 text-slate-650" /> Scoping &amp; Focal Point Details
                     </h4>
                     <div className="space-y-2">
-                      <label className="text-[10px] text-slate-400 font-mono uppercase tracking-wide block">Required Audit Scopes</label>
+                      <label className="text-[14px] text-slate-400 font-mono uppercase tracking-wide block">Required Audit Scopes</label>
                       <div className="space-y-2">
                         {CORE_SERVICES.map((srv) => {
                           const isChecked = selectedScopes.includes(srv.label);
@@ -601,7 +600,7 @@ function ConsultancyPanel() {
                             <button type="button" key={srv.label} onClick={() => handleToggleScope(srv.label)} className={`w-full flex items-center justify-between p-2.5 rounded-xl border text-left text-xs transition-all ${isChecked ? "bg-emerald-500/8 border-emerald-500/50 text-white font-medium" : "bg-slate-950 border-slate-850 text-slate-400 hover:text-slate-200"}`}>
                               <div className="flex items-center gap-2">
                                 <span className={isChecked ? "text-emerald-400" : "text-slate-600"}>{srv.icon}</span>
-                                <span className="text-[11px] truncate max-w-[200px] sm:max-w-xs">{srv.label}</span>
+                                <span className="text-[15px] truncate max-w-[200px] sm:max-w-xs">{srv.label}</span>
                               </div>
                               <span className={`w-4 h-4 rounded border flex items-center justify-center shrink-0 ${isChecked ? "bg-emerald-500 border-emerald-500 text-slate-950" : "border-slate-700"}`}>
                                 {isChecked && <Check className="w-3 h-3 stroke-[3]" />}
@@ -615,39 +614,39 @@ function ConsultancyPanel() {
                     <div className="space-y-2.5 text-xs font-sans">
                       <div className="grid grid-cols-2 gap-3">
                         <div className="space-y-1">
-                          <label className="text-[10px] text-slate-400 font-mono uppercase block">Project Focal Point Name *</label>
+                          <label className="text-[14px] text-slate-400 font-mono uppercase block">Project Focal Point Name *</label>
                           <input type="text" required value={contactName} onChange={(e) => setContactName(e.target.value)} placeholder="e.g. Rebecca Nyandeng" className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-emerald-500 text-slate-200" />
                         </div>
                         <div className="space-y-1">
-                          <label className="text-[10px] text-slate-400 font-mono uppercase block">Official Email Address *</label>
+                          <label className="text-[14px] text-slate-400 font-mono uppercase block">Official Email Address *</label>
                           <input type="email" required value={contactEmail} onChange={(e) => setContactEmail(e.target.value)} placeholder="e.g. nyandeng@nile-petroleum.com" className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-emerald-500 text-slate-200" />
                         </div>
                       </div>
                       <div className="space-y-1">
-                        <label className="text-[10px] text-slate-400 font-mono uppercase block">Official Contact Phone *</label>
+                        <label className="text-[14px] text-slate-400 font-mono uppercase block">Official Contact Phone *</label>
                         <input type="text" required value={contactPhone} onChange={(e) => setContactPhone(e.target.value)} placeholder="e.g. +211 912 400 300" className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-emerald-500 text-slate-200 font-mono" />
                       </div>
                       <div className="space-y-1">
-                        <label className="text-[10px] text-slate-400 font-mono uppercase block">Project Brief / Scope Directives</label>
+                        <label className="text-[14px] text-slate-400 font-mono uppercase block">Project Brief / Scope Directives</label>
                         <textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Outline specific regulatory requirements, targeted dates, or site details..." className="w-full h-16 bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-emerald-500 resize-none font-sans text-slate-200" />
                       </div>
                     </div>
                   </div>
                 </div>
 
-                {errorMsg && <p className="text-red-400 font-mono text-[10px] text-center animate-pulse">{errorMsg}</p>}
+                {errorMsg && <p className="text-red-400 font-mono text-[14px] text-center animate-pulse">{errorMsg}</p>}
 
                 <div className="pt-4 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
                   <div className="flex items-center gap-2">
                     <StickyNote className="w-4 h-4 text-emerald-400 shrink-0" />
                     <div className="text-left font-mono">
-                      <span className="text-[8px] text-slate-500 uppercase block leading-none">DOCKET PROFILE</span>
-                      <span className="text-[10px] text-emerald-400 font-bold tracking-wide">{complexityLabel}</span>
+                      <span className="text-[14px] text-slate-400 uppercase block leading-none">DOCKET PROFILE</span>
+                      <span className="text-[14px] text-emerald-400 font-bold tracking-wide">{complexityLabel}</span>
                     </div>
                   </div>
                   <div className="flex gap-3 w-full sm:w-auto">
                     <button type="button" onClick={() => { setIsModalOpen(false); handleResetForm(); }} className="flex-1 sm:flex-none px-5 py-3 border border-slate-850 rounded-xl hover:bg-slate-850 text-xs font-semibold text-slate-300 transition-colors">Cancel</button>
-                    <button type="submit" disabled={isSubmitting} className="flex-grow sm:flex-grow-0 bg-emerald-500 hover:bg-emerald-400 disabled:bg-emerald-800 disabled:text-slate-650 text-slate-950 font-display font-black text-xs px-8 py-3.5 rounded-xl transition-colors shadow-lg shadow-emerald-500/10 flex items-center justify-center gap-1.5 uppercase tracking-wider">
+                    <button type="submit" disabled={isSubmitting} className="flex-grow sm:flex-grow-0 bg-emerald-500 hover:bg-emerald-400 disabled:bg-emerald-800 disabled:text-slate-650 text-slate-955 font-display font-black text-xs px-8 py-3.5 rounded-xl transition-colors shadow-lg shadow-emerald-500/10 flex items-center justify-center gap-1.5 uppercase tracking-wider">
                       {isSubmitting ? (
                         <>
                           <span className="h-3.5 w-3.5 border-2 border-slate-950 border-t-transparent rounded-full animate-spin"></span>
@@ -669,29 +668,29 @@ function ConsultancyPanel() {
                   <CheckCircle className="w-10 h-10 animate-bounce" />
                 </div>
                 <div className="space-y-1">
-                  <span className="text-emerald-400 font-mono text-[9px] uppercase tracking-widest font-extrabold block">TECHNICAL AUDIT REGISTERED</span>
+                  <span className="text-emerald-400 font-mono text-[15px] uppercase tracking-widest font-extrabold block">TECHNICAL AUDIT REGISTERED</span>
                   <h3 className="font-display text-2xl font-black text-white">Assessment Case Registered</h3>
                   <p className="text-xs text-slate-400 leading-relaxed font-sans">Your environmental compliance scoping request has been officially logged and assigned to our Central Equatoria State engineering team in Juba.</p>
                 </div>
-                <div className="bg-slate-950 border border-slate-850 p-5 rounded-2xl text-left font-mono text-[11px] text-slate-300 space-y-3.5">
+                <div className="bg-slate-950 border border-slate-850 p-5 rounded-2xl text-left font-mono text-[15px] text-slate-300 space-y-3.5">
                   <div className="flex justify-between border-b border-slate-800/80 pb-2">
-                    <span className="text-slate-500">RSS AUDIT REFERENCE</span>
+                    <span className="text-slate-400">RSS AUDIT REFERENCE</span>
                     <span className="text-white font-bold">{quoteId}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-slate-500">ORGANIZATION / SITE</span>
+                    <span className="text-slate-400">ORGANIZATION / SITE</span>
                     <span className="text-white truncate max-w-[200px]">{facilityName}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-slate-500">AREA SIZE</span>
+                    <span className="text-slate-400">AREA SIZE</span>
                     <span className="text-white">{areaSize.toLocaleString()} m²</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-slate-500">RISK CLASSIFICATION</span>
+                    <span className="text-slate-400">RISK CLASSIFICATION</span>
                     <span className="text-emerald-400 font-semibold">{riskClass}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-slate-550">SECTOR / DISTRICT</span>
+                    <span className="text-slate-400">SECTOR / DISTRICT</span>
                     <span className="text-white">{locationName}</span>
                   </div>
                   <div className="flex justify-between border-t border-slate-800/80 pt-2 font-bold text-emerald-400">
@@ -699,7 +698,7 @@ function ConsultancyPanel() {
                     <span>&lt; 4 Hours Callout</span>
                   </div>
                 </div>
-                <p className="text-[10px] text-slate-500 leading-relaxed font-sans max-w-sm mx-auto">
+                <p className="text-[14px] text-slate-400 leading-relaxed font-sans max-w-sm mx-auto">
                   Our Senior Environmental Inspector will contact the designated focal point at <strong className="text-slate-300 font-mono">{contactPhone}</strong> within 4 hours to coordinate compliance documentation and schedule the initial site audit. A copy of this case receipt has been dispatched to <strong className="text-slate-300 font-mono">{contactEmail}</strong>.
                 </p>
                 <div className="pt-2">
@@ -1073,11 +1072,11 @@ export default function ServicesPage({
                   onClick={() => setSelectedPillar(service.id)}
                   role="tab"
                   aria-selected={isActive}
-                  className={`relative flex-1 py-3.5 text-[8px] md:text-[9px] lg:text-[10px] xl:text-[11px] font-display font-bold uppercase tracking-tighter md:tracking-tight lg:tracking-normal xl:tracking-wider rounded-full transition-all duration-200 focus:outline-none flex items-center justify-center gap-1.5 ${
+                  className={`relative flex-1 py-3.5 text-[14px] md:text-[15px] lg:text-[14px] xl:text-[15px] font-display font-bold uppercase tracking-tighter md:tracking-tight lg:tracking-normal xl:tracking-wider rounded-full transition-all duration-200 focus:outline-none flex items-center justify-center gap-1.5 ${
                     isActive ? "text-white" : "text-slate-400 hover:text-slate-200"
                   }`}
                 >
-                  <span className={`shrink-0 transition-colors ${isActive ? meta.color : "text-slate-500"}`}>
+                  <span className={`shrink-0 transition-colors ${isActive ? meta.color : "text-slate-400"}`}>
                     {meta.icon}
                   </span>
                   <span className="hidden md:inline whitespace-nowrap">{meta.label}</span>
@@ -1113,7 +1112,7 @@ export default function ServicesPage({
                   />
                   <button
                     onClick={() => setCleaningSubTab("cleaning")}
-                    className={`relative flex-1 py-2 text-[10px] sm:text-xs font-display font-bold uppercase tracking-wider rounded-full transition-all duration-200 ${
+                    className={`relative flex-1 py-2 text-[14px] sm:text-xs font-display font-bold uppercase tracking-wider rounded-full transition-all duration-200 ${
                       cleaningSubTab === "cleaning"
                         ? "text-sky-400 font-extrabold"
                         : "text-slate-400 hover:text-slate-200"
@@ -1123,7 +1122,7 @@ export default function ServicesPage({
                   </button>
                   <button
                     onClick={() => setCleaningSubTab("waste")}
-                    className={`relative flex-1 py-2 text-[10px] sm:text-xs font-display font-bold uppercase tracking-wider rounded-full transition-all duration-200 ${
+                    className={`relative flex-1 py-2 text-[14px] sm:text-xs font-display font-bold uppercase tracking-wider rounded-full transition-all duration-200 ${
                       cleaningSubTab === "waste"
                         ? "text-emerald-400 font-extrabold"
                         : "text-slate-400 hover:text-slate-200"
@@ -1151,7 +1150,7 @@ export default function ServicesPage({
                 <div className="absolute bottom-6 left-6 right-6 p-6 rounded-2xl border border-slate-800/50 backdrop-blur-md bg-[#1E293B]/60 shadow-[0_15px_30px_rgba(0,0,0,0.3)] space-y-2">
                   <div className="flex items-center gap-2">
                     <span className={`h-2.5 w-2.5 rounded-full ${pm.color.replace("text", "bg")} animate-pulse`} />
-                    <span className="text-[10px] font-mono font-bold tracking-widest text-slate-300 uppercase">
+                    <span className="text-[14px] font-mono font-bold tracking-widest text-slate-300 uppercase">
                       How We Work &amp; Dispatch
                     </span>
                   </div>
@@ -1195,7 +1194,7 @@ export default function ServicesPage({
                   </h3>
                   <button
                     onClick={() => setActiveView(ActiveView.Shop)}
-                    className="text-[10px] font-mono text-emerald-400 hover:text-emerald-300 hover:underline transition-colors"
+                    className="text-[14px] font-mono text-emerald-400 hover:text-emerald-300 hover:underline transition-colors"
                   >
                     View Catalog
                   </button>
@@ -1212,12 +1211,12 @@ export default function ServicesPage({
                           <img src={prod.image} alt={prod.name} width={48} height={48} loading="lazy" className="w-12 h-12 rounded-lg object-cover bg-slate-950 shrink-0 border border-slate-800" referrerPolicy="no-referrer" />
                           <div>
                             <div className="text-xs font-semibold text-white truncate max-w-[140px]">{prod.name}</div>
-                            <div className="text-[10px] text-slate-500 font-mono mt-0.5">${prod.price.toFixed(2)} / {prod.unit}</div>
+                            <div className="text-[14px] text-slate-400 font-mono mt-0.5">${prod.price.toFixed(2)} / {prod.unit}</div>
                           </div>
                         </div>
                         <button
                           onClick={() => onAddProductToCart(prod, 1)}
-                          className={`p-2 rounded-lg transition-all shrink-0 ${isInCart ? `${theme.bgSolid} text-slate-950 shadow-md ${theme.glow}` : "bg-[#1E293B] text-slate-300 hover:bg-slate-800"}`}
+                          className={`p-2 rounded-lg transition-all shrink-0 ${isInCart ? `${theme.bgSolid} text-slate-955 shadow-md ${theme.glow}` : "bg-[#1E293B] text-slate-300 hover:bg-slate-800"}`}
                         >
                           {isInCart ? <Check className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
                         </button>
@@ -1247,7 +1246,7 @@ export default function ServicesPage({
                   </div>
                   <div className="flex items-center gap-1.5 bg-[#0F172A] px-2.5 py-1 rounded-md border border-slate-800">
                     <span className="h-2 w-2 rounded-full bg-emerald-500 animate-ping" />
-                    <span className="text-[9px] font-mono text-emerald-400 font-extrabold uppercase">Live Pulse</span>
+                    <span className="text-[15px] font-mono text-emerald-400 font-extrabold uppercase">Live Pulse</span>
                   </div>
                 </div>
 
@@ -1264,7 +1263,7 @@ export default function ServicesPage({
                           </span>
                         </div>
                         <input type="range" min={1} max={100} value={wasteVolume} onChange={(e) => setWasteVolume(Number(e.target.value))} className={`w-full h-1.5 bg-[#0F172A] rounded-lg appearance-none cursor-pointer border border-slate-800 ${theme.accentClass}`} />
-                        <div className="flex justify-between text-[9px] font-mono text-slate-500 uppercase">
+                        <div className="flex justify-between text-[14px] font-mono text-slate-400 uppercase">
                           <span>1 m³</span>
                           <span>50 m³</span>
                           <span>100 m³</span>
@@ -1279,7 +1278,7 @@ export default function ServicesPage({
                           </span>
                         </div>
                         <input type="range" min={500} max={10000} step={100} value={cleaningArea} onChange={(e) => setCleaningArea(Number(e.target.value))} className={`w-full h-1.5 bg-[#0F172A] rounded-lg appearance-none cursor-pointer border border-slate-800 ${theme.accentClass}`} />
-                        <div className="flex justify-between text-[9px] font-mono text-slate-500 uppercase">
+                        <div className="flex justify-between text-[14px] font-mono text-slate-400 uppercase">
                           <span>500 sq ft</span>
                           <span>5,000 sq ft</span>
                           <span>10,000 sq ft</span>
@@ -1297,7 +1296,7 @@ export default function ServicesPage({
                         </span>
                       </div>
                       <input type="range" min={500} max={8000} step={100} value={fumigationArea} onChange={(e) => setFumigationArea(Number(e.target.value))} className={`w-full h-1.5 bg-[#0F172A] rounded-lg appearance-none cursor-pointer border border-slate-800 ${theme.accentClass}`} />
-                      <div className="flex justify-between text-[9px] font-mono text-slate-500 uppercase">
+                      <div className="flex justify-between text-[14px] font-mono text-slate-400 uppercase">
                         <span>500 sq ft</span>
                         <span>4,000 sq ft</span>
                         <span>8,000 sq ft</span>
@@ -1314,7 +1313,7 @@ export default function ServicesPage({
                         </span>
                       </div>
                       <input type="range" min={100} max={5000} step={50} value={landscapingArea} onChange={(e) => setLandscapingArea(Number(e.target.value))} className={`w-full h-1.5 bg-[#0F172A] rounded-lg appearance-none cursor-pointer border border-slate-800 ${theme.accentClass}`} />
-                      <div className="flex justify-between text-[9px] font-mono text-slate-500 uppercase">
+                      <div className="flex justify-between text-[14px] font-mono text-slate-400 uppercase">
                         <span>100 m²</span>
                         <span>2,500 m²</span>
                         <span>5,000 m²</span>
@@ -1326,8 +1325,8 @@ export default function ServicesPage({
                   {selectedPillar === ServicePillar.Management && (
                     cleaningSubTab === "waste" ? (
                       <div className="space-y-2">
-                        <span className="text-[10px] text-slate-400 font-mono uppercase tracking-wider block">Material Risk Tier</span>
-                        <div className="grid grid-cols-3 gap-1.5 text-[9px] font-mono font-bold">
+                        <span className="text-[14px] text-slate-400 font-mono uppercase tracking-wider block">Material Risk Tier</span>
+                        <div className="grid grid-cols-3 gap-1.5 text-[15px] font-mono font-bold">
                           {[
                             { label: "Class I (Low)", val: RiskClass.Low },
                             { label: "Class II (Med)", val: RiskClass.Medium },
@@ -1341,7 +1340,7 @@ export default function ServicesPage({
                       </div>
                     ) : (
                       <div className="space-y-2">
-                        <span className="text-[10px] text-slate-400 font-mono uppercase tracking-wider block">Service Depth Level</span>
+                        <span className="text-[14px] text-slate-400 font-mono uppercase tracking-wider block">Service Depth Level</span>
                         <div className="grid grid-cols-2 gap-2 text-xs font-sans">
                           {["standard", "deep"].map((t) => (
                             <button key={t} onClick={() => setCleanDepth(t as any)} className={`py-2 px-3 rounded-xl border text-center transition-all capitalize ${cleanDepth === t ? `${theme.bgSelected} ${theme.border} ${theme.text} font-bold` : "bg-[#0F172A] border-slate-800 text-slate-400"}`}>
@@ -1355,8 +1354,8 @@ export default function ServicesPage({
 
                   {selectedPillar === ServicePillar.Fumigation && (
                     <div className="space-y-2">
-                      <span className="text-[10px] text-slate-400 font-mono uppercase tracking-wider block">Treatment Intensity</span>
-                      <div className="grid grid-cols-3 gap-1.5 text-[9px] font-mono font-bold">
+                      <span className="text-[14px] text-slate-400 font-mono uppercase tracking-wider block">Treatment Intensity</span>
+                      <div className="grid grid-cols-3 gap-1.5 text-[15px] font-mono font-bold">
                         {[
                           { label: "Preventative", val: "preventative" },
                           { label: "Eradication", val: "eradication" },
@@ -1372,8 +1371,8 @@ export default function ServicesPage({
 
                   {selectedPillar === ServicePillar.Landscaping && (
                     <div className="space-y-2">
-                      <span className="text-[10px] text-slate-400 font-mono uppercase tracking-wider block">Eco-Design Tier</span>
-                      <div className="grid grid-cols-3 gap-1.5 text-[9px] font-mono font-bold">
+                      <span className="text-[14px] text-slate-400 font-mono uppercase tracking-wider block">Eco-Design Tier</span>
+                      <div className="grid grid-cols-3 gap-1.5 text-[15px] font-mono font-bold">
                         {[
                           { label: "Mowing & Trim", val: "mowing" },
                           { label: "Turf Design", val: "turf" },
@@ -1389,8 +1388,8 @@ export default function ServicesPage({
 
                   {/* Frequency selection */}
                   <div className="space-y-2">
-                    <span className="text-[10px] text-slate-400 font-mono uppercase tracking-wider block">Frequency Discount</span>
-                    <div className="grid grid-cols-4 gap-1.5 text-[9px] font-mono font-bold">
+                    <span className="text-[14px] text-slate-400 font-mono uppercase tracking-wider block">Frequency Discount</span>
+                    <div className="grid grid-cols-4 gap-1.5 text-[15px] font-mono font-bold">
                       {[
                         { label: "Single", val: "one-time", disc: "0%" },
                         { label: "Weekly", val: "weekly", disc: "-20%" },
@@ -1408,7 +1407,7 @@ export default function ServicesPage({
                         return (
                           <button key={f.val} onClick={selectFn} className={`py-2 rounded-lg border text-center transition-all flex flex-col justify-between items-center ${isSelected ? `bg-slate-900 ${theme.border} ${theme.text} font-bold` : "bg-[#0F172A] border-slate-800 text-slate-400"}`}>
                             <span>{f.label}</span>
-                            <span className={`text-[8px] mt-0.5 opacity-80 ${isSelected ? "text-white" : "text-slate-500"}`}>{f.disc}</span>
+                            <span className={`text-[14px] mt-0.5 opacity-80 ${isSelected ? "text-white" : "text-slate-500"}`}>{f.disc}</span>
                           </button>
                         );
                       })}
@@ -1417,7 +1416,7 @@ export default function ServicesPage({
 
                   {/* Add-ons checkboxes */}
                   <div className="space-y-2">
-                    <span className="text-[10px] text-slate-400 font-mono uppercase tracking-wider block">HSE Add-on Protocols</span>
+                    <span className="text-[14px] text-slate-400 font-mono uppercase tracking-wider block">HSE Add-on Protocols</span>
                     <div className="flex flex-wrap gap-2">
                       {selectedPillar === ServicePillar.Management && (
                         cleaningSubTab === "waste" ? (
@@ -1426,7 +1425,7 @@ export default function ServicesPage({
                           ].map((addon) => {
                             const isSelected = wasteAddons.includes(addon);
                             return (
-                              <button key={addon} onClick={() => handleToggleAddon(addon, wasteAddons, setWasteAddons)} className={`px-2.5 py-1.5 rounded-full border text-left text-[9px] font-semibold transition-all ${isSelected ? `${theme.bgSelected} ${theme.border} ${theme.text} font-bold` : "bg-[#0F172A] border-slate-800 text-slate-355"}`}>
+                              <button key={addon} onClick={() => handleToggleAddon(addon, wasteAddons, setWasteAddons)} className={`px-2.5 py-1.5 rounded-full border text-left text-[15px] font-semibold transition-all ${isSelected ? `${theme.bgSelected} ${theme.border} ${theme.text} font-bold` : "bg-[#0F172A] border-slate-800 text-slate-355"}`}>
                                 {addon}
                               </button>
                             );
@@ -1437,7 +1436,7 @@ export default function ServicesPage({
                           ].map((addon) => {
                             const isSelected = cleaningAddons.includes(addon);
                             return (
-                              <button key={addon} onClick={() => handleToggleAddon(addon, cleaningAddons, setCleaningAddons)} className={`px-2.5 py-1.5 rounded-full border text-left text-[9px] font-semibold transition-all ${isSelected ? `${theme.bgSelected} ${theme.border} ${theme.text} font-bold` : "bg-[#0F172A] border-slate-800 text-slate-350"}`}>
+                              <button key={addon} onClick={() => handleToggleAddon(addon, cleaningAddons, setCleaningAddons)} className={`px-2.5 py-1.5 rounded-full border text-left text-[15px] font-semibold transition-all ${isSelected ? `${theme.bgSelected} ${theme.border} ${theme.text} font-bold` : "bg-[#0F172A] border-slate-800 text-slate-350"}`}>
                                 {addon}
                               </button>
                             );
@@ -1450,7 +1449,7 @@ export default function ServicesPage({
                         ].map((addon) => {
                           const isSelected = fumigationAddons.includes(addon);
                           return (
-                            <button key={addon} onClick={() => handleToggleAddon(addon, fumigationAddons, setFumigationAddons)} className={`px-2.5 py-1.5 rounded-full border text-left text-[9px] font-semibold transition-all ${isSelected ? `${theme.bgSelected} ${theme.border} ${theme.text} font-bold` : "bg-[#0F172A] border-slate-800 text-slate-350"}`}>
+                            <button key={addon} onClick={() => handleToggleAddon(addon, fumigationAddons, setFumigationAddons)} className={`px-2.5 py-1.5 rounded-full border text-left text-[15px] font-semibold transition-all ${isSelected ? `${theme.bgSelected} ${theme.border} ${theme.text} font-bold` : "bg-[#0F172A] border-slate-800 text-slate-350"}`}>
                               {addon}
                             </button>
                           );
@@ -1462,7 +1461,7 @@ export default function ServicesPage({
                         ].map((addon) => {
                           const isSelected = landscapingAddons.includes(addon);
                           return (
-                            <button key={addon} onClick={() => handleToggleAddon(addon, landscapingAddons, setLandscapingAddons)} className={`px-2.5 py-1.5 rounded-full border text-left text-[9px] font-semibold transition-all ${isSelected ? `${theme.bgSelected} ${theme.border} ${theme.text} font-bold` : "bg-[#0F172A] border-slate-800 text-slate-350"}`}>
+                            <button key={addon} onClick={() => handleToggleAddon(addon, landscapingAddons, setLandscapingAddons)} className={`px-2.5 py-1.5 rounded-full border text-left text-[15px] font-semibold transition-all ${isSelected ? `${theme.bgSelected} ${theme.border} ${theme.text} font-bold` : "bg-[#0F172A] border-slate-800 text-slate-350"}`}>
                               {addon}
                             </button>
                           );
@@ -1475,7 +1474,7 @@ export default function ServicesPage({
                 {/* Estimate display */}
                 <div className="bg-[#0F172A] border border-slate-800/80 rounded-2xl p-4.5 space-y-4">
                   <div className="flex justify-between items-baseline">
-                    <span className="text-[10px] font-mono text-slate-500 uppercase tracking-widest">Estimated Subtotal</span>
+                    <span className="text-[14px] font-mono text-slate-400 uppercase tracking-widest">Estimated Subtotal</span>
                     <span className="text-2xl font-display font-black text-white">
                       ${
                         selectedPillar === ServicePillar.Management ? (
@@ -1486,7 +1485,7 @@ export default function ServicesPage({
                       }
                     </span>
                   </div>
-                  <div className="border-t border-slate-800/60 pt-3 space-y-2 text-[10px] font-mono text-slate-400">
+                  <div className="border-t border-slate-800/60 pt-3 space-y-2 text-[14px] font-mono text-slate-400">
                     <div className="flex justify-between">
                       <span>SLA Callout Commitment:</span>
                       <span className="text-white font-bold">&lt; 4 Hours Fast Dispatch</span>
@@ -1504,12 +1503,12 @@ export default function ServicesPage({
 
                 {/* Machinery / equipment tags in sidebar */}
                 <div className="space-y-2">
-                  <span className="text-[9px] font-mono uppercase tracking-[0.2em] text-slate-500 block">
+                  <span className="text-[14px] font-mono uppercase tracking-[0.2em] text-slate-400 block">
                     Dedicated Dispatch Gear
                   </span>
                   <div className="flex flex-wrap gap-1.5">
                     {activeService.equipment.map((tag, idx) => (
-                      <span key={idx} className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[9px] font-mono font-semibold ${theme.text} ${theme.bg} border ${theme.border}/20`}>
+                      <span key={idx} className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[15px] font-mono font-semibold ${theme.text} ${theme.bg} border ${theme.border}/20`}>
                         <Cpu className="w-2.5 h-2.5" />
                         {tag}
                       </span>
@@ -1536,7 +1535,7 @@ export default function ServicesPage({
                 </div>
                 <div className="h-2 w-2 rounded-full bg-emerald-500 animate-ping shrink-0" />
                 <div className="text-left font-sans">
-                  <span className="text-[9px] font-mono text-slate-500 block uppercase">24/7 Priority Emergency Line</span>
+                  <span className="text-[14px] font-mono text-slate-400 block uppercase">24/7 Priority Emergency Line</span>
                   <span className="text-xs font-semibold text-white block">+211 924 444 044</span>
                 </div>
               </div>

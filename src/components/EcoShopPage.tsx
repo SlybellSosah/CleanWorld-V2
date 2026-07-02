@@ -282,7 +282,7 @@ export default function EcoShopPage({
                   className="bg-slate-950 border border-slate-800 hover:border-slate-700/80 rounded-3xl overflow-hidden flex flex-col justify-between group transition-all shadow-[0_15px_35px_-10px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.05)] relative"
                 >
                   {/* Category badge */}
-                  <div className="absolute top-3 left-3 z-10 bg-slate-950/80 backdrop-blur-md border border-slate-800 px-2.5 py-1 rounded-lg text-[9px] font-mono text-slate-400">
+                  <div className="absolute top-3 left-3 z-10 bg-slate-950/80 backdrop-blur-md border border-slate-800 px-2.5 py-1 rounded-lg text-[15px] font-mono text-slate-400">
                     {prod.category}
                   </div>
 
@@ -323,7 +323,7 @@ export default function EcoShopPage({
                         </span>
                       </div>
                       
-                      <div className="flex items-center gap-4 text-[10px] text-slate-400 font-mono">
+                      <div className="flex items-center gap-4 text-[14px] text-slate-400 font-mono">
                         <span>Standard Unit: {prod.unit}</span>
                         {prod.ecoMetrics?.biodegradable && (
                           <span className="text-emerald-400 flex items-center gap-0.5">
@@ -342,7 +342,7 @@ export default function EcoShopPage({
                   <div className="p-5 sm:p-6 pt-0 border-t border-slate-900/60 flex items-center justify-between gap-4">
                     <button
                       onClick={() => setSelectedProduct(prod)}
-                      className="text-[10px] text-sky-400 hover:text-sky-300 font-mono flex items-center gap-1 hover:underline"
+                      className="text-[14px] text-sky-400 hover:text-sky-300 font-mono flex items-center gap-1 hover:underline"
                     >
                       <Info className="w-3 h-3" /> Details
                     </button>
@@ -393,7 +393,7 @@ export default function EcoShopPage({
                 {cartItems.length > 0 && (
                   <button 
                     onClick={onClearCart}
-                    className="text-[10px] font-mono text-slate-500 hover:text-red-400 transition-colors"
+                    className="text-[14px] font-mono text-slate-400 hover:text-red-400 transition-colors"
                   >
                     Clear Cart
                   </button>
@@ -403,7 +403,7 @@ export default function EcoShopPage({
               {cartItems.length === 0 ? (
                 <div className="py-12 text-center space-y-3" id="cart-empty-state">
                   <ShoppingCart className="w-8 h-8 text-slate-600 mx-auto" />
-                  <p className="text-xs text-slate-500 leading-relaxed">
+                  <p className="text-xs text-slate-400 leading-relaxed">
                     Your shopping cart is empty. Choose organic sanitizers or safety equipment to begin.
                   </p>
                 </div>
@@ -427,7 +427,7 @@ export default function EcoShopPage({
                           />
                           <div>
                             <span className="block font-medium text-white max-w-[150px] truncate">{item.product.name}</span>
-                            <span className="block text-[10px] text-slate-500 font-mono">Qty: {item.quantity}</span>
+                            <span className="block text-[14px] text-slate-400 font-mono">Qty: {item.quantity}</span>
                           </div>
                         </div>
                         <span className="font-mono text-slate-300 font-medium">
@@ -444,11 +444,11 @@ export default function EcoShopPage({
                         <RefreshCw className="w-3.5 h-3.5 text-emerald-400 animate-spin-slow" />
                         Regular Deliveries
                       </span>
-                      <span className="bg-emerald-500/10 text-emerald-400 font-mono text-[9px] font-bold px-2 py-0.5 rounded border border-emerald-500/20">
+                      <span className="bg-emerald-500/10 text-emerald-400 font-mono text-[15px] font-bold px-2 py-0.5 rounded border border-emerald-500/20">
                         SAVE UP TO 15%
                       </span>
                     </div>
-                    <p className="text-[10px] text-slate-400 leading-normal">
+                    <p className="text-[14px] text-slate-400 leading-normal">
                       Schedule a recurring delivery intervals for your workplace safety needs.
                     </p>
 
@@ -461,14 +461,14 @@ export default function EcoShopPage({
                         <button
                           key={freq.value}
                           onClick={() => setSubFrequency(freq.value)}
-                          className={`py-1.5 rounded-lg border text-[9px] font-mono transition-all ${
+                          className={`py-1.5 rounded-lg border text-[15px] font-mono transition-all ${
                             subFrequency === freq.value
                               ? "bg-emerald-500 border-emerald-400 text-slate-950 font-bold shadow-md shadow-emerald-500/10"
                               : "bg-slate-950 border-slate-800 text-slate-400 hover:text-white"
                           }`}
                         >
                           {freq.label}
-                          {freq.discount > 0 && <span className="block text-[7px] opacity-90">-{freq.discount}%</span>}
+                          {freq.discount > 0 && <span className="block text-[15px] opacity-90">-{freq.discount}%</span>}
                         </button>
                       ))}
                     </div>
@@ -504,7 +504,7 @@ export default function EcoShopPage({
                     <ArrowRight className="w-4 h-4" />
                   </button>
 
-                  <div className="flex items-start gap-1.5 text-[9px] text-slate-500 leading-normal text-left">
+                  <div className="flex items-start gap-1.5 text-[14px] text-slate-400 leading-normal text-left">
                     <Info className="w-3 h-3 shrink-0 mt-0.5" />
                     <span>Deliveries dispatched from Juba base station. Includes telemetry sync.</span>
                   </div>
@@ -555,10 +555,10 @@ export default function EcoShopPage({
                 </div>
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
-                    <span className="bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded text-[9px] font-mono text-emerald-400 uppercase">
+                    <span className="bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded text-[15px] font-mono text-emerald-400 uppercase">
                       {selectedProduct.category}
                     </span>
-                    <span className="text-[10px] text-slate-500 font-mono">ID: {selectedProduct.id}</span>
+                    <span className="text-[14px] text-slate-400 font-mono">ID: {selectedProduct.id}</span>
                   </div>
                   <h3 className="font-display text-xl font-bold text-white">{selectedProduct.name}</h3>
                   <div className="flex items-center gap-4">
@@ -581,7 +581,7 @@ export default function EcoShopPage({
                       </h4>
                       <div className="flex flex-wrap gap-1.5">
                         {selectedProduct.ingredients.map((ing, idx) => (
-                          <span key={idx} className="bg-slate-950 px-2.5 py-1 rounded-md text-[10px] text-slate-400 border border-slate-850">
+                          <span key={idx} className="bg-slate-950 px-2.5 py-1 rounded-md text-[14px] text-slate-400 border border-slate-850">
                             {ing}
                           </span>
                         ))}
@@ -615,7 +615,7 @@ export default function EcoShopPage({
                       </h4>
                       <div className="flex flex-wrap gap-1.5">
                         {selectedProduct.hseCertifications.map((cert, idx) => (
-                          <span key={idx} className="bg-emerald-950/20 text-emerald-400 border border-emerald-500/20 px-2.5 py-1 rounded text-[10px] font-mono">
+                          <span key={idx} className="bg-emerald-950/20 text-emerald-400 border border-emerald-500/20 px-2.5 py-1 rounded text-[14px] font-mono">
                             {cert}
                           </span>
                         ))}
@@ -626,17 +626,17 @@ export default function EcoShopPage({
                   {/* Eco Savings Metrics */}
                   {selectedProduct.ecoMetrics && (
                     <div className="space-y-2 bg-slate-950 p-4 rounded-2xl border border-slate-850">
-                      <h4 className="font-display text-[10px] font-bold text-slate-400 uppercase tracking-wider">ENVIRONMENTAL IMPACT REPORT</h4>
+                      <h4 className="font-display text-[14px] font-bold text-slate-400 uppercase tracking-wider">ENVIRONMENTAL IMPACT REPORT</h4>
                       <div className="grid grid-cols-2 gap-3 pt-2">
                         {selectedProduct.ecoMetrics.carbonSaved && (
                           <div className="space-y-0.5">
-                            <span className="text-[9px] text-slate-500 font-mono">Carbon Reduction</span>
+                            <span className="text-[14px] text-slate-400 font-mono">Carbon Reduction</span>
                             <span className="block font-bold text-emerald-400">{selectedProduct.ecoMetrics.carbonSaved}</span>
                           </div>
                         )}
                         {selectedProduct.ecoMetrics.waterSaved && (
                           <div className="space-y-0.5">
-                            <span className="text-[9px] text-slate-500 font-mono">Water Preserved</span>
+                            <span className="text-[14px] text-slate-400 font-mono">Water Preserved</span>
                             <span className="block font-bold text-sky-400 flex items-center gap-0.5">
                               <Droplet className="w-3.5 h-3.5" />
                               {selectedProduct.ecoMetrics.waterSaved}
@@ -645,7 +645,7 @@ export default function EcoShopPage({
                         )}
                         {selectedProduct.ecoMetrics.biodegradable && (
                           <div className="space-y-0.5 col-span-2">
-                            <span className="text-[9px] text-slate-500 font-mono">Biodegradable Duration</span>
+                            <span className="text-[14px] text-slate-400 font-mono">Biodegradable Duration</span>
                             <span className="block font-bold text-white">{selectedProduct.ecoMetrics.biodegradable}</span>
                           </div>
                         )}
@@ -659,7 +659,7 @@ export default function EcoShopPage({
                       <AlertTriangle className="w-5 h-5 shrink-0" />
                       <div>
                         <span className="font-bold block">Safety Alert</span>
-                        <p className="text-[10px] leading-relaxed text-red-300/90 mt-0.5">{selectedProduct.hazards}</p>
+                        <p className="text-[14px] leading-relaxed text-red-300/90 mt-0.5">{selectedProduct.hazards}</p>
                       </div>
                     </div>
                   )}
@@ -669,7 +669,7 @@ export default function EcoShopPage({
 
               {/* Footer details modal */}
               <div className="pt-4 border-t border-slate-800 flex justify-between items-center">
-                <p className="text-[10px] text-slate-500 font-mono">Formulated with biodegradable ingredients.</p>
+                <p className="text-[14px] text-slate-400 font-mono">Formulated with biodegradable ingredients.</p>
                 <div className="flex gap-2">
                   <button 
                     onClick={() => setSelectedProduct(null)}
@@ -733,7 +733,7 @@ export default function EcoShopPage({
               <div className="space-y-1">
                 <div className="flex items-center gap-1.5">
                   <CreditCard className="w-4.5 h-4.5 text-emerald-400" />
-                  <span className="text-[10px] text-emerald-400 font-mono uppercase tracking-widest font-bold">
+                  <span className="text-[14px] text-emerald-400 font-mono uppercase tracking-widest font-bold">
                     South Sudan Local Checkout
                   </span>
                 </div>
@@ -772,7 +772,7 @@ export default function EcoShopPage({
               {checkoutStep === 1 && (
                 <div className="space-y-4 text-xs font-sans">
                   <div className="space-y-1">
-                    <label className="text-[10px] text-slate-400 uppercase font-mono font-bold tracking-wider">Recipient Name</label>
+                    <label className="text-[14px] text-slate-400 uppercase font-mono font-bold tracking-wider">Recipient Name</label>
                     <div className="relative">
                       <User className="absolute left-3 top-2.5 w-4 h-4 text-slate-500" />
                       <input 
@@ -787,7 +787,7 @@ export default function EcoShopPage({
 
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-1">
-                      <label className="text-[10px] text-slate-400 uppercase font-mono font-bold tracking-wider">Juba District</label>
+                      <label className="text-[14px] text-slate-400 uppercase font-mono font-bold tracking-wider">Juba District</label>
                       <div className="relative">
                         <MapPin className="absolute left-3 top-2.5 w-4 h-4 text-slate-500" />
                         <select
@@ -806,7 +806,7 @@ export default function EcoShopPage({
                     </div>
 
                     <div className="space-y-1">
-                      <label className="text-[10px] text-slate-400 uppercase font-mono font-bold tracking-wider">Mobile Number</label>
+                      <label className="text-[14px] text-slate-400 uppercase font-mono font-bold tracking-wider">Mobile Number</label>
                       <div className="relative">
                         <Phone className="absolute left-3 top-2.5 w-4 h-4 text-slate-500" />
                         <input 
@@ -821,7 +821,7 @@ export default function EcoShopPage({
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-[10px] text-slate-400 uppercase font-mono font-bold tracking-wider">Delivery Street Address</label>
+                    <label className="text-[14px] text-slate-400 uppercase font-mono font-bold tracking-wider">Delivery Street Address</label>
                     <textarea 
                       placeholder="e.g. Block 4, off Ministries Road near Zain HQ"
                       value={deliveryAddress}
@@ -833,7 +833,7 @@ export default function EcoShopPage({
 
                   <div className="pt-2 border-t border-slate-850 flex justify-between items-center text-xs">
                     <div>
-                      <span className="text-[9px] text-slate-500 block">AMOUNT TO CHARGE:</span>
+                      <span className="text-[15px] text-slate-400 block">AMOUNT TO CHARGE:</span>
                       <span className="font-mono text-white font-bold">{formatPrice(grandTotal)}</span>
                     </div>
                     <button
@@ -899,8 +899,8 @@ export default function EcoShopPage({
                             {isSel && <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />}
                           </div>
                           <div>
-                            <span className="block text-[8px] text-slate-500 uppercase font-mono tracking-wider">CARRIER</span>
-                            <span className="text-[10px] font-semibold text-slate-300 block">{carrier.desc}</span>
+                            <span className="block text-[14px] text-slate-400 uppercase font-mono tracking-wider">CARRIER</span>
+                            <span className="text-[14px] font-semibold text-slate-300 block">{carrier.desc}</span>
                           </div>
                         </button>
                       );
@@ -937,7 +937,7 @@ export default function EcoShopPage({
                       <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-4 animate-fadeIn">
                         
                         <div className="flex justify-between items-center pb-2 border-b border-slate-850">
-                          <span className="font-mono text-[9px] font-bold text-slate-400 uppercase tracking-widest">{paymentCarrier} USSD GATE</span>
+                          <span className="font-mono text-[15px] font-bold text-slate-400 uppercase tracking-widest">{paymentCarrier} USSD GATE</span>
                           <span className="relative flex h-2 w-2">
                             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                             <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
@@ -945,13 +945,13 @@ export default function EcoShopPage({
                         </div>
 
                         <div className="space-y-1 text-center py-2">
-                          <p className="text-[10px] text-slate-400">Merchant: Clean World Inc.</p>
+                          <p className="text-[14px] text-slate-400">Merchant: Clean World Inc.</p>
                           <p className="text-sm font-black text-white">{formatPrice(grandTotal)}</p>
-                          <p className="text-[8px] text-slate-500 font-mono">Carrier Target: {phoneNum}</p>
+                          <p className="text-[14px] text-slate-400 font-mono">Carrier Target: {phoneNum}</p>
                         </div>
 
                         <div className="space-y-1">
-                          <label className="text-[8px] text-slate-500 uppercase font-mono tracking-widest block text-center">ENTER YOUR PIN TO CONFIRM</label>
+                          <label className="text-[14px] text-slate-400 uppercase font-mono tracking-widest block text-center">ENTER YOUR PIN TO CONFIRM</label>
                           <input 
                             type="password"
                             maxLength={4}
@@ -964,7 +964,7 @@ export default function EcoShopPage({
 
                         <button
                           onClick={handleSimulateUSSDPayment}
-                          className="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-mono font-bold text-[10px] py-2 rounded-lg transition-colors"
+                          className="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-955 font-mono font-bold text-[14px] py-2 rounded-lg transition-colors"
                         >
                           Confirm &amp; Authorize
                         </button>
@@ -974,16 +974,16 @@ export default function EcoShopPage({
                         <RefreshCw className="w-10 h-10 text-emerald-400 mx-auto animate-spin" />
                         <div className="space-y-1">
                           <p className="font-bold text-white text-xs">Simulating Juba Network Transit...</p>
-                          <p className="text-[9px] text-slate-500 font-mono">Carrier: {paymentCarrier} Gateway</p>
+                          <p className="text-[14px] text-slate-400 font-mono">Carrier: {paymentCarrier} Gateway</p>
                         </div>
                       </div>
                     )}
 
-                    <div className="h-8 w-8 border border-slate-800 rounded-full mx-auto flex items-center justify-center text-[10px] text-slate-500 font-mono">SSD</div>
+                    <div className="h-8 w-8 border border-slate-800 rounded-full mx-auto flex items-center justify-center text-[14px] text-slate-400 font-mono">SSD</div>
                   </div>
 
                   <div className="text-center">
-                    <p className="text-[10px] text-slate-500">
+                    <p className="text-[14px] text-slate-400">
                       *Notice: This is a safe sandboxed payment environment. No actual funds are charged. 
                       Input any 4 digit code to verify order telemetry.
                     </p>
@@ -1015,7 +1015,7 @@ export default function EcoShopPage({
                     <h4 className="font-display font-extrabold text-white text-base">
                       {createdOrder.paymentMethod === "Cash" ? "Order Placed Successfully!" : "Payment Authorized Successfully!"}
                     </h4>
-                    <p className="text-[10px] text-slate-400">
+                    <p className="text-[14px] text-slate-400">
                       {createdOrder.paymentMethod === "Cash" ? "Pay upon dispatch delivery in Juba." : "Simulated mobile push cleared in Juba."}
                     </p>
                   </div>
@@ -1023,29 +1023,29 @@ export default function EcoShopPage({
                   {/* Summary invoice */}
                   <div className="bg-slate-950 border border-slate-850 p-4 rounded-2xl space-y-3">
                     <div className="flex justify-between items-center pb-2 border-b border-slate-850">
-                      <span className="font-mono text-[9px] text-slate-500 font-bold uppercase">ORDER CONFIRMATION</span>
-                      <span className="font-mono text-[9px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded">
+                      <span className="font-mono text-[14px] text-slate-400 font-bold uppercase">ORDER CONFIRMATION</span>
+                      <span className="font-mono text-[15px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded">
                         {createdOrder.id}
                       </span>
                     </div>
 
                     <div className="space-y-1">
-                      <span className="text-[8px] text-slate-500 font-mono uppercase block">TRANSACTION REF</span>
+                      <span className="text-[15px] text-slate-400 font-mono uppercase block">TRANSACTION REF</span>
                       <span className="font-mono font-semibold text-white">{createdOrder.transactionRef}</span>
                     </div>
 
                     <div className="space-y-1">
-                      <span className="text-[8px] text-slate-500 font-mono uppercase block">SHIPPING ADDR</span>
+                      <span className="text-[15px] text-slate-400 font-mono uppercase block">SHIPPING ADDR</span>
                       <span className="font-medium text-white">{createdOrder.deliveryLocation} District - {createdOrder.deliveryAddress}</span>
                     </div>
 
                     <div className="flex justify-between items-center pt-2 border-t border-slate-850">
                       <div>
-                        <span className="text-[8px] text-slate-500 font-mono uppercase block">PAYMENT CARRIER</span>
+                        <span className="text-[15px] text-slate-400 font-mono uppercase block">PAYMENT CARRIER</span>
                         <span className="font-semibold text-white">{createdOrder.paymentMethod}</span>
                       </div>
                       <div className="text-right">
-                        <span className="text-[8px] text-slate-500 font-mono uppercase block">TOTAL AMOUNT</span>
+                        <span className="text-[15px] text-slate-400 font-mono uppercase block">TOTAL AMOUNT</span>
                         <span className="font-mono text-emerald-400 font-bold text-sm">
                           {createdOrder.currencyPaid === "USD" 
                             ? `$${createdOrder.totalUSD.toFixed(2)}` 
@@ -1060,7 +1060,7 @@ export default function EcoShopPage({
                     <Info className="w-5 h-5 shrink-0" />
                     <div>
                       <span className="font-bold block">Dashboard Synchronization</span>
-                      <p className="text-[10px] leading-relaxed text-sky-300/90 mt-0.5">
+                      <p className="text-[14px] leading-relaxed text-sky-300/90 mt-0.5">
                         This order has been synchronized with your global account. You can track status and print official receipts in the **Client Dashboard**.
                       </p>
                     </div>

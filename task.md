@@ -1,0 +1,8 @@
+- [x] Make CleanerPortal.tsx outer layout responsive (hide device mockups on mobile)
+- [x] Upgrade text colors and font sizes in CleanerPortal.tsx
+- [x] Upgrade text colors and font sizes in ClientDashboard.tsx
+- [x] Upgrade text colors and font sizes in AcademyPage.tsx
+- [x] Upgrade text colors and font sizes in ServicesPage.tsx
+- [x] Upgrade text colors and font sizes in EcoShopPage.tsx
+- [x] Upgrade text colors and font sizes in Footer.tsx
+- [x] Verify changes with compilation and Playwright tests

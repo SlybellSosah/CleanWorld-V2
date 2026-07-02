@@ -65,13 +65,13 @@ export default function Footer({ setActiveView }: FooterProps) {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
               </span>
-              <span className="text-[10px] font-mono uppercase tracking-widest text-red-400 font-extrabold">Emergency Line 24/7</span>
+              <span className="text-[14px] font-mono uppercase tracking-widest text-red-400 font-extrabold">Emergency Line 24/7</span>
             </div>
             <div>
               <p className="text-sm font-display text-white font-medium leading-tight tracking-tight">
                 Clean World emergency response is active now.
               </p>
-              <p className="text-[11px] text-slate-400 mt-1 font-sans">
+              <p className="text-[15px] text-slate-400 mt-1 font-sans">
                 On-site within 60 minutes for urgent disinfection, deep cleaning, or pest containment.
               </p>
             </div>
@@ -117,7 +117,7 @@ export default function Footer({ setActiveView }: FooterProps) {
                 <span className="font-display font-black text-lg tracking-tight bg-gradient-to-r from-white via-slate-100 to-slate-200 bg-clip-text text-transparent leading-none">
                   CLEAN WORLD
                 </span>
-                <span className="text-[9px] tracking-wider px-1 py-0.5 font-bold leading-none ml-1 shadow-sm text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 rounded">
+                <span className="text-[15px] tracking-wider px-1 py-0.5 font-bold leading-none ml-1 shadow-sm text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 rounded">
                   INC.
                 </span>
               </div>
@@ -127,7 +127,7 @@ export default function Footer({ setActiveView }: FooterProps) {
               South Sudan's premier eco-responsible hygiene and sanitization services. Delivering medical-grade decontamination, premium vector control, and professional janitorial solutions with absolute compliance and environmental stewardship.
             </p>
 
-            <div className="space-y-2 text-[11px] text-slate-500 font-sans">
+            <div className="space-y-2 text-[15px] text-slate-500 font-sans">
               <div className="flex items-start gap-2">
                 <MapPin className="w-3.5 h-3.5 text-slate-600 shrink-0 mt-0.5" />
                 <span>Airport Road, Juba, South Sudan</span>
@@ -141,7 +141,7 @@ export default function Footer({ setActiveView }: FooterProps) {
 
           {/* Column 2: Service Navigation (spans 1) */}
           <div className="space-y-4">
-            <h4 className="text-[10px] font-display font-bold text-slate-200 tracking-wider uppercase">Services</h4>
+            <h4 className="text-[14px] font-display font-bold text-slate-200 tracking-wider uppercase">Services</h4>
             <ul className="space-y-2.5 text-xs font-sans">
               <li>
                 <button 
@@ -184,7 +184,7 @@ export default function Footer({ setActiveView }: FooterProps) {
 
           {/* Column 3: Platform Portals (spans 1) */}
           <div className="space-y-4">
-            <h4 className="text-[10px] font-display font-bold text-slate-200 tracking-wider uppercase">Portals</h4>
+            <h4 className="text-[14px] font-display font-bold text-slate-200 tracking-wider uppercase">Portals</h4>
             <ul className="space-y-2.5 text-xs font-sans">
               <li>
                 <button 
@@ -209,7 +209,7 @@ export default function Footer({ setActiveView }: FooterProps) {
 
           {/* Column 4: Operations Center & Socials (spans 2) */}
           <div className="md:col-span-2 space-y-4">
-            <h4 className="text-[10px] font-display font-bold text-slate-200 tracking-wider uppercase">Operations Hub</h4>
+            <h4 className="text-[14px] font-display font-bold text-slate-200 tracking-wider uppercase">Operations Hub</h4>
             
             <div className="bg-slate-900/40 border border-slate-900 p-4 rounded-xl space-y-3">
               <div className="flex items-center gap-2">
@@ -217,7 +217,7 @@ export default function Footer({ setActiveView }: FooterProps) {
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                 </span>
-                <span className="text-[10px] font-mono uppercase tracking-widest text-emerald-400 font-bold">
+                <span className="text-[14px] font-mono uppercase tracking-widest text-emerald-400 font-bold">
                   All Systems Operational
                 </span>
               </div>
@@ -255,14 +255,14 @@ export default function Footer({ setActiveView }: FooterProps) {
         </div>
 
         {/* Copyright and Legal footer bar */}
-        <div className="border-t border-slate-900 mt-12 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-[10px] text-slate-500 font-mono">
+        <div className="border-t border-slate-900 mt-12 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-[14px] text-slate-400 font-mono">
           <div>
             © {new Date().getFullYear()} Clean World Inc. All rights reserved.
           </div>
           <div className="flex gap-4">
-            <a href="#privacy" className="hover:text-slate-400 transition-colors">Privacy Policy</a>
+            <a href="#privacy" className="hover:text-slate-300 transition-colors">Privacy Policy</a>
             <span>•</span>
-            <a href="#terms" className="hover:text-slate-400 transition-colors">Terms of Service</a>
+            <a href="#terms" className="hover:text-slate-300 transition-colors">Terms of Service</a>
           </div>
         </div>
       </div>
@@ -305,7 +305,7 @@ export default function Footer({ setActiveView }: FooterProps) {
                   Our certified cleaning, bio-hazard containment, and urgent vector control teams are stationed locally in Juba. On-site response is guaranteed within <strong>60 minutes</strong>.
                 </div>
               </div>
-              <p className="text-slate-400 text-[11px] leading-normal font-sans">
+              <p className="text-slate-400 text-[15px] leading-normal font-sans">
                 Serving all main sectors: Tongping, Airport Road, Munuki, Gudele, Gumbo, and the wider Central Equatoria area.
               </p>
             </div>
@@ -343,7 +343,7 @@ export default function Footer({ setActiveView }: FooterProps) {
             </div>
 
             {/* Footer stamp */}
-            <div className="text-[10px] text-center text-slate-500 font-mono">
+            <div className="text-[14px] text-center text-slate-500 font-mono">
               Licensed by Ministry of Environment No. SS/ME/2026-928
             </div>
 
@@ -362,7 +362,7 @@ export default function Footer({ setActiveView }: FooterProps) {
             id="whatsapp-floating-cta"
           >
             <MessageCircle className="w-5.5 h-5.5 sm:w-6 sm:h-6 transition-transform group-hover:scale-110" />
-            <span className="max-w-0 overflow-hidden group-hover:max-w-xs group-hover:ml-2 font-display text-[10px] sm:text-xs font-extrabold tracking-wider uppercase transition-all duration-300 ease-in-out whitespace-nowrap">
+            <span className="max-w-0 overflow-hidden group-hover:max-w-xs group-hover:ml-2 font-display text-[14px] sm:text-xs font-extrabold tracking-wider uppercase transition-all duration-300 ease-in-out whitespace-nowrap">
               WhatsApp 24/7
             </span>
           </a>
