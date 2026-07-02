@@ -1,18 +1,21 @@
 import React, { useState, useEffect } from "react";
-import { ActiveView, Booking } from "../types";
+import { ActiveView, Booking, RiskClass } from "../types";
 import { 
   ShieldCheck, ArrowLeft, ArrowRight, CheckCircle, MapPin, 
-  Sparkles, Calendar, Clock, CreditCard, HelpCircle, Heart, User, Building, Phone, Mail, FileText
+  Sparkles, Calendar, Clock, CreditCard, HelpCircle, Heart, User, Building, Phone, Mail, FileText,
+  X, RefreshCw, CheckCircle2
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
+import MapComponent from "./MapComponent";
 
 interface QuoteWizardProps {
   setActiveView: (view: ActiveView) => void;
   bookings: Booking[];
   setBookings: React.Dispatch<React.SetStateAction<Booking[]>>;
+  initialSpecs?: any;
 }
 
-export default function QuoteWizard({ setActiveView, bookings, setBookings }: QuoteWizardProps) {
+export default function QuoteWizard({ setActiveView, bookings, setBookings, initialSpecs }: QuoteWizardProps) {
   const [activeStep, setActiveStep] = useState(1); // Step 1: Scoping, Step 2: Frequency & Schedule, Step 3: Checkout
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [newBookingId, setNewBookingId] = useState<string | null>(null);
@@ -26,21 +29,50 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings }: Qu
   const [zipCode, setZipCode] = useState<string>("61101"); // prefilled if validated
   const [zipError, setZipError] = useState<string>("");
 
+  // WASTE SERVICE STATE
+  const [isWasteService, setIsWasteService] = useState<boolean>(false);
+  const [wasteVolume, setWasteVolume] = useState<number>(20);
+  const [wasteRisk, setWasteRisk] = useState<RiskClass>(RiskClass.Low);
+
   // STEP 2 STATE: Scheduling & Subscription Frequency
   const [frequency, setFrequency] = useState<"one-time" | "weekly" | "bi-weekly" | "monthly">("bi-weekly");
   const [selectedDate, setSelectedDate] = useState<string>("2026-07-01");
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<string>("09:00 AM - 12:00 PM");
 
-  // STEP 3 STATE: Personal Registration & Card Details
+  // STEP 3 STATE: Personal Registration & Local Payment Details
   const [clientName, setClientName] = useState("");
   const [clientEmail, setClientEmail] = useState("");
   const [clientPhone, setClientPhone] = useState("");
   const [address, setAddress] = useState("");
   const [entryInstructions, setEntryInstructions] = useState("");
-  const [cardNumber, setCardNumber] = useState("");
-  const [cardHolder, setCardHolder] = useState("");
-  const [cardExpiry, setCardExpiry] = useState("");
-  const [cardCvv, setCardCvv] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState<"m-GURUSH" | "MTN MoMo" | "Zain Cash" | "Cash">("MTN MoMo");
+  const [paymentPhone, setPaymentPhone] = useState("");
+  const [paymentHolder, setPaymentHolder] = useState("");
+  const [ussdPin, setUssdPin] = useState("");
+  const [isUSSDPromptOpen, setIsUSSDPromptOpen] = useState(false);
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+  
+  const [selectedLat, setSelectedLat] = useState<number>(4.86010);
+  const [selectedLng, setSelectedLng] = useState<number>(31.59100);
+
+  const handleCoordinatesChange = (newLat: number, newLng: number) => {
+    setSelectedLat(newLat);
+    setSelectedLng(newLng);
+  };
+
+  const handleGetCurrentLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setSelectedLat(position.coords.latitude);
+          setSelectedLng(position.coords.longitude);
+        },
+        (error) => {
+          console.warn("Geolocation warning: ", error.message);
+        }
+      );
+    }
+  };
   
   // Validation Errors
   const [step1Error, setStep1Error] = useState("");
@@ -64,6 +96,44 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings }: Qu
       setZipCode(savedZip);
     }
   }, []);
+
+  // Prefill hook from Services page deep-link
+  useEffect(() => {
+    if (initialSpecs) {
+      if (initialSpecs.isWaste) {
+        setIsWasteService(true);
+        if (initialSpecs.wasteVolume) setWasteVolume(initialSpecs.wasteVolume);
+        if (initialSpecs.riskClass) setWasteRisk(initialSpecs.riskClass);
+        if (initialSpecs.addons) setSelectedAddons(initialSpecs.addons);
+        if (initialSpecs.frequency) setFrequency(initialSpecs.frequency);
+      } else {
+        setIsWasteService(false);
+        if (initialSpecs.cleanType) setCleanType(initialSpecs.cleanType);
+        if (initialSpecs.addons) setSelectedAddons(initialSpecs.addons);
+        if (initialSpecs.frequency) setFrequency(initialSpecs.frequency);
+        if (initialSpecs.areaSize) {
+          const area = initialSpecs.areaSize;
+          if (area < 1000) {
+            setSqFtRange("< 1,000 sq ft");
+            setBedrooms(1);
+            setBathrooms(1);
+          } else if (area < 2000) {
+            setSqFtRange("1,000 - 1,999 sq ft");
+            setBedrooms(3);
+            setBathrooms(2);
+          } else if (area < 3000) {
+            setSqFtRange("2,000 - 2,999 sq ft");
+            setBedrooms(4);
+            setBathrooms(3);
+          } else {
+            setSqFtRange("3,000+ sq ft");
+            setBedrooms(5);
+            setBathrooms(4);
+          }
+        }
+      }
+    }
+  }, [initialSpecs]);
 
   // Pricing constants for dynamic scoping engine
   const BASE_PRICE = 80;
@@ -97,9 +167,27 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings }: Qu
     typeMultiplier = 1.25;
   }
 
-  const subtotalBeforeAddons = (baseSizePrice * typeMultiplier) + typePriceModifier;
-  const addonsTotal = selectedAddons.reduce((sum, addon) => sum + getAddonPrice(addon), 0);
-  const totalSubtotal = subtotalBeforeAddons + addonsTotal;
+  // Dynamic pricing calculation based on service type
+  let totalSubtotal = 0;
+  if (isWasteService) {
+    const ratePerM3 = 15;
+    let riskMultiplier = 1.0;
+    if (wasteRisk === RiskClass.Medium) riskMultiplier = 1.3;
+    if (wasteRisk === RiskClass.High) riskMultiplier = 1.8;
+    
+    const baseCost = wasteVolume * ratePerM3 * riskMultiplier;
+    const addonsCost = selectedAddons.reduce((sum, addon) => {
+      if (addon === "HSE Waste Binning") return sum + 50;
+      if (addon === "Bio-Safe Solutions") return sum + 75;
+      if (addon === "Secure Disposal Certification") return sum + 40;
+      return sum;
+    }, 0);
+    totalSubtotal = baseCost + addonsCost;
+  } else {
+    const subtotalBeforeAddons = (baseSizePrice * typeMultiplier) + typePriceModifier;
+    const addonsTotal = selectedAddons.reduce((sum, addon) => sum + getAddonPrice(addon), 0);
+    totalSubtotal = subtotalBeforeAddons + addonsTotal;
+  }
 
   // Frequency discounts
   let discountPercentage = 0;
@@ -161,17 +249,38 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings }: Qu
       return;
     }
 
-    // Card validation regex
-    if (!cardNumber || cardNumber.length < 12) {
-      setStep3Error("Secure Billing: Please input a valid credit card on file.");
+    if (paymentMethod !== "Cash") {
+      if (!paymentPhone) {
+        setStep3Error("Please enter your Mobile Money phone number.");
+        return;
+      }
+      // Open simulated USSD popup
+      setUssdPin("");
+      setIsUSSDPromptOpen(true);
+    } else {
+      // Cash payment proceeds instantly
+      executeBookingCreation();
+    }
+  };
+
+  const handleSimulateUSSDPayment = () => {
+    if (!ussdPin || ussdPin.length < 4) {
+      alert("Please enter your 4-digit USSD PIN.");
       return;
     }
+    setIsProcessingPayment(true);
+    setTimeout(() => {
+      setIsProcessingPayment(false);
+      setIsUSSDPromptOpen(false);
+      executeBookingCreation();
+    }, 1500);
+  };
 
+  const executeBookingCreation = () => {
     setIsSubmitting(true);
 
     setTimeout(() => {
       const bId = `CW-${Math.floor(1000 + Math.random() * 9000)}`;
-      
       const newBooking: Booking = {
         id: bId,
         clientName: clientName,
@@ -179,11 +288,13 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings }: Qu
         clientPhone: clientPhone,
         address: address,
         zipCode: zipCode,
-        entryInstructions: entryInstructions,
-        bedrooms: bedrooms,
-        bathrooms: bathrooms,
-        sqFtRange: sqFtRange,
-        cleanType: cleanType,
+        entryInstructions: isWasteService 
+          ? `[WASTE DISPATCH - RISK: ${wasteRisk}] ${entryInstructions}`
+          : entryInstructions,
+        bedrooms: isWasteService ? 0 : bedrooms,
+        bathrooms: isWasteService ? 0 : bathrooms,
+        sqFtRange: isWasteService ? `${wasteVolume} m³ Volume` : sqFtRange,
+        cleanType: isWasteService ? "deep" : cleanType,
         addons: selectedAddons,
         frequency: frequency,
         date: selectedDate,
@@ -194,14 +305,19 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings }: Qu
         beforePhoto: null,
         afterPhoto: null,
         checkedTasks: [],
-        createdAt: new Date().toISOString()
+        createdAt: new Date().toISOString(),
+        lat: selectedLat,
+        lng: selectedLng,
+        paymentMethod: paymentMethod,
+        paymentPhone: paymentMethod === "Cash" ? "" : paymentPhone,
+        transactionRef: paymentMethod === "Cash" ? "" : `${paymentMethod === "m-GURUSH" ? "MG" : paymentMethod === "MTN MoMo" ? "MT" : "ZC"}-${Math.floor(1000 + Math.random() * 9000)}-JUB`
       };
 
       setBookings(prev => [newBooking, ...prev]);
       setNewBookingId(bId);
       setIsSubmitting(false);
       setActiveStep(4); // Receipt View
-    }, 1500);
+    }, 1200);
   };
 
   // Generate 7-day calendar array starting today
@@ -265,7 +381,7 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings }: Qu
             </div>
 
             <div className="space-y-2">
-              <span className="text-emerald-400 font-mono text-xs uppercase tracking-wider block font-bold">// SECURE ORDER DISPATCHED</span>
+              <span className="text-emerald-400 font-mono text-xs uppercase tracking-wider block font-bold">SECURE ORDER DISPATCHED</span>
               <h2 className="font-display text-2xl font-extrabold text-white">Booking Confirmed!</h2>
               <p className="text-xs text-slate-400 max-w-sm mx-auto">
                 Your reservation has been authenticated and loaded into our scheduling matrix.
@@ -280,11 +396,17 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings }: Qu
               </div>
               <div className="flex justify-between">
                 <span className="text-slate-500 uppercase">Service Profile</span>
-                <span className="text-white capitalize font-semibold">{cleanType} Clean</span>
+                <span className="text-white capitalize font-semibold">
+                  {isWasteService ? "Waste Collection & Disposal Dispatch" : `${cleanType} Clean`}
+                </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-500">Property Layout</span>
-                <span>{bedrooms} Bed, {bathrooms} Bath</span>
+                <span className="text-slate-500">{isWasteService ? "Refuse Parameters" : "Property Layout"}</span>
+                <span>
+                  {isWasteService 
+                    ? `${wasteVolume} m³ (${wasteRisk})` 
+                    : `${bedrooms} Bed, ${bathrooms} Bath`}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-slate-500">Schedule Date</span>
@@ -297,6 +419,10 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings }: Qu
               <div className="flex justify-between">
                 <span className="text-slate-500">Territory Area</span>
                 <span>{SERVED_TERRITORIES.find(t => t.zip === zipCode)?.name || "Juba Local"} ({zipCode})</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-500">GPS Pinned Location</span>
+                <span>{selectedLat.toFixed(5)}, {selectedLng.toFixed(5)}</span>
               </div>
               <div className="flex justify-between pt-3 border-t border-slate-850 text-sm font-bold text-white">
                 <span>ESTIMATED BILLING</span>
@@ -337,9 +463,17 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings }: Qu
                   
                   {/* Step Title */}
                   <div className="space-y-1">
-                    <span className="text-sky-400 font-mono text-[10px] uppercase font-bold tracking-wider">// STEP 1 OF 3: PROPERTY DETAILS</span>
-                    <h2 className="font-display text-xl font-bold text-white">Tell us about your home</h2>
-                    <p className="text-xs text-slate-400">Specify property size and select clean type for instant scoping.</p>
+                    <span className="text-sky-400 font-mono text-[10px] uppercase font-bold tracking-wider">
+                      {isWasteService ? "STEP 1 OF 3: WASTE LOGISTICS PARAMETERS" : "STEP 1 OF 3: PROPERTY DETAILS"}
+                    </span>
+                    <h2 className="font-display text-xl font-bold text-white">
+                      {isWasteService ? "Tell us about your waste requirements" : "Tell us about your home"}
+                    </h2>
+                    <p className="text-xs text-slate-400">
+                      {isWasteService 
+                        ? "Specify refuse volume and risk tier for dynamic compliance scoping." 
+                        : "Specify property size and select clean type for instant scoping."}
+                    </p>
                   </div>
 
                   {/* Territory coverage check */}
@@ -367,156 +501,256 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings }: Qu
                     </div>
                   </div>
 
-                  {/* Bedroom & Bathroom Counters */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                    {/* Bedrooms */}
-                    <div className="bg-slate-950 border border-slate-850 p-4 rounded-2xl flex items-center justify-between">
-                      <div className="space-y-0.5">
-                        <span className="text-[10px] text-slate-500 font-mono uppercase">Bedrooms</span>
-                        <div className="font-display font-black text-white text-lg">{bedrooms} Bedrooms</div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <button 
-                          onClick={() => setBedrooms(b => Math.max(1, b - 1))}
-                          className="h-9 w-9 bg-slate-900 hover:bg-slate-850 border border-slate-800 rounded-full flex items-center justify-center font-bold text-slate-300"
-                        >-</button>
-                        <button 
-                          onClick={() => setBedrooms(b => Math.min(6, b + 1))}
-                          className="h-9 w-9 bg-slate-900 hover:bg-slate-850 border border-slate-800 rounded-full flex items-center justify-center font-bold text-slate-300"
-                        >+</button>
-                      </div>
-                    </div>
-
-                    {/* Bathrooms */}
-                    <div className="bg-slate-950 border border-slate-850 p-4 rounded-2xl flex items-center justify-between">
-                      <div className="space-y-0.5">
-                        <span className="text-[10px] text-slate-500 font-mono uppercase">Bathrooms</span>
-                        <div className="font-display font-black text-white text-lg">{bathrooms} Bathrooms</div>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <button 
-                          onClick={() => setBathrooms(b => Math.max(1, b - 1))}
-                          className="h-9 w-9 bg-slate-900 hover:bg-slate-850 border border-slate-800 rounded-full flex items-center justify-center font-bold text-slate-300"
-                        >-</button>
-                        <button 
-                          onClick={() => setBathrooms(b => Math.min(4, b + 1))}
-                          className="h-9 w-9 bg-slate-900 hover:bg-slate-850 border border-slate-800 rounded-full flex items-center justify-center font-bold text-slate-300"
-                        >+</button>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Square footage Range */}
-                  <div className="space-y-2">
-                    <label className="text-[10px] text-slate-400 font-mono uppercase tracking-wide block">Estimated Area Range</label>
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
-                      {[
-                        "< 1,000 sq ft",
-                        "1,000 - 1,999 sq ft",
-                        "2,000 - 2,999 sq ft",
-                        "3,000+ sq ft"
-                      ].map((range) => (
-                        <button
-                          key={range}
-                          onClick={() => setSqFtRange(range)}
-                          className={`py-3.5 rounded-xl border text-center transition-all ${
-                            sqFtRange === range
-                              ? "bg-sky-500/10 border-sky-500 text-sky-400 font-bold"
-                              : "bg-slate-950 border-slate-850 text-slate-400 hover:text-slate-200"
-                          }`}
-                        >
-                          {range}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Base Clean Selector */}
-                  <div className="space-y-2">
-                    <label className="text-[10px] text-slate-400 font-mono uppercase tracking-wide block">Standard, Deep, or Move Clean</label>
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                      {/* Standard Clean */}
-                      <button
-                        onClick={() => setCleanType("standard")}
-                        className={`p-4 rounded-2xl border text-left transition-all flex flex-col justify-between gap-4 ${
-                          cleanType === "standard"
-                            ? "bg-sky-500/5 border-sky-500 text-sky-400"
-                            : "bg-slate-950 border-slate-850 text-slate-400 hover:text-slate-200"
-                        }`}
-                      >
-                        <div className="space-y-1">
-                          <span className="font-display font-bold text-white block text-sm">Standard Clean</span>
-                          <p className="text-[10px] text-slate-500 leading-normal">
-                            Perfect for regular maintenance. Includes dust, mop, vacuum, and trash empty.
-                          </p>
+                  {isWasteService ? (
+                    /* WASTE SERVICE SCOPING INTERFACE */
+                    <div className="space-y-6">
+                      {/* Volume Slider / Selector */}
+                      <div className="space-y-2">
+                        <div className="flex justify-between items-center text-xs">
+                          <span className="text-slate-400 font-mono uppercase">Refuse Volume (Weekly)</span>
+                          <span className="text-sky-400 font-mono font-bold bg-slate-950 px-2.5 py-1 rounded border border-slate-850">
+                            {wasteVolume} m³ (cubic meters)
+                          </span>
                         </div>
-                        <span className="font-mono text-xs font-semibold">Multiplier: 1.0x</span>
-                      </button>
-
-                      {/* Deep Clean */}
-                      <button
-                        onClick={() => setCleanType("deep")}
-                        className={`p-4 rounded-2xl border text-left transition-all flex flex-col justify-between gap-4 ${
-                          cleanType === "deep"
-                            ? "bg-emerald-500/5 border-emerald-500 text-emerald-400"
-                            : "bg-slate-950 border-slate-850 text-slate-400 hover:text-slate-200"
-                        }`}
-                      >
-                        <div className="space-y-1">
-                          <span className="font-display font-bold text-white block text-sm">Deep Clean</span>
-                          <p className="text-[10px] text-slate-500 leading-normal">
-                            Intense detailed sanitize. Adds wet wipe baseboards, heavy scrub zones and light fixtures.
-                          </p>
+                        <input
+                          type="range"
+                          min={1}
+                          max={100}
+                          value={wasteVolume}
+                          onChange={(e) => setWasteVolume(Number(e.target.value))}
+                          className="w-full h-1.5 bg-slate-950 rounded-lg appearance-none cursor-pointer accent-sky-500 border border-slate-800"
+                        />
+                        <div className="flex justify-between text-[9px] font-mono text-slate-500 uppercase">
+                          <span>1 m³</span>
+                          <span>50 m³</span>
+                          <span>100 m³</span>
                         </div>
-                        <span className="font-mono text-xs font-semibold text-emerald-400">Multiplier: 1.5x</span>
-                      </button>
+                      </div>
 
-                      {/* Move-In/Out Clean */}
-                      <button
-                        onClick={() => setCleanType("move-in-out")}
-                        className={`p-4 rounded-2xl border text-left transition-all flex flex-col justify-between gap-4 ${
-                          cleanType === "move-in-out"
-                            ? "bg-purple-500/5 border-purple-500 text-purple-400"
-                            : "bg-slate-950 border-slate-850 text-slate-400 hover:text-slate-200"
-                        }`}
-                      >
-                        <div className="space-y-1">
-                          <span className="font-display font-bold text-white block text-sm">Move-In / Out</span>
-                          <p className="text-[10px] text-slate-500 leading-normal">
-                            Prepare your property for moving. Includes empty cabinets, stove interior and deep closet vacuum.
-                          </p>
+                      {/* Risk Classification selector */}
+                      <div className="space-y-2">
+                        <label className="text-[10px] text-slate-400 font-mono uppercase tracking-wide block">Material Risk Tier</label>
+                        <div className="grid grid-cols-3 gap-3">
+                          {[
+                            { label: "Class I (Low)", val: RiskClass.Low, desc: "Standard commercial paper/refuse", color: "border-emerald-500/30 text-emerald-400 bg-emerald-500/5" },
+                            { label: "Class II (Med)", val: RiskClass.Medium, desc: "Industrial and organic waste", color: "border-sky-500/30 text-sky-400 bg-sky-500/5" },
+                            { label: "Class III (High)", val: RiskClass.High, desc: "Hazardous and medical waste", color: "border-amber-500/30 text-amber-400 bg-amber-500/5" }
+                          ].map((item) => (
+                            <button
+                              type="button"
+                              key={item.val}
+                              onClick={() => setWasteRisk(item.val)}
+                              className={`p-4 rounded-2xl border text-left transition-all flex flex-col justify-between gap-3 ${
+                                wasteRisk === item.val
+                                  ? `${item.color} font-bold border-2`
+                                  : "bg-slate-950 border-slate-850 text-slate-400 hover:text-slate-200"
+                              }`}
+                            >
+                              <span className="font-display font-bold text-white text-xs">{item.label}</span>
+                              <span className="text-[9px] text-slate-500 leading-normal">{item.desc}</span>
+                            </button>
+                          ))}
                         </div>
-                        <span className="font-mono text-xs font-semibold text-purple-400">Multiplier: 1.25x + $50</span>
-                      </button>
+                      </div>
+
+                      {/* Waste Addon Selectors */}
+                      <div className="space-y-2">
+                        <label className="text-[10px] text-slate-400 font-mono uppercase tracking-wide block">Select HSE Compliance Add-ons</label>
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+                          {[
+                            { name: "HSE Waste Binning", price: 50, desc: "Provide high-grade sealed bins", icon: "🗑️" },
+                            { name: "Bio-Safe Solutions", price: 75, desc: "Chemical disinfection wash", icon: "🧪" },
+                            { name: "Secure Disposal Certification", price: 40, desc: "Certified disposal receipt matching HSE standards", icon: "📜" }
+                          ].map((addon) => {
+                            const isSelected = selectedAddons.includes(addon.name);
+                            return (
+                              <button
+                                type="button"
+                                key={addon.name}
+                                onClick={() => handleToggleAddon(addon.name)}
+                                className={`p-4 rounded-xl border text-left transition-all flex flex-col justify-between gap-3 ${
+                                  isSelected
+                                    ? "bg-sky-500/10 border-sky-500 text-sky-400 font-bold"
+                                    : "bg-slate-950 border-slate-850 text-slate-300 hover:text-white"
+                                }`}
+                              >
+                                <div className="flex justify-between items-center w-full">
+                                  <span className="text-lg">{addon.icon}</span>
+                                  <span className="font-mono text-[10px] text-slate-400 font-semibold">+${addon.price}</span>
+                                </div>
+                                <div>
+                                  <span className="text-[11px] font-semibold tracking-wide block">{addon.name}</span>
+                                  <span className="text-[9px] text-slate-500 leading-normal font-normal mt-0.5 block">{addon.desc}</span>
+                                </div>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
                     </div>
-                  </div>
+                  ) : (
+                    /* Standard Cleaning Scoping Counter Layout */
+                    <>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        {/* Bedrooms */}
+                        <div className="bg-slate-950 border border-slate-850 p-4 rounded-2xl flex items-center justify-between">
+                          <div className="space-y-0.5">
+                            <span className="text-[10px] text-slate-500 font-mono uppercase">Bedrooms</span>
+                            <div className="font-display font-black text-white text-lg">{bedrooms} Bedrooms</div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <button 
+                              type="button"
+                              onClick={() => setBedrooms(b => Math.max(1, b - 1))}
+                              className="h-9 w-9 bg-slate-900 hover:bg-slate-850 border border-slate-800 rounded-full flex items-center justify-center font-bold text-slate-300"
+                            >-</button>
+                            <button 
+                              type="button"
+                              onClick={() => setBedrooms(b => Math.min(6, b + 1))}
+                              className="h-9 w-9 bg-slate-900 hover:bg-slate-850 border border-slate-800 rounded-full flex items-center justify-center font-bold text-slate-300"
+                            >+</button>
+                          </div>
+                        </div>
 
-                  {/* Toggleable Add-on Cards */}
-                  <div className="space-y-3">
-                    <label className="text-[10px] text-slate-400 font-mono uppercase tracking-wide block">Select Special Add-ons</label>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 font-sans">
-                      {ADDONS_LIST.map((addon) => {
-                        const isSelected = selectedAddons.includes(addon.name);
-                        return (
+                        {/* Bathrooms */}
+                        <div className="bg-slate-950 border border-slate-850 p-4 rounded-2xl flex items-center justify-between">
+                          <div className="space-y-0.5">
+                            <span className="text-[10px] text-slate-500 font-mono uppercase">Bathrooms</span>
+                            <div className="font-display font-black text-white text-lg">{bathrooms} Bathrooms</div>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <button 
+                              type="button"
+                              onClick={() => setBathrooms(b => Math.max(1, b - 1))}
+                              className="h-9 w-9 bg-slate-900 hover:bg-slate-850 border border-slate-800 rounded-full flex items-center justify-center font-bold text-slate-300"
+                            >-</button>
+                            <button 
+                              type="button"
+                              onClick={() => setBathrooms(b => Math.min(4, b + 1))}
+                              className="h-9 w-9 bg-slate-900 hover:bg-slate-850 border border-slate-800 rounded-full flex items-center justify-center font-bold text-slate-300"
+                            >+</button>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Square footage Range */}
+                      <div className="space-y-2">
+                        <label className="text-[10px] text-slate-400 font-mono uppercase tracking-wide block">Estimated Area Range</label>
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+                          {[
+                            "< 1,000 sq ft",
+                            "1,000 - 1,999 sq ft",
+                            "2,000 - 2,999 sq ft",
+                            "3,000+ sq ft"
+                          ].map((range) => (
+                            <button
+                              type="button"
+                              key={range}
+                              onClick={() => setSqFtRange(range)}
+                              className={`py-3.5 rounded-xl border text-center transition-all ${
+                                sqFtRange === range
+                                  ? "bg-sky-500/10 border-sky-500 text-sky-400 font-bold"
+                                  : "bg-slate-950 border-slate-850 text-slate-400 hover:text-slate-200"
+                              }`}
+                            >
+                              {range}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Base Clean Selector */}
+                      <div className="space-y-2">
+                        <label className="text-[10px] text-slate-400 font-mono uppercase tracking-wide block">Standard, Deep, or Move Clean</label>
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                          {/* Standard Clean */}
                           <button
-                            key={addon.name}
-                            onClick={() => handleToggleAddon(addon.name)}
-                            className={`p-3.5 rounded-xl border text-left transition-all flex flex-col justify-between gap-3 ${
-                              isSelected
-                                ? "bg-sky-500/10 border-sky-500 text-sky-400 font-bold"
-                                : "bg-slate-950 border-slate-850 text-slate-300 hover:text-white"
+                            type="button"
+                            onClick={() => setCleanType("standard")}
+                            className={`p-4 rounded-2xl border text-left transition-all flex flex-col justify-between gap-4 ${
+                              cleanType === "standard"
+                                ? "bg-sky-500/5 border-sky-500 text-sky-400"
+                                : "bg-slate-950 border-slate-850 text-slate-400 hover:text-slate-200"
                             }`}
                           >
-                            <div className="flex justify-between items-center w-full">
-                              <span className="text-lg">{addon.icon}</span>
-                              <span className="font-mono text-[10px] text-slate-400 font-semibold">+${addon.price}</span>
+                            <div className="space-y-1">
+                              <span className="font-display font-bold text-white block text-sm">Standard Clean</span>
+                              <p className="text-[10px] text-slate-500 leading-normal">
+                                Perfect for regular maintenance. Includes dust, mop, vacuum, and trash empty.
+                              </p>
                             </div>
-                            <span className="text-[11px] font-semibold tracking-wide leading-none">{addon.name}</span>
+                            <span className="font-mono text-xs font-semibold">Multiplier: 1.0x</span>
                           </button>
-                        );
-                      })}
-                    </div>
-                  </div>
+
+                          {/* Deep Clean */}
+                          <button
+                            type="button"
+                            onClick={() => setCleanType("deep")}
+                            className={`p-4 rounded-2xl border text-left transition-all flex flex-col justify-between gap-4 ${
+                              cleanType === "deep"
+                                ? "bg-emerald-500/5 border-emerald-500 text-emerald-400"
+                                : "bg-slate-950 border-slate-850 text-slate-400 hover:text-slate-200"
+                            }`}
+                          >
+                            <div className="space-y-1">
+                              <span className="font-display font-bold text-white block text-sm">Deep Clean</span>
+                              <p className="text-[10px] text-slate-500 leading-normal">
+                                Intense detailed sanitize. Adds wet wipe baseboards, heavy scrub zones and light fixtures.
+                              </p>
+                            </div>
+                            <span className="font-mono text-xs font-semibold text-emerald-400">Multiplier: 1.5x</span>
+                          </button>
+
+                          {/* Move-In/Out Clean */}
+                          <button
+                            type="button"
+                            onClick={() => setCleanType("move-in-out")}
+                            className={`p-4 rounded-2xl border text-left transition-all flex flex-col justify-between gap-4 ${
+                              cleanType === "move-in-out"
+                                ? "bg-purple-500/5 border-purple-500 text-purple-400"
+                                : "bg-slate-950 border-slate-850 text-slate-400 hover:text-slate-200"
+                            }`}
+                          >
+                            <div className="space-y-1">
+                              <span className="font-display font-bold text-white block text-sm">Move-In / Out</span>
+                              <p className="text-[10px] text-slate-500 leading-normal">
+                                Prepare your property for moving. Includes empty cabinets, stove interior and deep closet vacuum.
+                              </p>
+                            </div>
+                            <span className="font-mono text-xs font-semibold text-purple-400">Multiplier: 1.25x + $50</span>
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* Toggleable Add-on Cards */}
+                      <div className="space-y-3">
+                        <label className="text-[10px] text-slate-400 font-mono uppercase tracking-wide block">Select Special Add-ons</label>
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 font-sans">
+                          {ADDONS_LIST.map((addon) => {
+                            const isSelected = selectedAddons.includes(addon.name);
+                            return (
+                              <button
+                                type="button"
+                                key={addon.name}
+                                onClick={() => handleToggleAddon(addon.name)}
+                                className={`p-3.5 rounded-xl border text-left transition-all flex flex-col justify-between gap-3 ${
+                                  isSelected
+                                    ? "bg-sky-500/10 border-sky-500 text-sky-400 font-bold"
+                                    : "bg-slate-950 border-slate-850 text-slate-300 hover:text-white"
+                                }`}
+                              >
+                                <div className="flex justify-between items-center w-full">
+                                  <span className="text-lg">{addon.icon}</span>
+                                  <span className="font-mono text-[10px] text-slate-400 font-semibold">+${addon.price}</span>
+                                </div>
+                                <span className="text-[11px] font-semibold tracking-wide leading-none">{addon.name}</span>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </>
+                  )}
 
                   {step1Error && (
                     <p className="text-red-400 font-mono text-[10px] text-center animate-pulse">{step1Error}</p>
@@ -548,7 +782,7 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings }: Qu
                   
                   {/* Step Title */}
                   <div className="space-y-1">
-                    <span className="text-sky-400 font-mono text-[10px] uppercase font-bold tracking-wider">// STEP 2 OF 3: SCHEDULING & FREQUENCY</span>
+                    <span className="text-sky-400 font-mono text-[10px] uppercase font-bold tracking-wider">STEP 2 OF 3: SCHEDULING & FREQUENCY</span>
                     <h2 className="font-display text-xl font-bold text-white">Choose frequency &amp; date</h2>
                     <p className="text-xs text-slate-400">Lock in a subscription schedule to unlock percentage discounts.</p>
                   </div>
@@ -706,7 +940,7 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings }: Qu
                   
                   {/* Step Title */}
                   <div className="space-y-1">
-                    <span className="text-sky-400 font-mono text-[10px] uppercase font-bold tracking-wider">// STEP 3 OF 3: REGISTRATION & SECURE BILLING</span>
+                    <span className="text-sky-400 font-mono text-[10px] uppercase font-bold tracking-wider">STEP 3 OF 3: REGISTRATION & SECURE BILLING</span>
                     <h2 className="font-display text-xl font-bold text-white">Complete booking checkout</h2>
                     <p className="text-xs text-slate-400">Card details are authorized on file before cleaning dispatch is approved.</p>
                   </div>
@@ -759,7 +993,28 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings }: Qu
                     </div>
                   </div>
 
-                  {/* Access Key codes instructions */}
+                  {/* Geolocation coordinates pinning */}
+                  <div className="space-y-2 font-sans">
+                    <label className="text-[10px] text-slate-400 font-mono uppercase block">Pin Location coordinates (Drag marker to exact gates) *</label>
+                    <div className="h-64 rounded-2xl border border-slate-850 overflow-hidden relative">
+                      <MapComponent 
+                        mode="pinning" 
+                        lat={selectedLat} 
+                        lng={selectedLng} 
+                        onCoordinatesChange={handleCoordinatesChange} 
+                      />
+                    </div>
+                    <div className="flex gap-4 text-[10px] font-mono text-slate-400 justify-between px-1">
+                      <span>Latitude: <strong className="text-emerald-400">{selectedLat.toFixed(5)}</strong></span>
+                      <span>Longitude: <strong className="text-emerald-400">{selectedLng.toFixed(5)}</strong></span>
+                      <button 
+                        type="button"
+                        onClick={handleGetCurrentLocation}
+                        className="text-sky-450 hover:text-sky-350 font-bold underline cursor-pointer"
+                      >
+                        Use Current GPS
+                      </button>
+                                   {/* Access Key codes instructions */}
                   <div className="space-y-1.5 font-sans">
                     <label className="text-[10px] text-slate-400 font-mono uppercase">Access or Key box entry instructions</label>
                     <textarea 
@@ -770,64 +1025,68 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings }: Qu
                     ></textarea>
                   </div>
 
-                  {/* Stripe Card Integration Panel */}
-                  <div className="p-5 bg-slate-950 border border-slate-850 rounded-2xl space-y-4">
-                    <h4 className="text-white font-semibold font-display text-xs flex items-center gap-1.5 uppercase tracking-wide">
-                      <CreditCard className="w-4 h-4 text-sky-400" />
-                      Secure Credit Card (Authorized on File)
-                    </h4>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-sans">
-                      <div className="space-y-1">
-                        <label className="text-[10px] text-slate-500 font-mono uppercase">Card Number</label>
-                        <input 
-                          type="text" 
-                          required
-                          value={cardNumber}
-                          onChange={(e) => setCardNumber(e.target.value)}
-                          placeholder="4111 2222 3333 4242"
-                          maxLength={19}
-                          className="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-sky-500 font-mono"
-                        />
-                      </div>
-                      <div className="space-y-1">
-                        <label className="text-[10px] text-slate-500 font-mono uppercase">Card Holder</label>
-                        <input 
-                          type="text" 
-                          required
-                          value={cardHolder}
-                          onChange={(e) => setCardHolder(e.target.value)}
-                          placeholder="e.g. Rebecca Nyandeng"
-                          className="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-sky-500"
-                        />
-                      </div>
-                      <div className="grid grid-cols-2 gap-3 sm:col-span-2">
-                        <div className="space-y-1">
-                          <label className="text-[10px] text-slate-500 font-mono uppercase">Expiry Date</label>
-                          <input 
-                            type="text" 
-                            required
-                            value={cardExpiry}
-                            onChange={(e) => setCardExpiry(e.target.value)}
-                            placeholder="MM/YY"
-                            maxLength={5}
-                            className="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-sky-500 font-mono"
-                          />
-                        </div>
-                        <div className="space-y-1">
-                          <label className="text-[10px] text-slate-500 font-mono uppercase">CVV Code</label>
-                          <input 
-                            type="password" 
-                            required
-                            value={cardCvv}
-                            onChange={(e) => setCardCvv(e.target.value)}
-                            placeholder="•••"
-                            maxLength={3}
-                            className="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-sky-500 font-mono"
-                          />
-                        </div>
+                  {/* Local Payment Selection Panel */}
+                  <div className="p-5 bg-slate-950 border border-slate-850 rounded-2xl space-y-4 text-left">
+                    <div className="flex justify-between items-center pb-2 border-b border-slate-905">
+                      <h4 className="text-white font-semibold font-display text-xs flex items-center gap-1.5 uppercase tracking-wide">
+                        <CreditCard className="w-4 h-4 text-sky-400" />
+                        South Sudan Payment Gateway
+                      </h4>
+                      <div className="flex gap-2">
+                        {["MTN MoMo", "Zain Cash", "m-GURUSH", "Cash"].map((method) => (
+                          <button
+                            key={method}
+                            type="button"
+                            onClick={() => {
+                              setPaymentMethod(method as any);
+                              setStep3Error("");
+                            }}
+                            className={`px-3 py-1.5 rounded-lg font-mono text-[9px] font-bold border transition-all ${
+                              paymentMethod === method
+                                ? "bg-sky-500/10 border-sky-500 text-sky-400"
+                                : "bg-slate-900 border-slate-850 text-slate-400 hover:text-slate-200"
+                            }`}
+                          >
+                            {method === "Cash" ? "Cash" : method}
+                          </button>
+                        ))}
                       </div>
                     </div>
+
+                    {paymentMethod !== "Cash" ? (
+                      <div className="space-y-4 animate-fadeIn">
+                        <p className="text-[11px] text-slate-400 leading-relaxed font-sans">
+                          Payment will be processed via local South Sudanese mobile money USSD push request. Standard rates apply.
+                        </p>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-sans">
+                          <div className="space-y-1">
+                            <label className="text-[10px] text-slate-500 font-mono uppercase">Selected Carrier</label>
+                            <div className="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs font-semibold text-white">
+                              {paymentMethod} Gateway
+                            </div>
+                          </div>
+                          <div className="space-y-1">
+                            <label className="text-[10px] text-slate-555 font-mono uppercase">Mobile Money Number *</label>
+                            <input 
+                              type="text" 
+                              required
+                              value={paymentPhone}
+                              onChange={(e) => setPaymentPhone(e.target.value)}
+                              placeholder="e.g. +211 928 300 401"
+                              className="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-sky-500 font-mono text-white"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="bg-slate-900/60 border border-slate-850 p-4 rounded-xl space-y-2 text-xs font-sans animate-fadeIn">
+                        <span className="font-bold text-slate-200 block">Cash Payment (Pay on Arrival)</span>
+                        <p className="text-slate-400 leading-normal text-[11px]">
+                          Book now without credit cards or networks. Hand cash (USD or SSP equivalents) directly to the dispatch crew leader upon clean completion.
+                        </p>
+                      </div>
+                    )}
+                  </div>     </div>
                   </div>
 
                   {step3Error && (
@@ -880,32 +1139,59 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings }: Qu
                 {/* Scoping details items list */}
                 <div className="space-y-3 font-sans text-xs">
                   
-                  {/* Area Details line */}
-                  <div className="flex justify-between text-slate-400">
-                    <span>Property Size ({bedrooms} Bed, {bathrooms} Bath)</span>
-                    <span className="font-mono text-white">${baseSizePrice}</span>
-                  </div>
+                  {isWasteService ? (
+                    <>
+                      {/* Waste Details line */}
+                      <div className="flex justify-between text-slate-400">
+                        <span>Refuse Volume ({wasteVolume} m³)</span>
+                        <span className="font-mono text-white">${wasteVolume * 15}</span>
+                      </div>
+                      
+                      {/* Risk multiplier line */}
+                      {wasteRisk !== RiskClass.Low && (
+                        <div className="flex justify-between text-slate-400">
+                          <span>Risk Modifier ({wasteRisk})</span>
+                          <span className="font-mono text-sky-400">
+                            {wasteRisk === RiskClass.Medium ? "+30% rate multiplier" : "+80% rate multiplier"}
+                          </span>
+                        </div>
+                      )}
+                    </>
+                  ) : (
+                    <>
+                      {/* Area Details line */}
+                      <div className="flex justify-between text-slate-400">
+                        <span>Property Size ({bedrooms} Bed, {bathrooms} Bath)</span>
+                        <span className="font-mono text-white">${baseSizePrice}</span>
+                      </div>
 
-                  {/* Clean Type modifier line */}
-                  {cleanType !== "standard" && (
-                    <div className="flex justify-between text-slate-400">
-                      <span className="capitalize">Modifier ({cleanType} Clean)</span>
-                      <span className="font-mono text-emerald-400">
-                        {cleanType === "deep" ? "+50% rate multiplier" : "+$50 Flat Fee"}
-                      </span>
-                    </div>
+                      {/* Clean Type modifier line */}
+                      {cleanType !== "standard" && (
+                        <div className="flex justify-between text-slate-400">
+                          <span className="capitalize">Modifier ({cleanType} Clean)</span>
+                          <span className="font-mono text-emerald-400">
+                            {cleanType === "deep" ? "+50% rate multiplier" : "+$50 Flat Fee"}
+                          </span>
+                        </div>
+                      )}
+                    </>
                   )}
 
                   {/* Add-ons line */}
                   {selectedAddons.length > 0 && (
                     <div className="space-y-1 pb-1 pt-1">
                       <span className="text-[10px] text-slate-500 font-mono uppercase block">Add-ons detail:</span>
-                      {selectedAddons.map((addon) => (
-                        <div key={addon} className="flex justify-between text-[11px] text-slate-400 pl-2">
-                          <span>• {addon}</span>
-                          <span className="font-mono">${getAddonPrice(addon)}</span>
-                        </div>
-                      ))}
+                      {selectedAddons.map((addon) => {
+                        const addonPrice = isWasteService
+                          ? (addon === "HSE Waste Binning" ? 50 : addon === "Bio-Safe Solutions" ? 75 : addon === "Secure Disposal Certification" ? 40 : 0)
+                          : getAddonPrice(addon);
+                        return (
+                          <div key={addon} className="flex justify-between text-[11px] text-slate-400 pl-2">
+                            <span>• {addon}</span>
+                            <span className="font-mono">${addonPrice}</span>
+                          </div>
+                        );
+                      })}
                     </div>
                   )}
 
@@ -931,8 +1217,11 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings }: Qu
                   {/* Estimated Grand Total */}
                   <div className="border-t border-slate-800 pt-3.5 flex justify-between items-end">
                     <div>
-                      <span className="block text-[10px] text-slate-500 uppercase font-mono leading-none mb-1">Total Clean Price:</span>
-                      <span className="text-white font-display text-2xl font-extrabold font-mono tracking-tight">${finalPrice.toFixed(2)}</span>
+                      <span className="block text-[10px] text-slate-500 uppercase font-mono leading-none mb-1">
+                        {isWasteService ? "Total Waste Price:" : "Total Clean Price:"}
+                      </span>
+                      <span className="text-white font-display text-xl font-extrabold font-mono tracking-tight block">${finalPrice.toFixed(2)}</span>
+                      <span className="text-emerald-400 font-display text-xs font-bold font-mono block">SSP {(finalPrice * 1300).toLocaleString()}</span>
                     </div>
                     <span className="text-[10px] text-sky-400 font-mono capitalize tracking-wide bg-sky-500/10 border border-sky-500/20 px-2 py-0.5 rounded font-bold">
                       {frequency}
@@ -942,14 +1231,18 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings }: Qu
                 </div>
 
                 {/* Explicit Trust Integration Section */}
-                <div className="pt-4 border-t border-slate-800 space-y-3 font-sans text-[11px] text-slate-400 bg-slate-950/20 p-3 rounded-2xl">
+                <div className="pt-4 border-t border-slate-800 space-y-3 font-sans text-[10px] text-slate-400 bg-slate-950/20 p-3 rounded-2xl">
                   <div className="flex gap-2">
                     <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
-                    <span><strong>Licensed, Bonded &amp; Insured:</strong> Fully vetted, background-screened team.</span>
+                    <span><strong>Ministry Registered:</strong> Ministry of Environment &amp; Forestry Licensed.</span>
                   </div>
                   <div className="flex gap-2">
                     <Heart className="w-4 h-4 text-emerald-400 shrink-0" />
-                    <span><strong>24-Hour Happiness Guarantee:</strong> We'll reclean for free if you are unsatisfied.</span>
+                    <span><strong>Happiness Guarantee:</strong> Free reclean within 24 hours if unsatisfied.</span>
+                  </div>
+                  <div className="flex gap-2">
+                    <CheckCircle2 className="w-4 h-4 text-sky-400 shrink-0" />
+                    <span><strong>NCA Approved Portal:</strong> Safe mobile billing for Juba carriers.</span>
                   </div>
                 </div>
 
@@ -961,6 +1254,105 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings }: Qu
         )}
 
       </div>
+
+      {/* South Sudan Mobile Money USSD Verification Mock Modal */}
+      <AnimatePresence>
+        {isUSSDPromptOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            {/* Backdrop */}
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 0.6 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+              onClick={() => {
+                if (!isProcessingPayment) setIsUSSDPromptOpen(false);
+              }}
+            ></motion.div>
+            
+            {/* Modal Card */}
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95, y: 15 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 15 }}
+              className="relative bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 max-w-sm w-full shadow-2xl z-10 space-y-6 text-left"
+            >
+              {!isProcessingPayment && (
+                <button 
+                  onClick={() => setIsUSSDPromptOpen(false)}
+                  className="absolute top-4 right-4 p-2 text-slate-400 hover:text-white rounded-full bg-slate-950 border border-slate-800"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              )}
+
+              <div className="space-y-1">
+                <div className="flex items-center gap-1.5">
+                  <CreditCard className="w-4.5 h-4.5 text-emerald-400" />
+                  <span className="text-[10px] text-emerald-400 font-mono uppercase tracking-widest font-bold">
+                    South Sudan Local Checkout
+                  </span>
+                </div>
+                <h3 className="font-display text-lg font-bold text-white">
+                  {!isProcessingPayment ? `${paymentMethod} Verification` : "Sending Transit Push..."}
+                </h3>
+              </div>
+
+              {!isProcessingPayment ? (
+                <div className="bg-slate-950 border border-slate-850 rounded-2xl p-5 space-y-4 animate-fadeIn font-sans text-xs">
+                  <div className="flex justify-between items-center pb-2 border-b border-slate-850">
+                    <span className="font-mono text-[9px] font-bold text-slate-450 uppercase tracking-widest">{paymentMethod} USSD GATE</span>
+                    <span className="relative flex h-2 w-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                    </span>
+                  </div>
+
+                  <div className="space-y-1 text-center py-2">
+                    <p className="text-[10px] text-slate-400 font-sans">Merchant: Clean World Inc.</p>
+                    <p className="text-base font-black text-white font-mono">${finalPrice.toFixed(2)} / SSP {(finalPrice * 1300).toLocaleString()}</p>
+                    <p className="text-[8px] text-slate-500 font-mono">Carrier Target: {paymentPhone}</p>
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-[8px] text-slate-500 uppercase font-mono tracking-widest block text-center">ENTER YOUR PIN TO CONFIRM</label>
+                    <input 
+                      type="password"
+                      maxLength={4}
+                      placeholder="••••"
+                      value={ussdPin}
+                      onChange={(e) => setUssdPin(e.target.value.replace(/\D/g, ""))}
+                      className="w-24 mx-auto text-center block bg-slate-950 border border-slate-800 rounded-lg py-1.5 text-base tracking-widest font-mono text-white focus:outline-none focus:border-emerald-500"
+                    />
+                  </div>
+
+                  <button
+                    onClick={handleSimulateUSSDPayment}
+                    className="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-mono font-bold text-[10px] py-2.5 rounded-lg transition-colors"
+                  >
+                    Confirm &amp; Authorize
+                  </button>
+                </div>
+              ) : (
+                <div className="py-12 text-center space-y-4 animate-pulse font-sans text-xs">
+                  <RefreshCw className="w-10 h-10 text-emerald-400 mx-auto animate-spin" />
+                  <div className="space-y-1">
+                    <p className="font-bold text-white text-xs">Simulating Juba Network Transit...</p>
+                    <p className="text-[9px] text-slate-500 font-mono">Carrier: {paymentMethod} Gateway</p>
+                  </div>
+                </div>
+              )}
+
+              <div className="text-center font-sans text-[10px] text-slate-500 leading-normal">
+                *Notice: This is a safe sandboxed payment environment. No actual funds are charged. 
+                Input any 4 digit code to verify order telemetry.
+              </div>
+
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
     </div>
   );
 }

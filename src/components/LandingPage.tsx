@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { ActiveView, ServicePillar } from "../types";
 import { SERVICES_DETAILS } from "../data";
 import kevinaImg from "./Kevina Aber.jpg";
+import { motion } from "motion/react";
 import { 
   ArrowRight, ShieldCheck, Award, Zap, Building, CheckCircle, Send, Star, Leaf, 
   Sparkles, Sprout, Shield, Clock, HelpCircle, Layers, Clipboard, Check, 
@@ -15,7 +16,254 @@ interface LandingPageProps {
   setQuotePillar: (pillar: ServicePillar) => void;
 }
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.15,
+      delayChildren: 0.1
+    }
+  }
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      type: "spring",
+      stiffness: 100,
+      damping: 20
+    }
+  }
+};
+
+// ─────────────────────────────────────────────────────────────
+// BentoPillarsSection — Tinted Immersion (locked in)
+// Full-bleed image per card, accent-color tint, bottom content shield
+// ─────────────────────────────────────────────────────────────
+
+interface BentoProps {
+  handleQuickAssessmentDeepLink: (pillar: ServicePillar) => void;
+}
+
+const PILLARS = [
+  {
+    id: "management",
+    accentHex: "56,189,248",
+    accentBorder: "hover:border-blue-500/50",
+    accentGlow: "hover:shadow-[0_0_60px_-10px_rgba(56,189,248,0.22)]",
+    accentText: "group-hover:text-blue-300",
+    accentIcon: "bg-blue-500/10 border-blue-500/30 text-blue-400",
+    accentBtn: "bg-blue-500 hover:bg-blue-400",
+    accentBtnText: "text-slate-950",
+    badge: "CORE BUSINESS",
+    title: "Integrated Facility & Cleaning Management",
+    desc: "Premium deep cleaning and facility management custom-tailored for embassies, corporate offices, and commercial sites.",
+    tags: ["100% Eco-Safe Sanitizers", "Flexible Recurring Care"],
+    cta: "Request Facility Assessment",
+    pillar: ServicePillar.Management,
+    img: "/assets/clean_world_south_sudan_1782922329033.png",
+    wide: true,
+  },
+  {
+    id: "consultancy",
+    accentHex: "16,185,129",
+    accentBorder: "hover:border-emerald-500/50",
+    accentGlow: "hover:shadow-[0_0_60px_-10px_rgba(16,185,129,0.22)]",
+    accentText: "group-hover:text-emerald-300",
+    accentIcon: "bg-emerald-500/15 border-emerald-500/30 text-emerald-400",
+    accentBtn: "bg-emerald-500 hover:bg-emerald-400",
+    accentBtnText: "text-slate-950",
+    badge: "REGULATORY AUDITS",
+    title: "Environmental Consultancy",
+    desc: "Rigorous EIA audits, certified waste management streams, and official regulatory compliance documentation.",
+    tags: ["ISO 9001 Alignment"],
+    cta: "Consult Now",
+    pillar: ServicePillar.Consultancy,
+    img: "/assets/south_sudan_consultant_1782922951830.png",
+    wide: false,
+  },
+  {
+    id: "fumigation",
+    // Brand Architecture: Lavender Innovation hover glow (#c9adf3) signals cutting-edge operational tech
+    accentHex: "201,173,243",
+    accentBorder: "hover:border-violet-400/50",
+    accentGlow: "hover:shadow-[0_0_60px_-10px_rgba(201,173,243,0.30)]",
+    accentText: "group-hover:text-violet-300",
+    accentIcon: "bg-violet-500/15 border-violet-400/30 text-violet-300",
+    accentBtn: "bg-[#226099] hover:bg-[#1a4e7a]",
+    accentBtnText: "text-white",
+    badge: "ELITE RISK MITIGATION",
+    title: "Fumigation & Pest Control",
+    desc: "Elite pest control and bio-risk mitigation for aviation, oilfield complexes, and high-stakes infrastructure.",
+    tags: ["PPE Compliance", "HSE-Certified"],
+    cta: "Secure Your Facility",
+    pillar: ServicePillar.Fumigation,
+    img: "/assets/ss_pest_control_1782923213624.png",
+    wide: false,
+  },
+  {
+    id: "landscaping",
+    accentHex: "20,184,166",
+    accentBorder: "hover:border-teal-500/50",
+    accentGlow: "hover:shadow-[0_0_60px_-10px_rgba(20,184,166,0.22)]",
+    accentText: "group-hover:text-teal-300",
+    accentIcon: "bg-teal-500/10 border-teal-500/20 text-teal-400",
+    accentBtn: "bg-teal-500 hover:bg-teal-400",
+    accentBtnText: "text-slate-950",
+    badge: "GARDEN DESIGN",
+    title: "Landscaping & Garden Design",
+    desc: "Professional turf planning, flora selection, and sustainable drainage solutions for embassies and luxury estates.",
+    tags: ["Turf & Flora Selection", "Diplomatic & Estate Grounds"],
+    cta: "Request Garden Design",
+    pillar: ServicePillar.Landscaping,
+    img: "/assets/completed_landscape_1782922167566.png",
+    wide: true,
+  },
+];
+
+const PILLAR_ICONS: Record<string, React.ElementType> = {
+  management: Sparkles,
+  consultancy: Leaf,
+  fumigation: Shield,
+  landscaping: Sprout,
+};
+
+function BentoCard({ p, onCta }: { p: typeof PILLARS[0]; onCta: () => void; key?: string }) {
+  const Icon = PILLAR_ICONS[p.id];
+  return (
+    <motion.div
+      id={`bento-${p.id}`}
+      variants={itemVariants}
+      whileHover={{ y: -5 }}
+      // added shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] to emulate light refraction along the card's inner borders
+      className={`relative border border-slate-800/60 ${p.accentBorder} rounded-3xl overflow-hidden group transition-all duration-500 shadow-2xl ${p.accentGlow} ${p.wide ? "md:col-span-2" : "md:col-span-1"} flex flex-col shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]`}
+      style={{ minHeight: p.wide ? 360 : 400 }}
+    >
+      {/* ── Full-bleed background image ── */}
+      <div className="absolute inset-0 z-0">
+        <img
+          src={p.img}
+          alt=""
+          aria-hidden="true"
+          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+          loading="lazy"
+          decoding="async"
+        />
+        {/* Accent-color corner tint */}
+        <div
+          className="absolute inset-0"
+          style={{ background: `linear-gradient(150deg, rgba(${p.accentHex},0.32) 0%, transparent 55%)` }}
+        />
+        {/* Bottom legibility shield with built-in backdrop-blur for maximum text readability */}
+        <div
+          className="absolute inset-0 backdrop-blur-[1px] group-hover:backdrop-blur-[2px] transition-all duration-500"
+          style={{
+            background: `linear-gradient(to top, rgba(2,6,23,1.0) 0%, rgba(2,6,23,0.92) 40%, rgba(2,6,23,0.40) 75%, transparent 100%)`,
+          }}
+        />
+        {/* Top badge darkener */}
+        <div
+          className="absolute top-0 left-0 right-0 h-28"
+          style={{ background: "linear-gradient(to bottom, rgba(2,6,23,0.72) 0%, transparent 100%)" }}
+        />
+      </div>
+
+      {/* Badge: top-left */}
+      <div className="relative z-10 p-6 sm:p-7 flex items-center gap-2.5">
+        <span className={`p-2 rounded-xl border backdrop-blur-sm shadow-lg ${p.accentIcon}`}>
+          <Icon className="w-4 h-4" />
+        </span>
+        <span className={`text-[10px] font-mono uppercase tracking-widest px-3 py-1 rounded-full border backdrop-blur-md ${p.accentIcon} bg-slate-950/40`}>
+          {p.badge}
+        </span>
+      </div>
+
+      {/* Content: bottom with scroll animation triggers */}
+      <motion.div 
+        className="relative z-10 mt-auto p-6 sm:p-8 space-y-5"
+        initial={{ opacity: 0, y: 15 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-40px" }}
+        transition={{ duration: 0.6, cubicBezier: [0.16, 1, 0.3, 1] }}
+      >
+        <div className="space-y-2">
+          <h3 className={`font-display ${p.wide ? "text-xl sm:text-2xl md:text-3xl font-bold" : "text-lg sm:text-xl font-bold"} text-white ${p.accentText} transition-colors leading-snug`}>
+            {p.title}
+          </h3>
+          <p className="text-slate-200 text-xs sm:text-sm font-medium leading-relaxed max-w-md">
+            {p.desc}
+          </p>
+        </div>
+
+        <div className="flex flex-wrap gap-2">
+          {p.tags.map(tag => (
+            <span key={tag} className="text-[11px] font-mono text-white/85 bg-slate-950/55 border border-white/10 px-3 py-1.5 rounded-lg backdrop-blur-md">
+              {tag}
+            </span>
+          ))}
+        </div>
+        
+        <div className="pt-1">
+          <motion.button
+            onClick={onCta}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className={`${p.accentBtn} ${p.accentBtnText} font-display font-bold text-xs px-6 py-3.5 rounded-xl transition-all flex items-center gap-1.5 group/btn min-h-[48px] shadow-xl cursor-pointer`}
+          >
+            {p.cta}
+            <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover/btn:translate-x-1" />
+          </motion.button>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+function BentoPillarsSection({ handleQuickAssessmentDeepLink }: BentoProps) {
+  return (
+    <section className="py-24 px-4 bg-slate-900 border-t border-slate-800" id="pillars-bento">
+      <div className="max-w-7xl mx-auto space-y-14">
+        <div className="text-center space-y-4 max-w-3xl mx-auto">
+          <span className="text-emerald-400 font-mono text-xs font-semibold tracking-widest uppercase">
+            ECOLOGICAL SOLUTIONS
+          </span>
+          <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white">
+            Our 4 Pillars of Facility Ecology
+          </h2>
+          <p className="text-sm sm:text-base text-slate-300 font-medium leading-relaxed font-sans max-w-2xl mx-auto">
+            Premium environmental compliance systems custom-engineered for private estates, corporate complexes, and high-security zones.
+          </p>
+        </div>
+
+        {/* Bento Grid */}
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+          className="grid grid-cols-1 md:grid-cols-3 gap-5 lg:gap-6"
+        >
+          {PILLARS.map(p => (
+            <BentoCard
+              key={p.id}
+              p={p}
+              onCta={() => handleQuickAssessmentDeepLink(p.pillar)}
+            />
+          ))}
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────
+
 export default function LandingPage({ setActiveView, setQuotePillar }: LandingPageProps) {
+
   // Quick contact form states
   const [formFacility, setFormFacility] = useState("");
   const [formContact, setFormContact] = useState("");
@@ -151,26 +399,51 @@ export default function LandingPage({ setActiveView, setQuotePillar }: LandingPa
       >
         <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent opacity-90"></div>
         
-        <div className="relative max-w-5xl mx-auto text-center space-y-8 z-10">
+        <motion.div 
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          className="relative max-w-5xl mx-auto text-center space-y-8 z-10"
+        >
           
-          <div className="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/30 px-4 py-2 rounded-full text-emerald-400 font-mono text-xs tracking-wider uppercase animate-pulse">
+          <motion.div 
+            variants={itemVariants}
+            animate={{ y: [0, -3, 0] }}
+            transition={{ y: { repeat: Infinity, repeatType: "reverse", duration: 4, ease: "easeInOut" } }}
+            className="inline-flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/30 px-4 py-2 rounded-full text-emerald-400 font-mono text-xs tracking-wider uppercase"
+          >
             <Award className="w-4 h-4 text-emerald-400" />
             ISO 9001 & 14001 Standard Compliant
-          </div>
+          </motion.div>
 
-          <h1 className="font-display text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-white leading-tight">
+          <motion.h1 
+            variants={itemVariants}
+            className="font-display text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-white leading-tight"
+          >
             Clean . Green . <span className="text-emerald-400 bg-emerald-400/10 px-4 rounded-xl border border-emerald-400/20">Sustainable.</span>
-          </h1>
+          </motion.h1>
 
-          <p className="font-sans text-lg sm:text-xl text-slate-300 max-w-3xl mx-auto leading-relaxed">
-            South Sudan's premier environmental cleaning and facility ecology firm. Our core business is delivering professional, top-tier deep cleaning services for residential and commercial clients, alongside eco-fumigation, landscaping, and environmental consultancy.
-          </p>
+          <motion.p 
+            variants={itemVariants}
+            className="font-sans text-lg sm:text-xl text-slate-300 max-w-3xl mx-auto leading-relaxed"
+          >
+            Clean World Inc. provides world-class{" "}
+            <span className="text-blue-300 font-semibold">Cleaning &amp; Waste Management Services</span>,{" "}
+            <span className="text-emerald-300 font-semibold">Environmental Consultancy</span>,{" "}
+            <span className="text-violet-300 font-semibold">Fumigation Risk Mitigation</span>, and{" "}
+            <span className="text-teal-300 font-semibold">Landscaping &amp; Gardening Design</span>{" "}
+            for residential, office and corporate compounds.
+          </motion.p>
 
           {/* Neighborhood Service Area Gatekeeper Component */}
-          <div className="max-w-2xl mx-auto bg-slate-950/80 border border-slate-800 p-6 rounded-3xl space-y-4 shadow-2xl backdrop-blur-md" id="zip-gatekeeper-card">
+          <motion.div 
+            variants={itemVariants}
+            className="max-w-2xl mx-auto bg-slate-950/80 border border-slate-800 p-6 rounded-3xl space-y-4 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.05)] backdrop-blur-md" 
+            id="zip-gatekeeper-card"
+          >
             <div className="text-center">
               <span className="text-emerald-400 font-mono text-[10px] font-bold uppercase tracking-wider block mb-1">Check Coverage Area</span>
-              <h2 className="text-lg font-display font-extrabold text-white">Do we serve your Juba neighborhood?</h2>
+              <h2 className="text-lg font-display font-extrabold text-white">Do We Cover Your Area in Juba?</h2>
             </div>
 
             {neighborhoodCheckResult === null ? (
@@ -178,7 +451,7 @@ export default function LandingPage({ setActiveView, setQuotePillar }: LandingPa
                 <form onSubmit={handleCheckNeighborhoodSubmit} className="flex flex-col sm:flex-row gap-3">
                   <input 
                     type="text" 
-                    placeholder="Search Juba neighborhood (e.g. Tongping, Gudele...)" 
+                    placeholder="Enter neighborhood (e.g. Tongping, Gudele, Munuki...)" 
                     value={neighborhoodInput}
                     onChange={(e) => setNeighborhoodInput(e.target.value)}
                     className="bg-slate-900 border border-slate-800 rounded-xl px-4 py-3 text-xs text-center font-semibold text-emerald-400 placeholder-slate-500 focus:outline-none focus:border-emerald-500 flex-grow"
@@ -187,7 +460,7 @@ export default function LandingPage({ setActiveView, setQuotePillar }: LandingPa
                     type="submit"
                     className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-display font-extrabold text-xs px-6 py-3 rounded-xl transition-all shadow-md shadow-emerald-500/10 flex items-center justify-center gap-1.5"
                   >
-                    Verify Area
+                    Check Coverage
                     <ArrowRight className="w-4 h-4" />
                   </button>
                 </form>
@@ -244,7 +517,7 @@ export default function LandingPage({ setActiveView, setQuotePillar }: LandingPa
                 </button>
               </div>
             )}
-          </div>
+          </motion.div>
 
           {/* Quick Metrics Overlay Bar */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto pt-12 border-t border-slate-800/60 text-left">
@@ -270,238 +543,20 @@ export default function LandingPage({ setActiveView, setQuotePillar }: LandingPa
             </div>
           </div>
 
-        </div>
+        </motion.div>
       </section>
 
 
 
-      {/* 3. 4 Pillars of Excellence Bento Grid */}
-      <section className="py-24 px-4 bg-slate-900 border-t border-slate-800" id="pillars-bento">
-        <div className="max-w-7xl mx-auto space-y-12">
-          
-          <div className="text-center space-y-4 max-w-2xl mx-auto">
-            <span className="text-emerald-500 font-mono text-xs font-semibold tracking-widest uppercase">// PREMIUM CAPABILITIES</span>
-            <h2 className="font-display text-3xl sm:text-4xl lg:text-5xl font-extrabold tracking-tight text-white">
-              Our 4 Pillars of Facility Ecology
-            </h2>
-            <p className="text-sm sm:text-base text-slate-400 leading-relaxed font-sans">
-              Streamlined environmental solutions matching premium HSE protocols. Less complexity, more visual clarity.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
-            
-            {/* 1. Core Service Hero: Facility & Cleaning Management */}
-            <div 
-              id="bento-management"
-              className="bg-slate-950 border border-slate-800 hover:border-blue-500/30 rounded-2xl overflow-hidden group transition-all duration-300 hover:-translate-y-1 shadow-lg hover:shadow-blue-500/5 md:col-span-2 flex flex-col md:flex-row justify-between"
-            >
-              <div className="p-8 flex flex-col justify-between flex-1 space-y-6">
-                <div className="space-y-4">
-                  <div className="flex items-center gap-3">
-                    <span className="p-2.5 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400">
-                      <Sparkles className="w-5 h-5" />
-                    </span>
-                    <span className="text-[10px] text-blue-400 font-mono uppercase tracking-wider bg-blue-500/10 px-2 py-0.5 rounded">
-                      CORE BUSINESS
-                    </span>
-                  </div>
-                  
-                  <h3 className="font-display text-2xl lg:text-3xl font-extrabold text-white group-hover:text-blue-400 transition-colors">
-                    Integrated Facility &amp; Cleaning Management
-                  </h3>
-                  
-                  <p className="text-slate-400 text-sm leading-relaxed max-w-md">
-                    Premium professional deep cleaning and sanitization custom-engineered for residential homes, corporate offices, and high-security diplomatic compounds.
-                  </p>
-                </div>
-
-                <div className="flex flex-wrap items-center gap-3 pt-2">
-                  <span className="text-[11px] font-mono text-slate-300 bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-lg flex items-center gap-1.5">
-                    <CheckCircle className="w-3.5 h-3.5 text-blue-400" />
-                    100% Eco-Safe Sanitizers
-                  </span>
-                  <span className="text-[11px] font-mono text-slate-300 bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-lg flex items-center gap-1.5">
-                    <Clock className="w-3.5 h-3.5 text-blue-400" />
-                    Flexible Recurring Care
-                  </span>
-                </div>
-
-                <div className="pt-4 border-t border-slate-900 flex items-center justify-between">
-                  <button
-                    onClick={() => handleQuickAssessmentDeepLink(ServicePillar.Management)}
-                    className="bg-blue-500 hover:bg-blue-400 text-slate-950 font-display font-bold text-xs px-5 py-2.5 rounded-lg transition-all flex items-center gap-1.5 group/btn"
-                  >
-                    Request Facility Assessment
-                    <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover/btn:translate-x-1" />
-                  </button>
-                </div>
-              </div>
-
-              <div className="w-full md:w-[40%] min-h-[220px] md:min-h-full relative overflow-hidden">
-                <img 
-                  src="https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=800&h=1000&q=80" 
-                  alt="Integrated Facility & Cleaning Management" 
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                  referrerPolicy="no-referrer"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-l from-slate-950 via-transparent to-transparent"></div>
-              </div>
-            </div>
-
-            {/* 2. Environmental Consultancy */}
-            <div 
-              id="bento-consultancy"
-              className="bg-slate-950 border border-slate-800 hover:border-emerald-500/30 rounded-2xl overflow-hidden group transition-all duration-300 hover:-translate-y-1 shadow-lg hover:shadow-emerald-500/5 md:col-span-1 flex flex-col justify-between"
-            >
-              <div>
-                <div className="h-44 relative overflow-hidden">
-                  <img 
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuCueMCIIwXziPTmpXtAzQAfem6akCdst69PdqJ8ARlJy3AjAk_9X8OQ4hdvahlz1JKu8jg2HG8p7rXJS21rcA9XXKhnygOSdepw03n4fDGKq1CRJXN8tyR406-b1vcscQZNhuKttaiLypQ7WWhhVFFxJoFlAgz1w1hYsfoIaTDOcxyoU0HtUXMZR7GvtUTjobFHRBFCpYGF-reYhvlm65gnsWpzGL11PpWeBJ796JSIxJipfa17dp3ideQKDZKF_1zSnv57l4LgzNE" 
-                    alt="Environmental Consultancy" 
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                    referrerPolicy="no-referrer"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent"></div>
-                  <span className="absolute bottom-4 left-4 p-2 rounded-xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400">
-                    <Leaf className="w-4 h-4" />
-                  </span>
-                </div>
-
-                <div className="p-6 space-y-3">
-                  <div className="text-[10px] text-emerald-400 font-mono uppercase tracking-wider">REGULATORY AUDITS</div>
-                  <h3 className="font-display text-xl font-bold text-white group-hover:text-emerald-400 transition-colors">
-                    Environmental Consultancy
-                  </h3>
-                  <p className="text-slate-400 text-xs sm:text-sm leading-relaxed">
-                    EIA audits, rigorous waste management streams, and official HSE compliance documentation tailored to local frameworks.
-                  </p>
-                </div>
-              </div>
-
-              <div className="p-6 pt-0 flex items-center justify-between border-t border-slate-900">
-                <span className="text-[10px] font-mono text-slate-500 uppercase">ISO 9001 Alignment</span>
-                <button
-                  onClick={() => handleQuickAssessmentDeepLink(ServicePillar.Consultancy)}
-                  className="text-xs font-display font-bold text-emerald-400 hover:text-white flex items-center gap-1 group/lnk"
-                >
-                  Consult
-                  <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover/lnk:translate-x-1" />
-                </button>
-              </div>
-            </div>
-
-            {/* 3. Professional Fumigation */}
-            <div 
-              id="bento-fumigation"
-              className="bg-slate-950 border border-slate-800 hover:border-amber-500/30 rounded-2xl overflow-hidden group transition-all duration-300 hover:-translate-y-1 shadow-lg hover:shadow-amber-500/5 md:col-span-1 flex flex-col justify-between"
-            >
-              <div>
-                <div className="h-44 relative overflow-hidden">
-                  <img 
-                    src="https://lh3.googleusercontent.com/aida-public/AB6AXuB4Z2YFQdO4NupFjHu7T3Lskw7v38FyQxLhRak0dCIWWYjoVul5rKty8cU_T6-VgovbyMgwWg8qv1vx6phbyaTXAwE41T_KtxwZjQF73PxvlPfE-guEK8rAP0589UZMvSQ61PyeXrp5HFtntbbDQv-ItQfGOT8BLhPibndnNLP-AIF0oz07nAXOB4xMNJJ7QchPAXVt0VqUck8DV4M_jzqiL-yj9tStKGvGfgV_bFbbqqS34Wd-fwaMd5hKi3ERTx7CJdNBGTUzMV4" 
-                    alt="Professional Fumigation" 
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                    referrerPolicy="no-referrer"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent"></div>
-                  <span className="absolute bottom-4 left-4 p-2 rounded-xl bg-amber-500/15 border border-amber-500/30 text-amber-400">
-                    <Shield className="w-4 h-4" />
-                  </span>
-                </div>
-
-                <div className="p-6 space-y-3">
-                  <div className="text-[10px] text-amber-400 font-mono uppercase tracking-wider">VECTOR CONTROL</div>
-                  <h3 className="font-display text-xl font-bold text-white group-hover:text-amber-400 transition-colors">
-                    Professional Fumigation
-                  </h3>
-                  <p className="text-slate-400 text-xs sm:text-sm leading-relaxed">
-                    High-efficacy, non-toxic vector containment targeting malaria &amp; dengue transmission vectors with zero-residue materials.
-                  </p>
-                </div>
-              </div>
-
-              <div className="p-6 pt-0 flex items-center justify-between border-t border-slate-900">
-                <span className="text-[10px] font-mono text-slate-500 uppercase">Child- &amp; Pet-Safe</span>
-                <button
-                  onClick={() => handleQuickAssessmentDeepLink(ServicePillar.Fumigation)}
-                  className="text-xs font-display font-bold text-amber-400 hover:text-white flex items-center gap-1 group/lnk"
-                >
-                  Schedule
-                  <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover/lnk:translate-x-1" />
-                </button>
-              </div>
-            </div>
-
-            {/* 4. Landscaping & Botanical Design */}
-            <div 
-              id="bento-landscaping"
-              className="bg-slate-950 border border-slate-800 hover:border-teal-500/30 rounded-2xl overflow-hidden group transition-all duration-300 hover:-translate-y-1 shadow-lg hover:shadow-teal-500/5 md:col-span-2 flex flex-col md:flex-row-reverse justify-between"
-            >
-              <div className="p-8 flex flex-col justify-between flex-1 space-y-6">
-                <div className="space-y-4">
-                  <div className="flex items-center gap-3">
-                    <span className="p-2.5 rounded-xl bg-teal-500/10 border border-teal-500/20 text-teal-400">
-                      <Sprout className="w-5 h-5" />
-                    </span>
-                    <span className="text-[10px] text-teal-400 font-mono uppercase tracking-wider bg-teal-500/10 px-2 py-0.5 rounded">
-                      BOTANICAL DESIGN
-                    </span>
-                  </div>
-                  
-                  <h3 className="font-display text-2xl lg:text-3xl font-extrabold text-white group-hover:text-teal-400 transition-colors">
-                    Landscaping &amp; Botanical Design
-                  </h3>
-                  
-                  <p className="text-slate-400 text-sm leading-relaxed max-w-md">
-                    Ecology-sensitive botanical turf architectures, flower beds, and erosion-prevention landscaping custom-tailored using local, low-water flora.
-                  </p>
-                </div>
-
-                <div className="flex flex-wrap items-center gap-3 pt-2">
-                  <span className="text-[11px] font-mono text-slate-300 bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-lg flex items-center gap-1.5">
-                    <CheckCircle className="w-3.5 h-3.5 text-teal-400" />
-                    Low-Water Native Flora
-                  </span>
-                  <span className="text-[11px] font-mono text-slate-300 bg-slate-900 border border-slate-800 px-3 py-1.5 rounded-lg flex items-center gap-1.5">
-                    <Building className="w-3.5 h-3.5 text-teal-400" />
-                    Diplomatic &amp; Estate Gardens
-                  </span>
-                </div>
-
-                <div className="pt-4 border-t border-slate-900 flex items-center justify-between">
-                  <button
-                    onClick={() => handleQuickAssessmentDeepLink(ServicePillar.Landscaping)}
-                    className="bg-teal-500 hover:bg-teal-400 text-slate-950 font-display font-bold text-xs px-5 py-2.5 rounded-lg transition-all flex items-center gap-1.5 group/btn"
-                  >
-                    Request Garden Design
-                    <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover/btn:translate-x-1" />
-                  </button>
-                </div>
-              </div>
-
-              <div className="w-full md:w-[40%] min-h-[220px] md:min-h-full relative overflow-hidden">
-                <img 
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuAxqmJo08gXhNRay7xWRarxpXxMzT8r6M3FnD9lnLRBlPjBpKgTR_SEpaP3OfP1Au0hoZkpFkPr3BO3hvC8wCxjAAs4I2XfTczNlxuZZgRW7hA6NvF1PcsCWDccCZuKfPeeOdpz6pi2KcZZ3iZ5iajgq7QYPkpSo81dYvUftdnAKETLjYsf-BK5NNmqHyML34Uny3-4F8D9J9Yi0j90AG3t2WDKGXKUhUIlWkcinIMnXA_VsPI3y8i3Bi-6Ha8wBQQzcDVJnq98Pls" 
-                  alt="Landscaping & Botanical Design" 
-                  className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                  referrerPolicy="no-referrer"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-r from-slate-950 via-transparent to-transparent"></div>
-              </div>
-            </div>
-
-          </div>
-
-        </div>
-      </section>
+      {/* 3. 4 Pillars of Excellence Bento Grid — Image-Wraparound Iterations */}
+      <BentoPillarsSection handleQuickAssessmentDeepLink={handleQuickAssessmentDeepLink} />
 
       {/* 4. The Clean World Advantage */}
       <section className="py-24 px-4 bg-slate-950 border-t border-slate-900" id="advantage-section">
         <div className="max-w-7xl mx-auto space-y-12">
           
           <div className="max-w-2xl">
-            <span className="text-emerald-500 font-mono text-[10px] font-semibold tracking-widest uppercase">// THE CLEAN WORLD ADVANTAGE</span>
+            <span className="text-emerald-500 font-mono text-[10px] font-semibold tracking-widest uppercase">THE CLEAN WORLD ADVANTAGE</span>
             <h2 className="font-display text-3xl sm:text-4xl font-extrabold tracking-tight text-white mt-2">
               Why Choose Us
             </h2>
@@ -543,6 +598,10 @@ export default function LandingPage({ setActiveView, setQuotePillar }: LandingPa
               <img 
                 src={kevinaImg} 
                 alt="Kevina Aber, CEO & Founder" 
+                width={360}
+                height={360}
+                loading="lazy"
+                decoding="async"
                 className="w-full h-full object-cover"
                 referrerPolicy="no-referrer"
               />
@@ -551,7 +610,7 @@ export default function LandingPage({ setActiveView, setQuotePillar }: LandingPa
 
             <div className="md:col-span-7 p-8 sm:p-12 flex flex-col justify-center space-y-6">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <span className="text-emerald-500 font-mono text-xs font-semibold tracking-widest uppercase">// OUR COMMITMENT TO YOU</span>
+                <span className="text-emerald-500 font-mono text-xs font-semibold tracking-widest uppercase">OUR COMMITMENT TO YOU</span>
                 <button
                   onClick={handleSpeak}
                   className={`flex items-center justify-center gap-2 px-4 py-2 rounded-full border text-xs font-mono tracking-wider transition-all duration-300 self-start sm:self-auto ${
@@ -623,7 +682,7 @@ export default function LandingPage({ setActiveView, setQuotePillar }: LandingPa
             <div className="bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl grid grid-cols-1 lg:grid-cols-12 animate-fadeIn">
               <div className="p-8 sm:p-12 lg:col-span-7 space-y-6">
                 <div className="space-y-2">
-                  <span className="text-emerald-500 font-mono text-[10px] tracking-widest uppercase font-bold">// INSTANT ONLINE INQUIRY</span>
+                  <span className="text-emerald-500 font-mono text-[10px] tracking-widest uppercase font-bold">INSTANT ONLINE INQUIRY</span>
                   <h3 className="font-display text-2xl sm:text-3xl font-bold text-white tracking-tight">
                     Book Your Clean World Today!
                   </h3>
@@ -690,6 +749,10 @@ export default function LandingPage({ setActiveView, setQuotePillar }: LandingPa
                   <img 
                     src="https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=800&q=80" 
                     alt="Eco-friendly clean indoor space" 
+                    width={400}
+                    height={600}
+                    loading="lazy"
+                    decoding="async"
                     className="w-full h-full object-cover"
                     referrerPolicy="no-referrer"
                   />

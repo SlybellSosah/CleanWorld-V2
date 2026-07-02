@@ -1,6 +1,17 @@
 import React from "react";
 import { ActiveView } from "../types";
-import { Phone, Mail, MapPin, ShieldCheck, HeartHandshake, ArrowUpRight, PhoneCall, X, Terminal, Radio, Zap } from "lucide-react";
+import { 
+  ArrowUpRight, 
+  PhoneCall, 
+  X, 
+  MessageCircle, 
+  AlertTriangle, 
+  Phone, 
+  Mail, 
+  Clock, 
+  ShieldCheck,
+  MapPin
+} from "lucide-react";
 
 const FacebookIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" {...props}>
@@ -41,12 +52,13 @@ interface FooterProps {
 
 export default function Footer({ setActiveView }: FooterProps) {
   const [isEmergencyOpen, setIsEmergencyOpen] = React.useState(false);
+
   return (
-    <footer className="bg-slate-950 text-slate-400 border-t border-slate-800" id="app-footer">
+    <footer className="bg-slate-950 text-slate-400 border-t border-slate-900" id="app-footer">
       
-      {/* 24/7 Emergency HSE Dispatch Banner */}
-      <div className="bg-gradient-to-r from-red-950/25 via-slate-950 to-emerald-950/10 border-b border-red-500/10 py-8 px-4 sm:px-6 lg:px-8" id="emergency-banner">
-        <div className="max-w-7xl mx-auto flex flex-col lg:flex-row items-center justify-between gap-6">
+      {/* 24/7 Emergency HSE Dispatch Card Banner */}
+      <div className="py-8 px-4 sm:px-6 lg:px-8 border-b border-slate-900" id="emergency-banner">
+        <div className="max-w-7xl mx-auto bg-gradient-to-r from-red-950/15 via-slate-900/40 to-slate-900/10 border border-red-500/10 p-6 rounded-2xl flex flex-col lg:flex-row items-center justify-between gap-6">
           <div className="flex flex-col sm:flex-row sm:items-center gap-4 text-center sm:text-left">
             <div className="flex items-center justify-center gap-2 bg-red-500/10 border border-red-500/20 px-3 py-1.5 rounded-full w-fit mx-auto sm:mx-0 shrink-0">
               <span className="flex h-2 w-2 relative">
@@ -59,7 +71,7 @@ export default function Footer({ setActiveView }: FooterProps) {
               <p className="text-sm font-display text-white font-medium leading-tight tracking-tight">
                 Clean World emergency response is active now.
               </p>
-              <p className="text-[11px] text-slate-400 mt-0.5">
+              <p className="text-[11px] text-slate-400 mt-1 font-sans">
                 On-site within 60 minutes for urgent disinfection, deep cleaning, or pest containment.
               </p>
             </div>
@@ -69,14 +81,14 @@ export default function Footer({ setActiveView }: FooterProps) {
               href="https://wa.me/211928300400?text=EMERGENCY%20DISPATCH%3A%20Need%20immediate%20HSE%20or%20cleaning%20response%20assistance."
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full sm:w-auto bg-red-600 hover:bg-red-500 text-white font-mono font-bold text-xs px-5 py-3 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-red-600/10"
+              className="w-full sm:w-auto bg-red-600 hover:bg-red-500 text-white font-mono font-bold text-xs px-5 py-3 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg shadow-red-600/10 cursor-pointer"
             >
               <PhoneCall className="w-3.5 h-3.5" />
               <span>+211 928 300 400</span>
             </a>
             <button 
               onClick={() => setActiveView(ActiveView.QuoteFlow)}
-              className="w-full sm:w-auto bg-slate-900 hover:bg-slate-800 text-slate-300 font-mono text-xs px-4 py-3 rounded-xl border border-slate-800 hover:border-slate-700 transition-all flex items-center justify-center gap-1.5"
+              className="w-full sm:w-auto bg-slate-900 hover:bg-slate-850 text-slate-300 font-mono text-xs px-4 py-3 rounded-xl border border-slate-800 hover:border-slate-700 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
             >
               <span>Request Call</span>
               <ArrowUpRight className="w-3.5 h-3.5 text-slate-500" />
@@ -85,50 +97,178 @@ export default function Footer({ setActiveView }: FooterProps) {
         </div>
       </div>
 
-      {/* Main Footer Links & Bio */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 border-t border-slate-900/60" id="main-footer-container">
-        <div className="text-center space-y-8">
-          <div className="h-1 w-16 bg-emerald-500 mx-auto rounded-full"></div>
-          <div className="text-sm sm:text-base md:text-lg font-bold text-white tracking-widest uppercase font-display">
-            CLEAN WORLD INC.
-          </div>
-          <p className="text-xs sm:text-sm md:text-base text-slate-300 max-w-xl mx-auto leading-relaxed">
-            Eco-responsible environmental decontamination, professional deep cleaning, and pest control management solutions in the Republic of South Sudan.
-          </p>
+      {/* Main Footer Links & Bio in Asymmetric Grid */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16" id="main-footer-container">
+        <div className="grid grid-cols-1 md:grid-cols-6 gap-8 lg:gap-12">
           
-          <div className="flex flex-wrap justify-center items-center gap-4 sm:gap-8 text-xs sm:text-sm font-mono text-slate-300">
-            <button onClick={() => setActiveView(ActiveView.Services)} className="hover:text-emerald-400 transition-colors py-1 px-2 hover:bg-slate-900 rounded-lg">Services</button>
-            <span className="text-slate-800 hidden sm:inline">/</span>
-            <button onClick={() => setActiveView(ActiveView.Shop)} className="hover:text-emerald-400 transition-colors py-1 px-2 hover:bg-slate-900 rounded-lg">Eco-Shop</button>
-            <span className="text-slate-800 hidden sm:inline">/</span>
-            <button onClick={() => setActiveView(ActiveView.Academy)} className="hover:text-emerald-400 transition-colors py-1 px-2 hover:bg-slate-900 rounded-lg">Academy</button>
+          {/* Column 1: Brand & Licensing (spans 2) */}
+          <div className="md:col-span-2 space-y-5">
+            <div className="flex items-center gap-2 select-none">
+              <div className="bg-emerald-500/10 rounded-lg border border-emerald-500/15 flex items-center justify-center h-8 w-8">
+                <img 
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuC8fFJemvF3DwJM9jvAhXJxgDNCEvkdoL_jM3vqHykN6uW-sD3OsnOrhZ1F7fOMukiMLKC4FjZD5WSf7bQ5cvagWxmpGR9E8eauBD3AxH926AkX0NnZ3y-MdIcFZW1_RF6VR8qSGGiMpx4kD1aekulsY1UN0BABgYYW3Hxe65vO8vZavPZixF7azOOXbjkZodQp1TLXJ1Y-sJR7Wh7jQr7f5Aw5KuGtk0488xjUMmOiHC3WG4E721HP9zM6vrmRHI5Z81acGH-WBLE" 
+                  alt="Clean World Logo" 
+                  width={20}
+                  height={20}
+                  className="h-5 w-5 object-contain"
+                />
+              </div>
+              <div className="flex items-center h-8">
+                <span className="font-display font-black text-lg tracking-tight bg-gradient-to-r from-white via-slate-100 to-slate-200 bg-clip-text text-transparent leading-none">
+                  CLEAN WORLD
+                </span>
+                <span className="text-[9px] tracking-wider px-1 py-0.5 font-bold leading-none ml-1 shadow-sm text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 rounded">
+                  INC.
+                </span>
+              </div>
+            </div>
+
+            <p className="text-xs text-slate-400 leading-relaxed font-sans max-w-sm">
+              South Sudan's premier eco-responsible hygiene and sanitization services. Delivering medical-grade decontamination, premium vector control, and professional janitorial solutions with absolute compliance and environmental stewardship.
+            </p>
+
+            <div className="space-y-2 text-[11px] text-slate-500 font-sans">
+              <div className="flex items-start gap-2">
+                <MapPin className="w-3.5 h-3.5 text-slate-600 shrink-0 mt-0.5" />
+                <span>Airport Road, Juba, South Sudan</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <ShieldCheck className="w-3.5 h-3.5 text-slate-600 shrink-0 mt-0.5" />
+                <span className="font-mono">Ministry of Environment Licensed No. SS/ME/2026-928</span>
+              </div>
+            </div>
           </div>
 
-          <div className="flex justify-center gap-4 pt-2">
-            {[
-              { name: "Facebook", href: "https://facebook.com/cleanworld", icon: <FacebookIcon className="w-5 h-5" />, color: "hover:text-blue-500 hover:border-blue-500/30" },
-              { name: "Instagram", href: "https://instagram.com/cleanworld", icon: <InstagramIcon className="w-5 h-5" />, color: "hover:text-pink-500 hover:border-pink-500/30" },
-              { name: "TikTok", href: "https://tiktok.com/@cleanworld", icon: <TikTokIcon className="w-5 h-5" />, color: "hover:text-cyan-400 hover:border-cyan-400/30" },
-              { name: "YouTube", href: "https://youtube.com/cleanworld", icon: <YoutubeIcon className="w-5 h-5" />, color: "hover:text-red-500 hover:border-red-500/30" },
-              { name: "X", href: "https://x.com/cleanworld", icon: <XIcon className="w-5 h-5" />, color: "hover:text-white hover:border-white/30" },
-            ].map((s) => (
-              <a key={s.name} href={s.href} target="_blank" rel="noopener noreferrer" className={`h-10 w-10 rounded-full bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-400 transition-all duration-300 hover:scale-105 hover:bg-slate-900/80 ${s.color}`} title={s.name}>
-                {s.icon}
-              </a>
-            ))}
+          {/* Column 2: Service Navigation (spans 1) */}
+          <div className="space-y-4">
+            <h4 className="text-[10px] font-display font-bold text-slate-200 tracking-wider uppercase">Services</h4>
+            <ul className="space-y-2.5 text-xs font-sans">
+              <li>
+                <button 
+                  onClick={() => setActiveView(ActiveView.Services)} 
+                  className="text-slate-400 hover:text-emerald-400 hover:translate-x-1 transition-all cursor-pointer flex items-center gap-1 group"
+                >
+                  Services
+                  <ArrowUpRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </button>
+              </li>
+              <li>
+                <button 
+                  onClick={() => setActiveView(ActiveView.Shop)} 
+                  className="text-slate-400 hover:text-emerald-400 hover:translate-x-1 transition-all cursor-pointer flex items-center gap-1 group"
+                >
+                  Cleaning Supplies
+                  <ArrowUpRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </button>
+              </li>
+              <li>
+                <button 
+                  onClick={() => setActiveView(ActiveView.Academy)} 
+                  className="text-slate-400 hover:text-emerald-400 hover:translate-x-1 transition-all cursor-pointer flex items-center gap-1 group"
+                >
+                  Training Academy
+                  <ArrowUpRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </button>
+              </li>
+              <li>
+                <button 
+                  onClick={() => setActiveView(ActiveView.QuoteFlow)} 
+                  className="text-slate-400 hover:text-emerald-400 hover:translate-x-1 transition-all cursor-pointer flex items-center gap-1 group"
+                >
+                  Get a Free Quote
+                  <ArrowUpRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </button>
+              </li>
+            </ul>
           </div>
 
-          <p className="text-[10px] sm:text-xs text-slate-400 font-mono tracking-wide max-w-2xl mx-auto leading-relaxed">
-            Airport Road, Juba, South Sudan • Ministry of Environment Licensed No. SS/ME/2026-928
-          </p>
-          <p className="text-[10px] sm:text-xs text-slate-500 font-mono pt-2">
+          {/* Column 3: Platform Portals (spans 1) */}
+          <div className="space-y-4">
+            <h4 className="text-[10px] font-display font-bold text-slate-200 tracking-wider uppercase">Portals</h4>
+            <ul className="space-y-2.5 text-xs font-sans">
+              <li>
+                <button 
+                  onClick={() => setActiveView(ActiveView.ClientDashboard)} 
+                  className="text-slate-400 hover:text-emerald-400 hover:translate-x-1 transition-all cursor-pointer flex items-center gap-1 group"
+                >
+                  Client Account
+                  <ArrowUpRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </button>
+              </li>
+              <li>
+                <button 
+                  onClick={() => setActiveView(ActiveView.CleanerPortal)} 
+                  className="text-slate-400 hover:text-emerald-400 hover:translate-x-1 transition-all cursor-pointer flex items-center gap-1 group"
+                >
+                  Cleaner Dispatch
+                  <ArrowUpRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                </button>
+              </li>
+            </ul>
+          </div>
+
+          {/* Column 4: Operations Center & Socials (spans 2) */}
+          <div className="md:col-span-2 space-y-4">
+            <h4 className="text-[10px] font-display font-bold text-slate-200 tracking-wider uppercase">Operations Hub</h4>
+            
+            <div className="bg-slate-900/40 border border-slate-900 p-4 rounded-xl space-y-3">
+              <div className="flex items-center gap-2">
+                <span className="flex h-2 w-2 relative">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                </span>
+                <span className="text-[10px] font-mono uppercase tracking-widest text-emerald-400 font-bold">
+                  All Systems Operational
+                </span>
+              </div>
+              <div className="space-y-2 text-xs font-sans text-slate-400">
+                <div className="flex items-center gap-2">
+                  <Clock className="w-3.5 h-3.5 text-slate-500" />
+                  <span>Juba Hub (GMT+3) • 08:00 AM - 06:00 PM</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Phone className="w-3.5 h-3.5 text-slate-500" />
+                  <span className="font-mono">+211 928 300 400</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Mail className="w-3.5 h-3.5 text-slate-500" />
+                  <span className="font-mono">dispatch@cleanworld.live</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex gap-3 pt-1">
+              {[
+                { name: "Facebook", href: "https://facebook.com/cleanworld", icon: <FacebookIcon className="w-4 h-4" />, color: "hover:text-blue-500 hover:border-blue-500/30" },
+                { name: "Instagram", href: "https://instagram.com/cleanworld", icon: <InstagramIcon className="w-4 h-4" />, color: "hover:text-pink-500 hover:border-pink-500/30" },
+                { name: "TikTok", href: "https://tiktok.com/@cleanworld", icon: <TikTokIcon className="w-4 h-4" />, color: "hover:text-cyan-400 hover:border-cyan-400/30" },
+                { name: "YouTube", href: "https://youtube.com/cleanworld", icon: <YoutubeIcon className="w-4 h-4" />, color: "hover:text-red-500 hover:border-red-500/30" },
+                { name: "X", href: "https://x.com/cleanworld", icon: <XIcon className="w-4 h-4" />, color: "hover:text-white hover:border-white/30" },
+              ].map((s) => (
+                <a key={s.name} href={s.href} target="_blank" rel="noopener noreferrer" className={`h-8 w-8 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center text-slate-400 transition-all duration-300 hover:scale-105 hover:bg-slate-900/80 ${s.color}`} title={s.name}>
+                  {s.icon}
+                </a>
+              ))}
+            </div>
+          </div>
+
+        </div>
+
+        {/* Copyright and Legal footer bar */}
+        <div className="border-t border-slate-900 mt-12 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-[10px] text-slate-500 font-mono">
+          <div>
             © {new Date().getFullYear()} Clean World Inc. All rights reserved.
-          </p>
+          </div>
+          <div className="flex gap-4">
+            <a href="#privacy" className="hover:text-slate-400 transition-colors">Privacy Policy</a>
+            <span>•</span>
+            <a href="#terms" className="hover:text-slate-400 transition-colors">Terms of Service</a>
+          </div>
         </div>
       </div>
 
       {/* Floating Emergency Response Action Button & Popover */}
-      <div className="fixed bottom-6 right-6 z-50 font-sans" id="floating-emergency-widget">
+      <div className="fixed bottom-6 right-6 z-[100] font-sans" id="floating-emergency-widget">
         
         {/* Popover Panel */}
         {isEmergencyOpen && (
@@ -149,7 +289,7 @@ export default function Footer({ setActiveView }: FooterProps) {
               </div>
               <button 
                 onClick={() => setIsEmergencyOpen(false)}
-                className="text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 p-1.5 rounded-lg transition-colors"
+                className="text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 p-1.5 rounded-lg transition-colors cursor-pointer"
                 aria-label="Close emergency prompt"
               >
                 <X className="w-4 h-4" />
@@ -158,11 +298,14 @@ export default function Footer({ setActiveView }: FooterProps) {
 
             {/* Availability message */}
             <div className="space-y-2 text-xs">
-              <div className="bg-red-500/10 border border-red-500/20 text-red-200 rounded-xl p-3 leading-relaxed">
-                <span className="font-semibold block text-red-400 mb-0.5">⚠️ Juba Dispatch Team Online</span>
-                Our certified cleaning, bio-hazard containment, and urgent vector control teams are stationed locally in Juba. On-site response is guaranteed within <strong>60 minutes</strong>.
+              <div className="bg-red-500/10 border border-red-500/20 text-red-200 rounded-xl p-3 leading-relaxed flex gap-2.5">
+                <AlertTriangle className="w-5 h-5 text-red-400 shrink-0 mt-0.5" />
+                <div>
+                  <span className="font-semibold block text-red-400 mb-0.5">Juba Dispatch Team Online</span>
+                  Our certified cleaning, bio-hazard containment, and urgent vector control teams are stationed locally in Juba. On-site response is guaranteed within <strong>60 minutes</strong>.
+                </div>
               </div>
-              <p className="text-slate-400 text-[11px] leading-normal">
+              <p className="text-slate-400 text-[11px] leading-normal font-sans">
                 Serving all main sectors: Tongping, Airport Road, Munuki, Gudele, Gumbo, and the wider Central Equatoria area.
               </p>
             </div>
@@ -171,7 +314,7 @@ export default function Footer({ setActiveView }: FooterProps) {
             <div className="space-y-2.5">
               <a 
                 href="tel:+211928300400"
-                className="w-full bg-red-600 hover:bg-red-500 text-white font-mono font-bold text-sm py-3 px-4 rounded-xl flex items-center justify-center gap-2.5 transition-all shadow-lg shadow-red-600/10 hover:shadow-red-600/20"
+                className="w-full bg-red-600 hover:bg-red-500 text-white font-mono font-bold text-sm py-3 px-4 rounded-xl flex items-center justify-center gap-2.5 transition-all shadow-lg shadow-red-600/10 hover:shadow-red-600/20 cursor-pointer"
               >
                 <PhoneCall className="w-4 h-4 animate-bounce" />
                 Call Urgent Hotline: +211 928 300 400
@@ -181,7 +324,7 @@ export default function Footer({ setActiveView }: FooterProps) {
                 href="https://wa.me/211928300400?text=URGENT%3A%20I%20need%20emergency%20cleaning%20%2F%20vector%20control%20services."
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full bg-slate-800 hover:bg-slate-700 text-emerald-400 font-mono font-bold text-xs py-3 px-4 rounded-xl flex items-center justify-center gap-2 border border-slate-700 transition-all"
+                className="w-full bg-slate-800 hover:bg-slate-700 text-emerald-400 font-mono font-bold text-xs py-3 px-4 rounded-xl flex items-center justify-center gap-2 border border-slate-700 transition-all cursor-pointer"
               >
                 <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
                 WhatsApp Operations Dispatch
@@ -192,7 +335,7 @@ export default function Footer({ setActiveView }: FooterProps) {
                   setActiveView(ActiveView.QuoteFlow);
                   setIsEmergencyOpen(false);
                 }}
-                className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-display font-bold text-xs py-2.5 rounded-xl transition-all flex items-center justify-center gap-1.5"
+                className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-display font-bold text-xs py-2.5 rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer"
               >
                 Submit Electronic Dispatch Ticket
                 <ArrowUpRight className="w-3.5 h-3.5" />
@@ -207,28 +350,46 @@ export default function Footer({ setActiveView }: FooterProps) {
           </div>
         )}
 
-        {/* Floating Toggle Button */}
-        <button
-          onClick={() => setIsEmergencyOpen(!isEmergencyOpen)}
-          className={`group flex items-center gap-2.5 px-4 sm:px-5 py-3.5 sm:py-4 rounded-full font-display font-bold text-xs shadow-xl transition-all duration-300 ${
-            isEmergencyOpen 
-              ? "bg-slate-800 text-white border border-slate-700 ring-2 ring-slate-800/20" 
-              : "bg-red-600 hover:bg-red-500 text-white hover:scale-105 shadow-red-600/20 hover:shadow-red-600/30"
-          }`}
-          id="toggle-emergency-fab"
-        >
-          <span className="relative flex h-2.5 w-2.5">
-            <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${isEmergencyOpen ? "bg-slate-400" : "bg-white"}`}></span>
-            <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${isEmergencyOpen ? "bg-slate-400" : "bg-white"}`}></span>
-          </span>
-          <PhoneCall className="w-4 h-4 transition-transform duration-300 group-hover:rotate-12" />
-          <span className="hidden sm:inline tracking-wider uppercase">
-            {isEmergencyOpen ? "Close Panel" : "Emergency Response"}
-          </span>
-          <span className="sm:hidden tracking-wider uppercase">
-            {isEmergencyOpen ? "Close" : "Emergency"}
-          </span>
-        </button>
+        {/* Unified Floating Action Row */}
+        <div className="flex items-center gap-3 justify-end">
+          {/* WhatsApp Floating Button */}
+          <a
+            href="https://wa.me/211928300400?text=Hello%20Clean%20World%2C%20I%20would%20like%20to%20request%20an%20HSE%20consultation%20or%20service%20quote."
+            target="_blank"
+            rel="noopener noreferrer"
+            className="bg-emerald-500/20 backdrop-blur-md border border-emerald-500/30 text-emerald-400 p-3.5 sm:p-4 rounded-full shadow-[0_20px_50px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.15)] hover:bg-emerald-500 hover:text-slate-950 hover:border-emerald-400 transition-all duration-300 group flex items-center justify-center cursor-pointer"
+            aria-label="Contact on WhatsApp"
+            id="whatsapp-floating-cta"
+          >
+            <MessageCircle className="w-5.5 h-5.5 sm:w-6 sm:h-6 transition-transform group-hover:scale-110" />
+            <span className="max-w-0 overflow-hidden group-hover:max-w-xs group-hover:ml-2 font-display text-[10px] sm:text-xs font-extrabold tracking-wider uppercase transition-all duration-300 ease-in-out whitespace-nowrap">
+              WhatsApp 24/7
+            </span>
+          </a>
+
+          {/* Floating Toggle Button */}
+          <button
+            onClick={() => setIsEmergencyOpen(!isEmergencyOpen)}
+            className={`group flex items-center gap-2.5 px-4 sm:px-5 py-3.5 sm:py-4 rounded-full font-display font-bold text-xs shadow-xl transition-all duration-300 cursor-pointer ${
+              isEmergencyOpen 
+                ? "bg-slate-800 text-white border border-slate-700 ring-2 ring-slate-800/20" 
+                : "bg-red-600 hover:bg-red-500 text-white hover:scale-105 shadow-red-600/20 hover:shadow-red-600/30"
+            }`}
+            id="toggle-emergency-fab"
+          >
+            <span className="relative flex h-2.5 w-2.5">
+              <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${isEmergencyOpen ? "bg-slate-400" : "bg-white"}`}></span>
+              <span className={`relative inline-flex rounded-full h-2.5 w-2.5 ${isEmergencyOpen ? "bg-slate-400" : "bg-white"}`}></span>
+            </span>
+            <PhoneCall className="w-4 h-4 transition-transform duration-300 group-hover:rotate-12" />
+            <span className="hidden sm:inline tracking-wider uppercase">
+              {isEmergencyOpen ? "Close Panel" : "Emergency Response"}
+            </span>
+            <span className="sm:hidden tracking-wider uppercase">
+              {isEmergencyOpen ? "Close" : "Emergency"}
+            </span>
+          </button>
+        </div>
 
       </div>
 

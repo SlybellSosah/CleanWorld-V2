@@ -36,6 +36,14 @@ export interface Booking {
   afterPhoto: string | null;
   checkedTasks: string[];
   createdAt: string;
+  lat?: number;
+  lng?: number;
+  paymentMethod?: "m-GURUSH" | "MTN MoMo" | "Zain Cash" | "Cash";
+  paymentPhone?: string;
+  transactionRef?: string;
+  landmark?: string;
+  transportMode?: "boda" | "truck";
+  roadCondition?: "clear" | "muddy" | "flooded" | "construction";
 }
 
 export enum ServicePillar {
@@ -59,11 +67,35 @@ export interface Product {
   image: string;
   unit: string;
   category: string;
+  ingredients?: string[];
+  usageGuide?: string[];
+  hazards?: string;
+  hseCertifications?: string[];
+  ecoMetrics?: {
+    carbonSaved?: string;
+    biodegradable?: string;
+    waterSaved?: string;
+  };
 }
 
 export interface CartItem {
   product: Product;
   quantity: number;
+}
+
+export interface ProductOrder {
+  id: string;
+  items: CartItem[];
+  totalUSD: number;
+  totalSSP: number;
+  currencyPaid: "USD" | "SSP";
+  paymentMethod: "m-GURUSH" | "MTN MoMo" | "Zain Cash" | "Cash";
+  phonePaid: string;
+  deliveryLocation: string;
+  deliveryAddress: string;
+  transactionRef: string;
+  status: "processing" | "dispatched" | "delivered";
+  createdAt: string;
 }
 
 export interface JubaLocation {

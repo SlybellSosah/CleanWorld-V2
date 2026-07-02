@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ActiveView, ServicePillar, RiskClass, QuoteState, Product, Booking } from "./types";
+import { ActiveView, ServicePillar, RiskClass, QuoteState, Product, Booking, ProductOrder } from "./types";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import LandingPage from "./components/LandingPage";
@@ -9,13 +9,62 @@ import QuoteWizard from "./components/QuoteWizard";
 import AcademyPage from "./components/AcademyPage";
 import ClientDashboard from "./components/ClientDashboard";
 import CleanerPortal from "./components/CleanerPortal";
+import { useDocumentMetadata } from "./hooks/useDocumentMetadata";
+import { MessageCircle } from "lucide-react";
+import { motion } from "motion/react";
 
 export default function App() {
   // Navigation active state
   const [activeView, setActiveView] = useState<ActiveView>(ActiveView.Home);
 
+  // Dynamic SEO metadata, open graph tags and JSON-LD schema injection
+  useDocumentMetadata(activeView);
+
   // Procurement cart state: maps { [productId]: quantity }
   const [cartProducts, setCartProducts] = useState<{ [key: string]: number }>({});
+
+  // Product purchase orders history
+  const [productOrders, setProductOrders] = useState<ProductOrder[]>([
+    {
+      id: "PO-7210",
+      items: [
+        {
+          product: {
+            id: "prod-1",
+            name: "Bio-Clean Pro-X",
+            price: 45.00,
+            unit: "5-Liter Canister",
+            description: "Industrial strength bio-enzymatic cleaner. Concentrated organic formulation for heavy-duty facility sanitization. Leaving zero environmental runoff.",
+            image: "https://lh3.googleusercontent.com/aida-public/AB6AXuDm8aWmUCTIgiKoxLCINbvsdFJE8cGiBHvrBLEcttEuPOrfKFvgZB6D3LqQMtGOEqO0e0oNHdhYSltYB4r8WxFvUQVjYmhVIW5Z701Qn7FJD0RkvceVqu-x8m5II63nhZTBC7sG3_A-VQR6vcbZ0id9jxad8mgvftvk-CN8MadFdZdWjDsuIjfPKTWvNhBPVfe3cnE0P8nY4yGfHqaLihddkkL2w58SMY2r8QYKdOXMjToONkdh926tOfjx3YUnC894yYfXm-6GZ5s",
+            category: "Sanitizers"
+          },
+          quantity: 2
+        },
+        {
+          product: {
+            id: "prod-2",
+            name: "Verde Surface Mist",
+            price: 18.50,
+            unit: "500ml Spray Bottle",
+            description: "Plant-based broad spectrum surface spray. Fast drying, active botanical compounds neutralize pathogens without toxic residues.",
+            image: "https://lh3.googleusercontent.com/aida-public/AB6AXuCLBElue0ml3DxSAaDWuYMCAPR5t58MKJfqVWyMdDlckvMr7CFWmOdC6iCsjHWqWAjVTbR21faxE8CW0oRL1AwtcH9oN4ZE_DIQJn77k3UcQGcxxW03CO9GgXQzh8RdGwYPmaveLVRFR3MalY6TCSgb6jTa22X2vRV5b0-iNLHuMtvKtxGN-CDNg6mbl6J2AU-VaVs6dSBRR-R4UJkdtv0we1bz4D6--mWvIgTJkC03zqoMdks6D4XMBPCkfSSRs4V_fMYbH20W5hM",
+            category: "Sanitizers"
+          },
+          quantity: 1
+        }
+      ],
+      totalUSD: 108.50,
+      totalSSP: 141050,
+      currencyPaid: "USD",
+      paymentMethod: "m-GURUSH",
+      phonePaid: "+211 928 300 401",
+      deliveryLocation: "Tongping",
+      deliveryAddress: "Plot 42, Airport Road, Tongping",
+      transactionRef: "MG-9102-JUB",
+      status: "dispatched",
+      createdAt: "2026-07-01T15:30:00Z"
+    }
+  ]);
 
   // Procure bookings state for client & cleaner dispatches
   const [bookings, setBookings] = useState<Booking[]>([
@@ -41,7 +90,12 @@ export default function App() {
       beforePhoto: null,
       afterPhoto: null,
       checkedTasks: [],
-      createdAt: "2026-06-29T10:00:00Z"
+      createdAt: "2026-06-29T10:00:00Z",
+      lat: 4.85610,
+      lng: 31.58100,
+      landmark: "Near Juba International Airport (opposite Zain HQ Office)",
+      transportMode: "truck",
+      roadCondition: "clear"
     },
     {
       id: "CW-4201",
@@ -65,7 +119,12 @@ export default function App() {
       beforePhoto: "https://images.unsplash.com/photo-1581578731548-c64695cc6952?q=80&w=400&auto=format&fit=crop",
       afterPhoto: "https://images.unsplash.com/photo-1527515637462-cff94eecc1ac?q=80&w=400&auto=format&fit=crop",
       checkedTasks: ["Sweep and vacuum all floors", "Sanitize countertops, sinks and tables", "Dust visible surfaces, baseboards and electronics", "Empty trash bins and replace liners"],
-      createdAt: "2026-06-27T08:30:00Z"
+      createdAt: "2026-06-27T08:30:00Z",
+      lat: 4.84320,
+      lng: 31.57210,
+      landmark: "Behind Turkish Embassy (Amarat Street 3)",
+      transportMode: "boda",
+      roadCondition: "muddy"
     }
   ]);
 
@@ -84,6 +143,9 @@ export default function App() {
     notes: "",
     items: []
   });
+
+  // Prefilled specs state to bridge Services page selections and QuoteWizard
+  const [prefilledSpecs, setPrefilledSpecs] = useState<any>(null);
 
   // Scroll to top on view changes to mimic professional routing transitions
   useEffect(() => {
@@ -123,6 +185,9 @@ export default function App() {
       servicePillar: pillar
     }));
   };
+  const handleAddOrder = (order: ProductOrder) => {
+    setProductOrders((prev) => [order, ...prev]);
+  };
 
   // Count total items in the cart
   const cartCount = Object.keys(cartProducts).reduce((acc, key) => acc + (cartProducts[key] || 0), 0);
@@ -152,6 +217,7 @@ export default function App() {
             setQuotePillar={handleSetQuotePillar} 
             onAddProductToCart={handleAddProductToCart}
             cartProducts={cartProducts}
+            setPrefilledSpecs={setPrefilledSpecs}
           />
         )}
 
@@ -161,6 +227,7 @@ export default function App() {
             cartProducts={cartProducts}
             onUpdateCartQuantity={handleUpdateCartQuantity}
             onClearCart={handleClearCart}
+            onAddOrder={handleAddOrder}
           />
         )}
 
@@ -169,6 +236,7 @@ export default function App() {
             setActiveView={setActiveView} 
             bookings={bookings}
             setBookings={setBookings}
+            initialSpecs={prefilledSpecs}
           />
         )}
 
@@ -177,6 +245,7 @@ export default function App() {
             bookings={bookings}
             setBookings={setBookings}
             setActiveView={setActiveView}
+            productOrders={productOrders}
           />
         )}
 
