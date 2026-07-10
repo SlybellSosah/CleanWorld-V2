@@ -1,27 +1,36 @@
 import React, { useState, useEffect } from "react";
-import { ActiveView } from "../types";
-import { Menu, X, ShoppingBag, ShieldAlert, Sparkles, CheckCircle, Phone, Lock, Sliders, ChevronDown } from "lucide-react";
+import { ActiveView, UserSession, UserRole } from "../types";
+import { Menu, X, ShoppingBag, ShieldAlert, Sparkles, CheckCircle, Phone, Lock, Sliders, ChevronDown, User, LogOut, LayoutDashboard } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 
 interface NavbarProps {
   activeView: ActiveView;
   setActiveView: (view: ActiveView) => void;
   cartCount: number;
+  currentUser: UserSession | null;
+  setCurrentUser: (user: UserSession | null) => void;
+  onLoginClick: () => void;
 }
 
-export default function Navbar({ activeView, setActiveView, cartCount }: NavbarProps) {
+export default function Navbar({ 
+  activeView, 
+  setActiveView, 
+  cartCount,
+  currentUser,
+  setCurrentUser,
+  onLoginClick
+}: NavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   // Locked permanently to Floating Glassmorphic Capsule style
   const navbarStyle = "glass-capsule";
 
   const navItems = [
     { label: "Home", view: ActiveView.Home },
+    { label: "Consultancy", view: ActiveView.Consultancy },
     { label: "Services", view: ActiveView.Services },
     { label: "Shop", view: ActiveView.Shop },
-    { label: "Training Academy", view: ActiveView.Academy },
-    { label: "Client Portal", view: ActiveView.ClientDashboard },
-    { label: "Cleaner Dispatch", view: ActiveView.CleanerPortal },
   ];
 
   // Render different container layouts depending on style selection
@@ -81,7 +90,7 @@ export default function Navbar({ activeView, setActiveView, cartCount }: NavbarP
                 }`}>
                   CLEAN WORLD
                 </span>
-                <span className={`text-[15px] tracking-wider px-1 py-0.5 font-bold leading-none ml-1 shadow-sm select-none self-center ${
+                <span className={`text-xs tracking-wider px-1.5 py-0.5 font-bold leading-none ml-1 shadow-sm select-none self-center ${
                   isCyberGrid 
                     ? "bg-emerald-400 text-slate-950 border border-emerald-400 rounded-none" 
                     : "text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 rounded"
@@ -100,28 +109,20 @@ export default function Navbar({ activeView, setActiveView, cartCount }: NavbarP
                   onClick={() => setActiveView(item.view)}
                   whileHover={{ y: -1 }}
                   whileTap={{ scale: 0.98 }}
-                  className={`px-3 py-2 transition-all duration-200 relative group/btn ${
-                    isCyberGrid 
-                      ? `font-mono text-xs uppercase tracking-tight rounded-none border ${
-                          activeView === item.view
-                            ? "bg-emerald-500 text-slate-950 border-emerald-500 font-extrabold"
-                            : "text-slate-400 border-transparent hover:text-white hover:bg-slate-900"
-                        }`
-                      : `font-sans text-xs font-semibold tracking-wide uppercase rounded-xl ${
-                          activeView === item.view
-                            ? "bg-slate-900 text-emerald-400 border border-slate-800/80 shadow-md"
-                            : "text-slate-400 hover:text-white hover:bg-slate-900/50"
-                        }`
+                  className={`px-3 py-2 transition-all duration-200 relative group/btn font-sans text-xs font-semibold tracking-wide uppercase rounded-xl ${
+                    activeView === item.view
+                      ? "text-emerald-400 font-extrabold"
+                      : "text-slate-400 hover:text-white hover:bg-slate-900/30"
                   }`}
                 >
-                  {item.label}
-                  {activeView === item.view && !isCyberGrid && (
-                    <motion.span 
-                      layoutId="activeTab"
+                  {activeView === item.view && (
+                    <motion.div
+                      layoutId="activeNavTab"
+                      className="absolute inset-0 bg-slate-950/80 border border-slate-800/80 shadow-md rounded-xl"
                       transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                      className="absolute bottom-1 left-3 right-3 h-[2px] bg-emerald-400 rounded-full" 
                     />
                   )}
+                  <span className="relative z-10">{item.label}</span>
                 </motion.button>
               ))}
             </div>
@@ -133,24 +134,116 @@ export default function Navbar({ activeView, setActiveView, cartCount }: NavbarP
               <button
                 id="nav-cart-btn"
                 onClick={() => setActiveView(ActiveView.Shop)}
-                className={`relative p-2.5 transition-all ${
-                  isCyberGrid
-                    ? "text-slate-400 hover:text-emerald-400 border border-slate-800 hover:bg-slate-950 bg-slate-900 rounded-none"
-                    : "text-slate-400 hover:text-emerald-400 rounded-xl hover:bg-slate-900 border border-transparent hover:border-slate-800"
-                }`}
+                className="relative p-2.5 transition-all text-slate-400 hover:text-emerald-400 rounded-xl hover:bg-slate-900 border border-transparent hover:border-slate-800"
                 title="View Your Cart"
               >
                 <ShoppingBag className="w-5 h-5" />
                 {cartCount > 0 && (
-                  <span className={`absolute -top-1 -right-1 font-mono text-[15px] font-extrabold h-5 w-5 flex items-center justify-center animate-pulse ${
-                    isCyberGrid 
-                      ? "bg-emerald-400 text-slate-950 border border-emerald-400 rounded-none"
-                      : "bg-emerald-500 text-slate-950 rounded-full border border-slate-950"
-                  }`}>
+                  <span className="absolute -top-1 -right-1 font-mono text-[10px] font-extrabold h-4 w-4 flex items-center justify-center animate-pulse bg-emerald-500 text-slate-955 rounded-full border border-slate-950">
                     {cartCount}
                   </span>
                 )}
               </button>
+
+              {/* Authentication Actions */}
+              {currentUser ? (
+                <div className="relative">
+                  <button
+                    id="nav-user-dropdown-toggle"
+                    onClick={() => setDropdownOpen(!dropdownOpen)}
+                    className="flex items-center gap-2 px-3 py-1.5 bg-slate-955/40 hover:bg-slate-900 border border-slate-800 hover:border-slate-700/60 rounded-xl transition-all cursor-pointer"
+                  >
+                    <div className="w-6 h-6 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-slate-955 font-mono font-bold text-xs">
+                      {currentUser.email.substring(0, 2).toUpperCase()}
+                    </div>
+                    <span className="text-xs font-semibold text-slate-200">
+                      {currentUser.role === UserRole.Client ? "Client" : "Operations"}
+                    </span>
+                    <ChevronDown className="w-3.5 h-3.5 text-slate-500" />
+                  </button>
+
+                  <AnimatePresence>
+                    {dropdownOpen && (
+                      <>
+                        <div 
+                          className="fixed inset-0 z-10 cursor-default"
+                          onClick={() => setDropdownOpen(false)}
+                        />
+                        <motion.div
+                          initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                          exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                          transition={{ duration: 0.15 }}
+                          className="absolute right-0 mt-2 w-52 bg-slate-900 border border-slate-800 rounded-2xl shadow-xl p-2 z-20 space-y-0.5"
+                        >
+                          <div className="px-3 py-2 border-b border-slate-850">
+                            <p className="text-[9px] font-mono text-slate-500 uppercase tracking-widest">Logged In As</p>
+                            <p className="text-xs text-slate-300 font-semibold truncate">{currentUser.email}</p>
+                          </div>
+                          
+                          {currentUser.role === UserRole.Client ? (
+                            <>
+                              <button
+                                onClick={() => {
+                                  setActiveView(ActiveView.ClientDashboard);
+                                  setDropdownOpen(false);
+                                }}
+                                className="w-full text-left px-3 py-2 text-xs text-slate-300 hover:text-emerald-400 hover:bg-slate-850 rounded-xl transition-all flex items-center gap-2 cursor-pointer"
+                              >
+                                <LayoutDashboard className="w-4 h-4 text-emerald-500/70" />
+                                Client Dashboard
+                              </button>
+                              <button
+                                onClick={() => {
+                                  setActiveView(ActiveView.QuoteFlow);
+                                  setDropdownOpen(false);
+                                }}
+                                className="w-full text-left px-3 py-2 text-xs text-slate-300 hover:text-emerald-400 hover:bg-slate-850 rounded-xl transition-all flex items-center gap-2 cursor-pointer"
+                              >
+                                <ShieldAlert className="w-4 h-4 text-emerald-500/70" />
+                                Book a Service
+                              </button>
+                            </>
+                          ) : (
+                            <button
+                              onClick={() => {
+                                setActiveView(ActiveView.CleanerPortal);
+                                setDropdownOpen(false);
+                              }}
+                              className="w-full text-left px-3 py-2 text-xs text-slate-300 hover:text-emerald-400 hover:bg-slate-850 rounded-xl transition-all flex items-center gap-2 cursor-pointer"
+                            >
+                              <LayoutDashboard className="w-4 h-4 text-emerald-500/70" />
+                              Operations Portal
+                            </button>
+                          )}
+
+                          <button
+                            id="nav-logout-btn"
+                            onClick={() => {
+                              setCurrentUser(null);
+                              setActiveView(ActiveView.Home);
+                              setDropdownOpen(false);
+                            }}
+                            className="w-full text-left px-3 py-2 text-xs text-red-400 hover:text-red-350 hover:bg-red-955/20 rounded-xl transition-all flex items-center gap-2 cursor-pointer border-t border-slate-850 pt-2 mt-1"
+                          >
+                            <LogOut className="w-4 h-4" />
+                            Log Out
+                          </button>
+                        </motion.div>
+                      </>
+                    )}
+                  </AnimatePresence>
+                </div>
+              ) : (
+                <button
+                  id="nav-login-btn"
+                  onClick={onLoginClick}
+                  className="px-4 py-2 text-xs font-semibold text-slate-350 hover:text-white hover:bg-slate-900/50 border border-slate-800 hover:border-slate-700/60 rounded-xl transition-all cursor-pointer flex items-center gap-1.5"
+                >
+                  <User className="w-3.5 h-3.5 text-slate-400" />
+                  Log In
+                </button>
+              )}
 
               {/* Assessment CTA */}
               <motion.button
@@ -158,11 +251,7 @@ export default function Navbar({ activeView, setActiveView, cartCount }: NavbarP
                 onClick={() => setActiveView(ActiveView.QuoteFlow)}
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.98 }}
-                className={`transform hover:-translate-y-0.5 transition-all duration-200 flex items-center gap-2 uppercase tracking-wide font-extrabold text-xs py-3 ${
-                  isCyberGrid
-                    ? "bg-emerald-400 hover:bg-emerald-300 text-slate-950 px-6 rounded-none border border-emerald-400 font-mono"
-                    : "bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 px-5 rounded-xl shadow-lg shadow-emerald-500/10 hover:shadow-emerald-500/25"
-                }`}
+                className="transform hover:-translate-y-0.5 transition-all duration-200 flex items-center gap-2 uppercase tracking-wide font-extrabold text-xs py-3 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-slate-955 px-5 rounded-xl shadow-lg shadow-emerald-500/10 hover:shadow-emerald-500/25"
               >
                 <ShieldAlert className="w-4 h-4" />
                 Get a Free Quote
@@ -179,7 +268,7 @@ export default function Navbar({ activeView, setActiveView, cartCount }: NavbarP
               >
                 <ShoppingBag className="w-5 h-5" />
                 {cartCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-emerald-500 text-slate-950 font-mono text-[15px] font-extrabold h-4 h-4 min-w-4 rounded-full flex items-center justify-center border border-slate-900 px-1">
+                  <span className="absolute -top-1 -right-1 bg-emerald-500 text-slate-950 font-mono text-[10px] font-extrabold h-4 w-4 rounded-full flex items-center justify-center border border-slate-900 px-1">
                     {cartCount}
                   </span>
                 )}
@@ -226,14 +315,94 @@ export default function Navbar({ activeView, setActiveView, cartCount }: NavbarP
                     {item.label}
                   </button>
                 ))}
+
+                {currentUser ? (
+                  <div className="space-y-1.5 pt-2 border-t border-slate-900/60">
+                    <div className="px-4 py-2.5 bg-slate-900/50 rounded-xl border border-slate-800/80 flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className="w-6 h-6 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-slate-955 font-mono font-bold text-[10px]">
+                          {currentUser.email.substring(0, 2).toUpperCase()}
+                        </div>
+                        <div className="text-left">
+                          <p className="text-[9px] font-mono text-slate-500 uppercase leading-none mb-0.5">Session Active</p>
+                          <p className="text-[11px] text-slate-300 font-bold truncate max-w-[140px] leading-none">{currentUser.email}</p>
+                        </div>
+                      </div>
+                      <span className="text-[9px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0.5 rounded uppercase font-bold">
+                        {currentUser.role === UserRole.Client ? "Client" : "Ops"}
+                      </span>
+                    </div>
+
+                    {currentUser.role === UserRole.Client ? (
+                      <>
+                        <button
+                          onClick={() => {
+                            setActiveView(ActiveView.ClientDashboard);
+                            setMobileMenuOpen(false);
+                          }}
+                          className="w-full text-left px-4 py-3 font-sans text-xs font-semibold uppercase tracking-wide text-slate-355 hover:text-emerald-400 hover:bg-slate-900 rounded-xl transition-all flex items-center gap-2"
+                        >
+                          <LayoutDashboard className="w-4 h-4 text-emerald-400" />
+                          Client Dashboard
+                        </button>
+                        <button
+                          onClick={() => {
+                            setActiveView(ActiveView.QuoteFlow);
+                            setMobileMenuOpen(false);
+                          }}
+                          className="w-full text-left px-4 py-3 font-sans text-xs font-semibold uppercase tracking-wide text-slate-355 hover:text-emerald-400 hover:bg-slate-900 rounded-xl transition-all flex items-center gap-2"
+                        >
+                          <ShieldAlert className="w-4 h-4 text-emerald-400" />
+                          Book a Service
+                        </button>
+                      </>
+                    ) : (
+                      <button
+                        onClick={() => {
+                          setActiveView(ActiveView.CleanerPortal);
+                          setMobileMenuOpen(false);
+                        }}
+                        className="w-full text-left px-4 py-3 font-sans text-xs font-semibold uppercase tracking-wide text-slate-355 hover:text-emerald-400 hover:bg-slate-900 rounded-xl transition-all flex items-center gap-2"
+                      >
+                        <LayoutDashboard className="w-4 h-4 text-emerald-400" />
+                        Operations Portal
+                      </button>
+                    )}
+
+                    <button
+                      id="nav-mobile-logout-btn"
+                      onClick={() => {
+                        setCurrentUser(null);
+                        setActiveView(ActiveView.Home);
+                        setMobileMenuOpen(false);
+                      }}
+                      className="w-full text-left px-4 py-3 font-sans text-xs font-semibold uppercase tracking-wide text-red-400 hover:text-red-350 hover:bg-red-955/20 rounded-xl transition-all flex items-center gap-2 border-t border-slate-900/60 mt-1"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      Log Out
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    id="nav-mobile-login-btn"
+                    onClick={() => {
+                      onLoginClick();
+                      setMobileMenuOpen(false);
+                    }}
+                    className="w-full text-left px-4 py-3 font-sans text-xs font-semibold uppercase tracking-wide text-slate-355 hover:text-emerald-400 hover:bg-slate-900 rounded-xl transition-all flex items-center gap-2 border-t border-slate-900/60"
+                  >
+                    <User className="w-4 h-4 text-emerald-400" />
+                    Log In to Account
+                  </button>
+                )}
               </div>
               <div className="pt-3 border-t border-slate-900 space-y-3">
                 {/* Trust Badge for Mobile View */}
                 <div className={`text-center p-3 ${isCyberGrid ? "bg-slate-900 border border-slate-800 rounded-none" : "bg-emerald-500/5 border border-emerald-500/10 rounded-xl"}`}>
-                  <p className="text-[14px] font-mono text-emerald-400 font-semibold tracking-wider">
+                  <p className="text-xs font-mono text-emerald-400 font-semibold tracking-wider">
                     ★ 24-HOUR HAPPINESS GUARANTEE
                   </p>
-                  <p className="text-[15px] font-mono text-slate-400 mt-0.5">
+                  <p className="text-xs font-mono text-slate-400 mt-0.5">
                     LICENSED, BONDED & INSURED
                   </p>
                 </div>

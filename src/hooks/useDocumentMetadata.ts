@@ -56,6 +56,39 @@ export function useDocumentMetadata(activeView: ActiveView) {
         };
         break;
 
+      case ActiveView.Consultancy:
+        title = "Environmental Consultancy & HSE Audits | Clean World Inc.";
+        description = "Regulatory environmental audits, EIA certifications, ESG compliance mapping, and waste stream optimization for industrial and governmental facilities in Juba, South Sudan.";
+        robots = "index, follow";
+        schemaData = {
+          "@context": "https://schema.org",
+          "@type": "GovernmentService",
+          "name": "Environmental Consultancy & HSE Audit Scoping",
+          "serviceOperator": {
+            "@type": "LocalBusiness",
+            "name": "Clean World Inc.",
+            "image": logoUrl,
+            "telephone": "+211 924 444 044",
+            "address": {
+              "@type": "PostalAddress",
+              "streetAddress": "Hai Kuwait, Juba",
+              "addressLocality": "Juba",
+              "addressRegion": "Central Equatoria",
+              "addressCountry": "SS"
+            }
+          },
+          "serviceType": "Environmental Consultancy",
+          "provider": {
+            "@type": "LocalBusiness",
+            "name": "Clean World Inc."
+          },
+          "areaServed": {
+            "@type": "AdministrativeArea",
+            "name": "South Sudan"
+          }
+        };
+        break;
+
       case ActiveView.Services:
         title = "Services | Clean World Inc.";
         description = "Explore our integrated professional facility ecology services in Juba, including environmental consultancy, facility management, vector-safe fumigation, and botanical landscaping.";
@@ -144,59 +177,6 @@ export function useDocumentMetadata(activeView: ActiveView) {
         robots = "index, follow";
         break;
 
-      case ActiveView.Academy:
-        title = "Academy (LMS) | Clean World Inc.";
-        description = "Professional safety, vector control, and eco-cleaning certification programs at Clean World Compliance Academy Juba.";
-        robots = "index, follow";
-        schemaData = {
-          "@context": "https://schema.org",
-          "@type": "ItemList",
-          "itemListElement": [
-            {
-              "@type": "ListItem",
-              "position": 1,
-              "item": {
-                "@type": "Course",
-                "name": "Mosquito & Vector Control",
-                "description": "Learn how to find breeding pools, apply safe larvicides, and operate mosquito control equipment safely under local guidelines.",
-                "provider": {
-                  "@type": "Organization",
-                  "name": "Clean World Compliance Academy Juba",
-                  "sameAs": "https://www.cleanworld.live"
-                }
-              }
-            },
-            {
-              "@type": "ListItem",
-              "position": 2,
-              "item": {
-                "@type": "Course",
-                "name": "Safe Chemical & Cleaning Product Handling",
-                "description": "Learn how to read product labels, safely handle cleaning chemicals, avoid toxic spills, and use protective gear correctly.",
-                "provider": {
-                  "@type": "Organization",
-                  "name": "Clean World Compliance Academy Juba",
-                  "sameAs": "https://www.cleanworld.live"
-                }
-              }
-            },
-            {
-              "@type": "ListItem",
-              "position": 3,
-              "item": {
-                "@type": "Course",
-                "name": "Modern Waste Collection & Disposal",
-                "description": "Learn how to safely collect waste, store bio-hazard materials for transport, and comply with South Sudan disposal laws.",
-                "provider": {
-                  "@type": "Organization",
-                  "name": "Clean World Compliance Academy Juba",
-                  "sameAs": "https://www.cleanworld.live"
-                }
-              }
-            }
-          ]
-        };
-        break;
 
       case ActiveView.ClientDashboard:
         title = "Client Dashboard | Clean World Inc.";

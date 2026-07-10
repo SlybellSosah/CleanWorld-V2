@@ -1,50 +1,76 @@
-# Implementation Plan: Responsive Layout & Readability Upgrades
+# Implementation Plan: Navigation Cleanup & Role-Based Auth
 
-This plan details the technical steps to resolve text visibility and readability issues under narrow viewports (30%-50% of standard desktop width, i.e., mobile/tablet scales). We will make the device mockups fully responsive and upgrade small, low-contrast typography across all components to meet WCAG AA standards.
+This plan details the steps to execute the UX and architectural roadmap to separate marketing pages, client workspaces, and worker tools.
 
-## Proposed Changes
+## User Review Required
 
-### 1. Responsive Portal Shells
+> [!IMPORTANT]
+> **Authentication state details:**
+> We will introduce a global state `currentUser` (`{ email: string, role: 'client' | 'cleaner' } | null`) in `App.tsx`.
+> - If `currentUser` is null, the public header navigation is visible, and the right side displays a **"Log In"** button.
+> - Clicking **"Log In"** opens a premium, dark-mode custom Modal offering preset quick-login buttons for either a **Client** (`client@cleanworld.live`) or **Cleaner Crew** (`cleaner@cleanworld.live`).
+> - Once authenticated, the "Log In" button is replaced by a **User Profile Avatar** with a dropdown menu allowing navigation to their respective private dashboards and logs.
 
-#### [MODIFY] [CleanerPortal.tsx](file:///home/pop_i9/Development/Web/Clean_World_Inc/src/components/CleanerPortal.tsx)
-- Modify the phone shell container to apply phone borders, fixed height (`h-[820px]`), and notch (`h-6`) **only** on medium-and-above viewports (`md:` breakpoint).
-- On mobile viewports, remove the borders, notch, and fixed height so that it spans `w-full min-h-screen` natively.
-- Upgrade any low-contrast texts (`text-slate-500`, `text-slate-600`) to readable gray shades (`text-slate-400` or `text-slate-300`).
+> [!TIP]
+> **Subdomain Simulation (`ops.cleanworld.live`):**
+> We will add a persistent operational banner at the top of the **Cleaner Portal** UI to indicate it is running on the isolated subdomain `ops.cleanworld.live` (with optimized offline-first service parameters), matching the strategic decoupling recommendation.
 
 ---
 
-### 2. Global Typography & Contrast Enhancements
+## Proposed Changes
 
-We will audit and refactor all major components to replace low-contrast text styles (`text-slate-500`, `text-slate-550`, `text-slate-600`, `text-slate-650`) on dark backgrounds with higher contrast classes (`text-slate-400` or `text-slate-300`), and bump ultra-small font sizes (`text-[9px]`, `text-[10px]`) to readable sizes.
+### Core Types
 
-#### [MODIFY] [AcademyPage.tsx](file:///home/pop_i9/Development/Web/Clean_World_Inc/src/components/AcademyPage.tsx)
-- Replace all occurrences of low-contrast `text-slate-500` with `text-slate-400` or `text-emerald-400` (for labels).
-- Bump sub-labels and metadata text sizes (e.g. from `text-[9px]` or `text-[10px]` to `text-xs` or `text-[11px]`).
+#### [MODIFY] [types.ts](file:///home/pop_i9/Development/Web/Clean_World_Inc/src/types.ts)
+- Define `UserSession` type:
+  ```typescript
+  export interface UserSession {
+    email: string;
+    role: 'client' | 'cleaner';
+  }
+  ```
 
-#### [MODIFY] [ClientDashboard.tsx](file:///home/pop_i9/Development/Web/Clean_World_Inc/src/components/ClientDashboard.tsx)
-- Upgrade `text-slate-500` classes in booking lists and metadata info panels to `text-slate-400`.
-- Ensure all detail text remains readable on mobile viewports.
+---
 
-#### [MODIFY] [EcoShopPage.tsx](file:///home/pop_i9/Development/Web/Clean_World_Inc/src/components/EcoShopPage.tsx)
-- Increase contrast on safety sheets and order summary labels.
-- Replace `text-slate-500` with `text-slate-400` / `text-slate-350`.
+### Shared Layout & Authentication
 
-#### [MODIFY] [ServicesPage.tsx](file:///home/pop_i9/Development/Web/Clean_World_Inc/src/components/ServicesPage.tsx)
-- Audit and adjust complexity labels, operational specifications table elements, and equipment tags to use higher contrast colors.
-- Adjust `text-slate-500`/`text-slate-650` classes in tables to `text-slate-400`.
+#### [NEW] [LoginModal.tsx](file:///home/pop_i9/Development/Web/Clean_World_Inc/src/components/LoginModal.tsx)
+- Create a beautiful, premium dark-mode modal container.
+- Implement preset click-to-login options (Corporate/Residential Client vs. Field Cleaner) with pre-filled mock credentials.
+- Add micro-animations using Framer Motion.
+
+#### [MODIFY] [Navbar.tsx](file:///home/pop_i9/Development/Web/Clean_World_Inc/src/components/Navbar.tsx)
+- Receive `currentUser` and `setCurrentUser` props.
+- Filter out `ActiveView.ClientDashboard` and `ActiveView.CleanerPortal` from public `navItems`.
+- Render a unified "Log In" button instead of the portal links.
+- Render a User Profile Avatar with dropdown options when logged in.
+
+#### [MODIFY] [App.tsx](file:///home/pop_i9/Development/Web/Clean_World_Inc/src/App.tsx)
+- Manage the global `currentUser` state.
+- Pass auth states to `Navbar`.
+- Add route guards: if a user tries to access `ActiveView.ClientDashboard` or `ActiveView.CleanerPortal` without being logged in, redirect them to the home page or prompt the login modal.
+
+---
+
+### Footer & Operations Hub
 
 #### [MODIFY] [Footer.tsx](file:///home/pop_i9/Development/Web/Clean_World_Inc/src/components/Footer.tsx)
-- Improve contrast of licensing info and bottom links (`text-slate-500` -> `text-slate-400`).
+- Update portals list to label Cleaner Dispatch as `Operations Portal (ops.cleanworld.live)`.
+- Update click handlers to align with new portal views.
+
+#### [MODIFY] [CleanerPortal.tsx](file:///home/pop_i9/Development/Web/Clean_World_Inc/src/components/CleanerPortal.tsx)
+- Add a top badge/header segment: `[ Simulated Subdomain: ops.cleanworld.live ]` with network latency indicators to emphasize separation.
 
 ---
 
 ## Verification Plan
 
 ### Automated Tests
-- Run `npm run lint` to ensure no TypeScript or compilation errors.
-- Run `npx playwright test` to verify that E2E tests still pass successfully.
+- Run `npm run lint` and `npm run build` to verify correctness.
+- Update Playwright E2E tests in `tests/clean-world.spec.ts` and `tests/screenshot.spec.ts` if they try to click public navbar buttons for dashboards directly. Instead, click the "Log In" button and authenticate first.
 
 ### Manual Verification
-- Deploy local dev server at `http://localhost:3000`.
-- Inspect the Cleaner Portal at `360px` width: check that it fills the screen perfectly without horizontal scroll and that mock borders/notch are hidden.
-- Review readability of all metadata and labels under dark mode at small screens.
+- Verify that "Client Portal" and "Cleaner Dispatch" are no longer visible on the public header.
+- Verify clicking "Log In" opens the modal.
+- Verify logging in as Client redirects to Client Dashboard and displays a dropdown avatar.
+- Verify logging in as Cleaner redirects to Cleaner Dispatch (with simulated ops subdomain header banner).

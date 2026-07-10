@@ -8,23 +8,54 @@ const viewports = [
 ];
 
 async function navigateToView(page: any, label: string, viewId: string, isMobile: boolean) {
-  if (isMobile) {
-    // Open mobile menu
-    const toggleBtn = page.locator('#nav-mobile-toggle');
-    await expect(toggleBtn).toBeVisible();
-    await toggleBtn.click();
-    await page.waitForTimeout(500); // Wait for transition
-    // Click the button inside the mobile drawer
-    const drawerLink = page.locator(`#nav-mobile-drawer button:has-text("${label}")`);
-    await expect(drawerLink).toBeVisible();
-    await drawerLink.click();
-    await page.waitForTimeout(500); // Wait for view to update and transition
-  } else {
-    // Desktop: Click the nav link directly
-    const navLink = page.locator(`#nav-link-${viewId}`);
-    await expect(navLink).toBeVisible();
-    await navLink.click();
+  if (viewId === 'client-dashboard' || viewId === 'cleaner-portal') {
+    // Reset state by going to home page to clear session and close any drawers
+    await page.goto('/');
     await page.waitForTimeout(500);
+    
+    // Trigger login
+    if (isMobile) {
+      const isDrawerOpen = await page.locator('#nav-mobile-drawer').isVisible().catch(() => false);
+      if (!isDrawerOpen) {
+        await page.locator('#nav-mobile-toggle').click();
+        await page.waitForTimeout(500);
+      }
+      await page.locator('#nav-mobile-login-btn').click();
+    } else {
+      await page.locator('#nav-login-btn').click();
+    }
+    await page.waitForTimeout(500);
+    
+    // Choose appropriate persona from login modal presets
+    if (viewId === 'client-dashboard') {
+      await page.getByRole('button', { name: 'Demo Client' }).click();
+    } else {
+      await page.getByRole('button', { name: 'Field Staff' }).click();
+      await page.getByRole('button', { name: 'Demo Cleaner Crew' }).click();
+    }
+    await page.waitForTimeout(1000);
+  } else {
+    if (isMobile) {
+      // Open mobile menu
+      const isDrawerOpen = await page.locator('#nav-mobile-drawer').isVisible().catch(() => false);
+      if (!isDrawerOpen) {
+        const toggleBtn = page.locator('#nav-mobile-toggle');
+        await expect(toggleBtn).toBeVisible();
+        await toggleBtn.click();
+        await page.waitForTimeout(500); // Wait for transition
+      }
+      // Click the button inside the mobile drawer
+      const drawerLink = page.locator(`#nav-mobile-drawer button:has-text("${label}")`);
+      await expect(drawerLink).toBeVisible();
+      await drawerLink.click();
+      await page.waitForTimeout(500); // Wait for view to update and transition
+    } else {
+      // Desktop: Click the nav link directly
+      const navLink = page.locator(`#nav-link-${viewId}`);
+      await expect(navLink).toBeVisible();
+      await navLink.click();
+      await page.waitForTimeout(500);
+    }
   }
 }
 
@@ -41,13 +72,6 @@ test.describe('Capture Screenshots at Different Viewports', () => {
       // Take screenshot of home page
       await page.screenshot({
         path: `screenshot_home_${vp.name}.png`,
-        fullPage: true
-      });
-
-      // Navigate to Academy
-      await navigateToView(page, 'Training Academy', 'academy', vp.isMobile);
-      await page.screenshot({
-        path: `screenshot_academy_${vp.name}.png`,
         fullPage: true
       });
 

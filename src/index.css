@@ -7,15 +7,14 @@
   --font-display: "Space Grotesk", sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
 
-  /* Global scale-up: all standard text sizes increased by 4px from base */
-  --font-size-xs: 1rem;
-  --font-size-sm: 1.125rem;
-  --font-size-base: 1.25rem;
-  --font-size-lg: 1.375rem;
-  --font-size-xl: 1.5rem;
-  --font-size-2xl: 1.75rem;
-  --font-size-3xl: 2.125rem;
-  --font-size-4xl: 2.5rem;
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 1.875rem;
+  --font-size-4xl: 2.25rem;
 }
 
 /* Custom dark mode leaflet styling to look extremely premium */

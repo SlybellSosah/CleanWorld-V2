@@ -108,7 +108,7 @@ export default function MapComponent({
     });
 
     const pendingIcon = L.divIcon({
-      html: `<div class="flex items-center justify-center bg-amber-500 border-2 border-slate-950 rounded-full shadow-lg h-8 w-8 text-[15px] text-slate-950 font-sans">🧹</div>`,
+      html: `<div class="flex items-center justify-center bg-amber-500 border-2 border-slate-950 rounded-full shadow-lg h-8 w-8 text-xs text-slate-950 font-sans">🧹</div>`,
       className: "",
       iconSize: [32, 32],
       iconAnchor: [16, 16],
@@ -116,7 +116,7 @@ export default function MapComponent({
     });
 
     const completedIcon = L.divIcon({
-      html: `<div class="flex items-center justify-center bg-emerald-500 border-2 border-slate-950 rounded-full shadow-lg h-8 w-8 text-[15px] text-slate-950 font-sans">✅</div>`,
+      html: `<div class="flex items-center justify-center bg-emerald-500 border-2 border-slate-950 rounded-full shadow-lg h-8 w-8 text-xs text-slate-950 font-sans">✅</div>`,
       className: "",
       iconSize: [32, 32],
       iconAnchor: [16, 16],
@@ -125,7 +125,7 @@ export default function MapComponent({
 
     // Custom helper for landmarks decoration
     const landmarkIcon = (emoji: string, label: string) => L.divIcon({
-      html: `<div class="flex items-center bg-slate-950/90 border border-slate-800 rounded-lg px-2 py-0.5 shadow-md text-[15px] font-sans font-semibold text-slate-300 gap-1.5 whitespace-nowrap"><span class="text-xs shrink-0">${emoji}</span><span>${label}</span></div>`,
+      html: `<div class="flex items-center bg-slate-950/90 border border-slate-800 rounded-lg px-2 py-0.5 shadow-md text-xs font-sans font-semibold text-slate-300 gap-1.5 whitespace-nowrap"><span class="text-xs shrink-0">${emoji}</span><span>${label}</span></div>`,
       className: "",
       iconSize: [95, 22],
       iconAnchor: [47, 11]
@@ -179,23 +179,23 @@ export default function MapComponent({
         
         popupContent.innerHTML = `
           <div class="flex justify-between items-center gap-2">
-            <span class="font-mono font-bold text-sky-400 text-[14px]">${booking.id}</span>
-            <span class="text-[15px] uppercase px-1.5 py-0.5 rounded font-bold ${
+            <span class="font-mono font-bold text-sky-400 text-xs">${booking.id}</span>
+            <span class="text-xs uppercase px-1.5 py-0.5 rounded font-bold ${
               booking.status === "completed" ? "bg-emerald-500/20 text-emerald-400" : "bg-amber-500/20 text-amber-400"
             }">${booking.status}</span>
           </div>
-          <div class="font-bold text-white text-[15px] capitalize">${booking.cleanType} Clean</div>
-          <div class="text-[14px] text-slate-300">${booking.address}</div>
-          ${booking.landmark ? `<div class="text-[15px] text-slate-400 italic leading-tight mt-0.5">📍 Landmark: ${booking.landmark}</div>` : ""}
-          <div class="flex justify-between items-center text-[14px] border-t border-slate-800/80 pt-1.5 mt-0.5">
+          <div class="font-bold text-white text-xs capitalize">${booking.cleanType} Clean</div>
+          <div class="text-xs text-slate-300">${booking.address}</div>
+          ${booking.landmark ? `<div class="text-xs text-slate-400 italic leading-tight mt-0.5">📍 Landmark: ${booking.landmark}</div>` : ""}
+          <div class="flex justify-between items-center text-xs border-t border-slate-800/80 pt-1.5 mt-0.5">
             <span class="font-mono text-emerald-400 font-bold">$${booking.price.toFixed(0)} / SSP ${sspPrice.toLocaleString()}</span>
-            <span class="text-[15px] font-semibold text-slate-400 bg-slate-900 px-1 py-0.5 rounded">${booking.transportMode === "boda" ? "🏍️ Boda-Boda" : "🚚 Crew Truck"}</span>
+            <span class="text-xs font-semibold text-slate-400 bg-slate-900 px-1 py-0.5 rounded">${booking.transportMode === "boda" ? "🏍️ Boda-Boda" : "🚚 Crew Truck"}</span>
           </div>
         `;
 
         if (onSelectBooking && booking.status !== "cancelled") {
           const btn = document.createElement("button");
-          btn.className = "w-full mt-2 py-1.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-[14px] font-bold rounded uppercase transition-colors pointer-events-auto cursor-pointer";
+          btn.className = "w-full mt-2 py-1.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold rounded uppercase transition-colors pointer-events-auto cursor-pointer";
           btn.innerText = "Open Job Sheet";
           btn.onclick = (e) => {
             e.stopPropagation();
@@ -351,8 +351,8 @@ export default function MapComponent({
       <div ref={mapContainerRef} className="w-full h-full min-h-[300px] z-10" />
       
       {/* Decorative Juba GPS Coordinates HUD Panel overlay */}
-      <div className="absolute bottom-3 left-3 bg-slate-900/90 border border-slate-800 px-3 py-2 rounded-xl z-20 text-[14px] font-mono text-slate-400 backdrop-blur-md shadow-lg pointer-events-none flex flex-col gap-0.5">
-        <span className="text-emerald-400 font-bold uppercase tracking-wider text-[14px] mb-0.5">TELEMETRY</span>
+      <div className="absolute bottom-3 left-3 bg-slate-900/90 border border-slate-800 px-3 py-2 rounded-xl z-20 text-xs font-mono text-slate-400 backdrop-blur-md shadow-lg pointer-events-none flex flex-col gap-0.5">
+        <span className="text-emerald-400 font-bold uppercase tracking-wider text-xs mb-0.5">TELEMETRY</span>
         <div>REG: Juba, Central Equatoria</div>
         <div>LAT: {mode === "pinning" ? lat.toFixed(5) : (targetLat?.toFixed(5) || lat.toFixed(5))}</div>
         <div>LNG: {mode === "pinning" ? lng.toFixed(5) : (targetLng?.toFixed(5) || lng.toFixed(5))}</div>

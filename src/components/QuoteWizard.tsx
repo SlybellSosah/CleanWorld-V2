@@ -1,21 +1,206 @@
 import React, { useState, useEffect } from "react";
-import { ActiveView, Booking, RiskClass } from "../types";
+import { ActiveView, Booking, RiskClass, UserSession, UserRole } from "../types";
 import { 
   ShieldCheck, ArrowLeft, ArrowRight, CheckCircle, MapPin, 
   Sparkles, Calendar, Clock, CreditCard, HelpCircle, Heart, User, Building, Phone, Mail, FileText,
-  X, RefreshCw, CheckCircle2
+  X, RefreshCw, CheckCircle2, SmartphoneNfc
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import MapComponent from "./MapComponent";
+
+
+// ─── Progressive Registration Nudge ──────────────────────────────────────────
+interface ProgressiveNudgeProps {
+  currentUser?: UserSession | null;
+  onRegisterSuccess?: (session: UserSession) => void;
+}
+
+function ProgressiveRegistrationNudge({ currentUser, onRegisterSuccess }: ProgressiveNudgeProps) {
+  const [dismissed, setDismissed] = useState(false);
+  const [regName, setRegName] = useState("");
+  const [regPhone, setRegPhone] = useState("");
+  const [regPin, setRegPin] = useState("");
+  const [regLoading, setRegLoading] = useState(false);
+  const [regSuccess, setRegSuccess] = useState(false);
+  const [regError, setRegError] = useState("");
+
+  // Don't render if already logged in or dismissed
+  if (currentUser || dismissed) return null;
+
+  const handleRegister = (e: React.FormEvent) => {
+    e.preventDefault();
+    setRegError("");
+    if (!regName.trim()) { setRegError("Please enter your name."); return; }
+    if (!regPhone.trim()) { setRegError("Please enter your phone number."); return; }
+    if (regPin.length < 4) { setRegError("Please set a complete 4-digit PIN."); return; }
+
+    setRegLoading(true);
+    setTimeout(() => {
+      setRegLoading(false);
+      setRegSuccess(true);
+      if (onRegisterSuccess) {
+        setTimeout(() => {
+          onRegisterSuccess({
+            email: `${regPhone.replace(/\s+/g, "")}@client.cleanworld.live`,
+            role: UserRole.Client,
+            name: regName,
+            phone: regPhone,
+          });
+        }, 900);
+      }
+    }, 800);
+  };
+
+  return (
+    <div
+      className="bg-slate-900 border border-emerald-500/25 rounded-3xl p-6 space-y-5"
+      id="progressive-registration-nudge"
+    >
+      {/* Glow line */}
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-500/30 to-transparent" />
+
+      {regSuccess ? (
+        <div className="text-center space-y-3 py-4">
+          <div className="h-12 w-12 bg-emerald-500/10 text-emerald-400 rounded-full flex items-center justify-center mx-auto border border-emerald-500/20">
+            <CheckCircle2 className="w-7 h-7" />
+          </div>
+          <h3 className="font-display font-bold text-white text-sm">Account Created!</h3>
+          <p className="text-xs text-slate-400">Welcome, {regName}. You can now track your booking and re-book in one tap.</p>
+        </div>
+      ) : (
+        <>
+          {/* Header */}
+          <div className="flex items-start justify-between">
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 bg-emerald-500/10 border border-emerald-500/20 rounded-xl flex items-center justify-center shrink-0">
+                <SmartphoneNfc className="w-5 h-5 text-emerald-400" />
+              </div>
+              <div>
+                <h3 className="font-display font-bold text-white text-sm">Track your cleaner live</h3>
+                <p className="text-[11px] text-slate-400 mt-0.5">Save your booking to your free account</p>
+              </div>
+            </div>
+            <button
+              onClick={() => setDismissed(true)}
+              className="text-slate-600 hover:text-slate-400 transition-colors shrink-0 ml-2"
+              aria-label="Dismiss"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+
+          {/* Value bullets */}
+          <div className="grid grid-cols-3 gap-2 text-center">
+            {[
+              { icon: "📍", label: "Track cleaner live" },
+              { icon: "⚡", label: "Re-book in 1 tap" },
+              { icon: "📄", label: "View receipts" },
+            ].map(({ icon, label }) => (
+              <div key={label} className="bg-slate-950/60 border border-slate-800 rounded-xl px-2 py-3 space-y-1">
+                <span className="text-lg block">{icon}</span>
+                <span className="text-[10px] text-slate-400 font-sans leading-tight block">{label}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* Registration form */}
+          <form onSubmit={handleRegister} className="space-y-3">
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-[10px] font-mono uppercase text-slate-400 mb-1">Your Name *</label>
+                <input
+                  type="text"
+                  placeholder="e.g. John Garang"
+                  value={regName}
+                  onChange={(e) => setRegName(e.target.value)}
+                  disabled={regLoading}
+                  className="w-full bg-slate-950/60 border border-slate-800 rounded-xl py-2.5 px-3 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-emerald-500/40 font-sans transition-all"
+                />
+              </div>
+              <div>
+                <label className="block text-[10px] font-mono uppercase text-slate-400 mb-1">Phone Number *</label>
+                <div className="relative">
+                  <Phone className="absolute left-3 top-2.5 w-3.5 h-3.5 text-slate-500" />
+                  <input
+                    type="tel"
+                    placeholder="+211 9__"
+                    value={regPhone}
+                    onChange={(e) => setRegPhone(e.target.value)}
+                    disabled={regLoading}
+                    className="w-full bg-slate-950/60 border border-slate-800 rounded-xl py-2.5 pl-8 pr-3 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-emerald-500/40 font-mono transition-all"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-[10px] font-mono uppercase text-slate-400 mb-1">Set a 4-Digit PIN * (like your mobile money)</label>
+              <div className="flex gap-2 items-center">
+                <input
+                  type="password"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  maxLength={4}
+                  value={regPin}
+                  onChange={(e) => setRegPin(e.target.value.replace(/\D/g, "").slice(0, 4))}
+                  disabled={regLoading}
+                  placeholder="••••"
+                  className="flex-1 bg-slate-950/60 border border-slate-800 rounded-xl py-2.5 px-4 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-emerald-500/40 font-mono tracking-widest text-center transition-all"
+                  aria-label="4-digit PIN"
+                />
+                <div className="flex gap-1.5">
+                  {[0, 1, 2, 3].map((i) => (
+                    <div
+                      key={i}
+                      className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
+                        i < regPin.length ? "border-emerald-500 bg-emerald-500/15" : "border-slate-700"
+                      }`}
+                    >
+                      {i < regPin.length && <span className="w-2 h-2 rounded-full bg-emerald-400 block" />}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {regError && (
+              <p className="text-red-400 font-mono text-[11px] text-center">{regError}</p>
+            )}
+
+            <div className="flex flex-col sm:flex-row gap-2.5 pt-1">
+              <button
+                type="submit"
+                disabled={regLoading}
+                className="flex-grow bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-display font-extrabold text-xs py-3 rounded-xl transition-all shadow-lg shadow-emerald-500/10 disabled:opacity-50"
+              >
+                {regLoading ? "Saving..." : "Save My Booking →"}
+              </button>
+              <button
+                type="button"
+                onClick={() => setDismissed(true)}
+                className="sm:flex-none bg-slate-800/60 hover:bg-slate-800 text-slate-300 font-sans text-xs py-3 px-4 rounded-xl border border-slate-700 transition-colors"
+              >
+                Continue as Guest
+              </button>
+            </div>
+          </form>
+        </>
+      )}
+    </div>
+  );
+}
+
 
 interface QuoteWizardProps {
   setActiveView: (view: ActiveView) => void;
   bookings: Booking[];
   setBookings: React.Dispatch<React.SetStateAction<Booking[]>>;
   initialSpecs?: any;
+  currentUser?: UserSession | null;
+  onRegisterSuccess?: (session: UserSession) => void;
 }
 
-export default function QuoteWizard({ setActiveView, bookings, setBookings, initialSpecs }: QuoteWizardProps) {
+export default function QuoteWizard({ setActiveView, bookings, setBookings, initialSpecs, currentUser, onRegisterSuccess }: QuoteWizardProps) {
   const [activeStep, setActiveStep] = useState(1); // Step 1: Scoping, Step 2: Frequency & Schedule, Step 3: Checkout
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [newBookingId, setNewBookingId] = useState<string | null>(null);
@@ -341,9 +526,9 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings, init
           <div>
             <div className="flex items-center gap-2 mb-1">
               <Sparkles className="w-4 h-4 text-emerald-400 animate-pulse" />
-              <span className="text-emerald-400 font-mono text-[14px] uppercase tracking-widest font-extrabold">Professional Cleaning Engine</span>
+              <span className="text-emerald-400 font-mono text-xs uppercase tracking-widest font-extrabold">Professional Cleaning Engine</span>
             </div>
-            <h1 className="font-display text-3xl font-extrabold text-white">Book Your Eco-Clean</h1>
+            <h1 className="font-display text-2xl sm:text-3xl font-extrabold text-white">Book Your Eco-Clean</h1>
           </div>
 
           {/* Stepper Wizard Indicator */}
@@ -375,80 +560,89 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings, init
 
         {activeStep === 4 ? (
           /* STEP 4: CONFIRMATION & RECEIPT SHEET */
-          <div className="max-w-2xl mx-auto bg-slate-900 border border-slate-800 rounded-3xl p-8 space-y-8 text-center animate-fadeIn" id="receipt-card">
-            <div className="h-16 w-16 bg-emerald-500/10 text-emerald-400 rounded-full flex items-center justify-center mx-auto border border-emerald-500/20 shadow-lg shadow-emerald-500/5">
-              <CheckCircle className="w-10 h-10 animate-bounce" />
+          <div className="max-w-2xl mx-auto space-y-6 animate-fadeIn">
+            {/* Receipt Card */}
+            <div className="bg-slate-900 border border-slate-800 rounded-3xl p-8 space-y-8 text-center" id="receipt-card">
+              <div className="h-16 w-16 bg-emerald-500/10 text-emerald-400 rounded-full flex items-center justify-center mx-auto border border-emerald-500/20 shadow-lg shadow-emerald-500/5">
+                <CheckCircle className="w-10 h-10 animate-bounce" />
+              </div>
+
+              <div className="space-y-2">
+                <span className="text-emerald-400 font-mono text-xs uppercase tracking-wider block font-bold">SECURE ORDER DISPATCHED</span>
+                <h2 className="font-display text-2xl font-extrabold text-white">Booking Confirmed!</h2>
+                <p className="text-xs text-slate-400 max-w-sm mx-auto">
+                  Your reservation has been authenticated and loaded into our scheduling matrix.
+                </p>
+              </div>
+
+              {/* Receipt Summary Breakdown */}
+              <div className="bg-slate-950 border border-slate-850 rounded-2xl p-6 text-left space-y-4 font-mono text-xs text-slate-300">
+                <div className="flex justify-between pb-3 border-b border-slate-850">
+                  <span className="text-slate-400 uppercase font-mono">Invoice Reference</span>
+                  <span className="font-bold text-white">{newBookingId}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-400 uppercase">Service Profile</span>
+                  <span className="text-white capitalize font-semibold">
+                    {isWasteService ? "Waste Collection & Disposal Dispatch" : `${cleanType} Clean`}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-400">{isWasteService ? "Refuse Parameters" : "Property Layout"}</span>
+                  <span>
+                    {isWasteService 
+                      ? `${wasteVolume} m³ (${wasteRisk})` 
+                      : `${bedrooms} Bed, ${bathrooms} Bath`}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-400">Schedule Date</span>
+                  <span>{selectedDate}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-400">Arrival Window</span>
+                  <span>{selectedTimeSlot}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-400">Territory Area</span>
+                  <span>{SERVED_TERRITORIES.find(t => t.zip === zipCode)?.name || "Juba Local"} ({zipCode})</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-slate-400">GPS Pinned Location</span>
+                  <span>{selectedLat.toFixed(5)}, {selectedLng.toFixed(5)}</span>
+                </div>
+                <div className="flex justify-between pt-3 border-t border-slate-850 text-sm font-bold text-white">
+                  <span>ESTIMATED BILLING</span>
+                  <span>${finalPrice.toFixed(2)}</span>
+                </div>
+              </div>
+
+              {/* CTA action buttons */}
+              <div className="flex flex-col sm:flex-row gap-4 justify-center pt-2">
+                <button
+                  onClick={() => setActiveView(ActiveView.ClientDashboard)}
+                  className="w-full sm:w-auto bg-sky-500 hover:bg-sky-400 text-slate-950 font-display font-extrabold text-xs px-8 py-3.5 rounded-xl transition-colors shadow-lg shadow-sky-500/10 flex items-center justify-center gap-1.5"
+                >
+                  Go to Client Dashboard
+                </button>
+                <button
+                  onClick={() => {
+                    setActiveStep(1);
+                    setNewBookingId(null);
+                    setSelectedAddons([]);
+                  }}
+                  className="w-full sm:w-auto bg-slate-800 hover:bg-slate-700 text-white font-sans font-semibold text-xs px-8 py-3.5 rounded-xl border border-slate-750 transition-colors"
+                >
+                  Book Another Service
+                </button>
+              </div>
             </div>
 
-            <div className="space-y-2">
-              <span className="text-emerald-400 font-mono text-xs uppercase tracking-wider block font-bold">SECURE ORDER DISPATCHED</span>
-              <h2 className="font-display text-2xl font-extrabold text-white">Booking Confirmed!</h2>
-              <p className="text-xs text-slate-400 max-w-sm mx-auto">
-                Your reservation has been authenticated and loaded into our scheduling matrix.
-              </p>
-            </div>
-
-            {/* Receipt Summary Breakdown */}
-            <div className="bg-slate-950 border border-slate-850 rounded-2xl p-6 text-left space-y-4 font-mono text-xs text-slate-300">
-              <div className="flex justify-between pb-3 border-b border-slate-850">
-                <span className="text-slate-400 uppercase font-mono">Invoice Reference</span>
-                <span className="font-bold text-white">{newBookingId}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-slate-400 uppercase">Service Profile</span>
-                <span className="text-white capitalize font-semibold">
-                  {isWasteService ? "Waste Collection & Disposal Dispatch" : `${cleanType} Clean`}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-slate-400">{isWasteService ? "Refuse Parameters" : "Property Layout"}</span>
-                <span>
-                  {isWasteService 
-                    ? `${wasteVolume} m³ (${wasteRisk})` 
-                    : `${bedrooms} Bed, ${bathrooms} Bath`}
-                </span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-slate-400">Schedule Date</span>
-                <span>{selectedDate}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-slate-400">Arrival Window</span>
-                <span>{selectedTimeSlot}</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-slate-400">Territory Area</span>
-                <span>{SERVED_TERRITORIES.find(t => t.zip === zipCode)?.name || "Juba Local"} ({zipCode})</span>
-              </div>
-              <div className="flex justify-between">
-                <span className="text-slate-400">GPS Pinned Location</span>
-                <span>{selectedLat.toFixed(5)}, {selectedLng.toFixed(5)}</span>
-              </div>
-              <div className="flex justify-between pt-3 border-t border-slate-850 text-sm font-bold text-white">
-                <span>ESTIMATED BILLING</span>
-                <span>${finalPrice.toFixed(2)}</span>
-              </div>
-            </div>
-
-            {/* CTA action buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center pt-2">
-              <button
-                onClick={() => setActiveView(ActiveView.ClientDashboard)}
-                className="w-full sm:w-auto bg-sky-500 hover:bg-sky-400 text-slate-950 font-display font-extrabold text-xs px-8 py-3.5 rounded-xl transition-colors shadow-lg shadow-sky-500/10 flex items-center justify-center gap-1.5"
-              >
-                Go to Client Dashboard
-              </button>
-              <button
-                onClick={() => {
-                  setActiveStep(1);
-                  setNewBookingId(null);
-                  setSelectedAddons([]);
-                }}
-                className="w-full sm:w-auto bg-slate-800 hover:bg-slate-700 text-white font-sans font-semibold text-xs px-8 py-3.5 rounded-xl border border-slate-750 transition-colors"
-              >
-                Book Another Service
-              </button>
-            </div>
+            {/* ── Progressive Registration Nudge (guests only) ──────────── */}
+            <ProgressiveRegistrationNudge
+              currentUser={currentUser}
+              onRegisterSuccess={onRegisterSuccess}
+            />
           </div>
         ) : (
           /* WORKFLOW CONTENT & SIDEBAR GRID */
@@ -463,10 +657,10 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings, init
                   
                   {/* Step Title */}
                   <div className="space-y-1">
-                    <span className="text-sky-400 font-mono text-[14px] uppercase font-bold tracking-wider">
+                    <span className="text-sky-400 font-mono text-xs uppercase font-bold tracking-wider">
                       {isWasteService ? "STEP 1 OF 3: WASTE LOGISTICS PARAMETERS" : "STEP 1 OF 3: PROPERTY DETAILS"}
                     </span>
-                    <h2 className="font-display text-xl font-bold text-white">
+                    <h2 className="font-display text-lg sm:text-xl font-bold text-white">
                       {isWasteService ? "Tell us about your waste requirements" : "Tell us about your home"}
                     </h2>
                     <p className="text-xs text-slate-400">
@@ -478,7 +672,7 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings, init
 
                   {/* Territory coverage check */}
                   <div className="space-y-2">
-                    <label className="text-[14px] text-slate-400 font-mono uppercase tracking-wide block">Juba Neighborhood Service Area *</label>
+                    <label className="text-xs text-slate-400 font-mono uppercase tracking-wide block">Juba Neighborhood Service Area *</label>
                     <div className="flex gap-3 max-w-md">
                       <select 
                         value={zipCode}
@@ -495,7 +689,7 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings, init
                           </option>
                         ))}
                       </select>
-                      <span className="px-3.5 py-3 rounded-xl bg-slate-950 border border-slate-800 font-semibold font-mono text-[15px] flex items-center justify-center text-slate-400">
+                      <span className="px-3.5 py-3 rounded-xl bg-slate-950 border border-slate-800 font-semibold font-mono text-xs flex items-center justify-center text-slate-400">
                         {SERVED_TERRITORIES.find(t => t.zip === zipCode)?.zip || "OUTSIDE AREA"}
                       </span>
                     </div>
@@ -520,7 +714,7 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings, init
                           onChange={(e) => setWasteVolume(Number(e.target.value))}
                           className="w-full h-1.5 bg-slate-950 rounded-lg appearance-none cursor-pointer accent-sky-500 border border-slate-800"
                         />
-                        <div className="flex justify-between text-[14px] font-mono text-slate-400 uppercase">
+                        <div className="flex justify-between text-xs font-mono text-slate-400 uppercase">
                           <span>1 m³</span>
                           <span>50 m³</span>
                           <span>100 m³</span>
@@ -529,7 +723,7 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings, init
 
                       {/* Risk Classification selector */}
                       <div className="space-y-2">
-                        <label className="text-[14px] text-slate-400 font-mono uppercase tracking-wide block">Material Risk Tier</label>
+                        <label className="text-xs text-slate-400 font-mono uppercase tracking-wide block">Material Risk Tier</label>
                         <div className="grid grid-cols-3 gap-3">
                           {[
                             { label: "Class I (Low)", val: RiskClass.Low, desc: "Standard commercial paper/refuse", color: "border-emerald-500/30 text-emerald-400 bg-emerald-500/5" },
@@ -547,7 +741,7 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings, init
                               }`}
                             >
                               <span className="font-display font-bold text-white text-xs">{item.label}</span>
-                              <span className="text-[14px] text-slate-400 leading-normal">{item.desc}</span>
+                              <span className="text-xs text-slate-400 leading-normal">{item.desc}</span>
                             </button>
                           ))}
                         </div>
@@ -555,7 +749,7 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings, init
 
                       {/* Waste Addon Selectors */}
                       <div className="space-y-2">
-                        <label className="text-[14px] text-slate-400 font-mono uppercase tracking-wide block">Select HSE Compliance Add-ons</label>
+                        <label className="text-xs text-slate-400 font-mono uppercase tracking-wide block">Select HSE Compliance Add-ons</label>
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
                           {[
                             { name: "HSE Waste Binning", price: 50, desc: "Provide high-grade sealed bins", icon: "🗑️" },
@@ -576,11 +770,11 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings, init
                               >
                                 <div className="flex justify-between items-center w-full">
                                   <span className="text-lg">{addon.icon}</span>
-                                  <span className="font-mono text-[14px] text-slate-400 font-semibold">+${addon.price}</span>
+                                  <span className="font-mono text-xs text-slate-400 font-semibold">+${addon.price}</span>
                                 </div>
                                 <div>
-                                  <span className="text-[15px] font-semibold tracking-wide block">{addon.name}</span>
-                                  <span className="text-[14px] text-slate-400 leading-normal font-normal mt-0.5 block">{addon.desc}</span>
+                                  <span className="text-xs font-semibold tracking-wide block">{addon.name}</span>
+                                  <span className="text-xs text-slate-400 leading-normal font-normal mt-0.5 block">{addon.desc}</span>
                                 </div>
                               </button>
                             );
@@ -595,7 +789,7 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings, init
                         {/* Bedrooms */}
                         <div className="bg-slate-950 border border-slate-850 p-4 rounded-2xl flex items-center justify-between">
                           <div className="space-y-0.5">
-                            <span className="text-[14px] text-slate-400 font-mono uppercase">Bedrooms</span>
+                            <span className="text-xs text-slate-400 font-mono uppercase">Bedrooms</span>
                             <div className="font-display font-black text-white text-lg">{bedrooms} Bedrooms</div>
                           </div>
                           <div className="flex items-center gap-2">
@@ -611,11 +805,10 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings, init
                             >+</button>
                           </div>
                         </div>
-
                         {/* Bathrooms */}
                         <div className="bg-slate-950 border border-slate-850 p-4 rounded-2xl flex items-center justify-between">
                           <div className="space-y-0.5">
-                            <span className="text-[14px] text-slate-400 font-mono uppercase">Bathrooms</span>
+                            <span className="text-xs text-slate-400 font-mono uppercase">Bathrooms</span>
                             <div className="font-display font-black text-white text-lg">{bathrooms} Bathrooms</div>
                           </div>
                           <div className="flex items-center gap-2">
@@ -635,7 +828,7 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings, init
 
                       {/* Square footage Range */}
                       <div className="space-y-2">
-                        <label className="text-[14px] text-slate-400 font-mono uppercase tracking-wide block">Estimated Area Range</label>
+                        <label className="text-xs text-slate-400 font-mono uppercase tracking-wide block">Estimated Area Range</label>
                         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
                           {[
                             "< 1,000 sq ft",
@@ -661,7 +854,7 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings, init
 
                       {/* Base Clean Selector */}
                       <div className="space-y-2">
-                        <label className="text-[14px] text-slate-400 font-mono uppercase tracking-wide block">Standard, Deep, or Move Clean</label>
+                        <label className="text-xs text-slate-400 font-mono uppercase tracking-wide block">Standard, Deep, or Move Clean</label>
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                           {/* Standard Clean */}
                           <button
@@ -675,11 +868,11 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings, init
                           >
                             <div className="space-y-1">
                               <span className="font-display font-bold text-white block text-sm">Standard Clean</span>
-                              <p className="text-[14px] text-slate-400 leading-normal">
-                                Perfect for regular maintenance. Includes dust, mop, vacuum, and trash empty.
+                              <p className="text-xs text-slate-400 leading-normal">
+                                Regular maintenance. Includes dust, mop, vacuum, and trash empty.
                               </p>
                             </div>
-                            <span className="font-mono text-xs font-semibold">Multiplier: 1.0x</span>
+                            <span className="font-mono text-xs font-semibold">1.0x</span>
                           </button>
 
                           {/* Deep Clean */}
@@ -694,11 +887,11 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings, init
                           >
                             <div className="space-y-1">
                               <span className="font-display font-bold text-white block text-sm">Deep Clean</span>
-                              <p className="text-[14px] text-slate-400 leading-normal">
-                                Intense detailed sanitize. Adds wet wipe baseboards, heavy scrub zones and light fixtures.
+                              <p className="text-xs text-slate-400 leading-normal">
+                                Intense sanitize. Adds baseboards and heavy scrub zones.
                               </p>
                             </div>
-                            <span className="font-mono text-xs font-semibold text-emerald-400">Multiplier: 1.5x</span>
+                            <span className="font-mono text-xs font-semibold text-emerald-400">1.5x</span>
                           </button>
 
                           {/* Move-In/Out Clean */}
@@ -708,23 +901,23 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings, init
                             className={`p-4 rounded-2xl border text-left transition-all flex flex-col justify-between gap-4 ${
                               cleanType === "move-in-out"
                                 ? "bg-purple-500/5 border-purple-500 text-purple-400"
-                                : "bg-slate-950 border-slate-850 text-slate-400 hover:text-slate-200"
+                                : "bg-slate-950 border-slate-855 text-slate-400 hover:text-slate-200"
                             }`}
                           >
                             <div className="space-y-1">
                               <span className="font-display font-bold text-white block text-sm">Move-In / Out</span>
-                              <p className="text-[14px] text-slate-400 leading-normal">
-                                Prepare your property for moving. Includes empty cabinets, stove interior and deep closet vacuum.
+                              <p className="text-xs text-slate-400 leading-normal">
+                                Moving cleans. Empty cabinets, stove interior and deep vacuums.
                               </p>
                             </div>
-                            <span className="font-mono text-xs font-semibold text-purple-400">Multiplier: 1.25x + $50</span>
+                            <span className="font-mono text-xs font-semibold text-purple-400">1.25x + $50</span>
                           </button>
                         </div>
                       </div>
 
                       {/* Toggleable Add-on Cards */}
                       <div className="space-y-3">
-                        <label className="text-[14px] text-slate-400 font-mono uppercase tracking-wide block">Select Special Add-ons</label>
+                        <label className="text-xs text-slate-400 font-mono uppercase tracking-wide block">Select Special Add-ons</label>
                         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 font-sans">
                           {ADDONS_LIST.map((addon) => {
                             const isSelected = selectedAddons.includes(addon.name);
@@ -736,14 +929,14 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings, init
                                 className={`p-3.5 rounded-xl border text-left transition-all flex flex-col justify-between gap-3 ${
                                   isSelected
                                     ? "bg-sky-500/10 border-sky-500 text-sky-400 font-bold"
-                                    : "bg-slate-950 border-slate-850 text-slate-300 hover:text-white"
+                                    : "bg-slate-950 border-slate-855 text-slate-300 hover:text-white"
                                 }`}
                               >
                                 <div className="flex justify-between items-center w-full">
                                   <span className="text-lg">{addon.icon}</span>
-                                  <span className="font-mono text-[14px] text-slate-400 font-semibold">+${addon.price}</span>
+                                  <span className="font-mono text-xs text-slate-400 font-semibold">+${addon.price}</span>
                                 </div>
-                                <span className="text-[15px] font-semibold tracking-wide leading-none">{addon.name}</span>
+                                <span className="text-xs font-semibold tracking-wide leading-none">{addon.name}</span>
                               </button>
                             );
                           })}
@@ -753,7 +946,7 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings, init
                   )}
 
                   {step1Error && (
-                    <p className="text-red-400 font-mono text-[14px] text-center animate-pulse">{step1Error}</p>
+                    <p className="text-red-400 font-mono text-xs text-center animate-pulse">{step1Error}</p>
                   )}
 
                   {/* Bottom Navigation CTAs */}
@@ -782,14 +975,14 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings, init
                   
                   {/* Step Title */}
                   <div className="space-y-1">
-                    <span className="text-sky-400 font-mono text-[14px] uppercase font-bold tracking-wider">STEP 2 OF 3: SCHEDULING & FREQUENCY</span>
+                    <span className="text-sky-400 font-mono text-xs uppercase font-bold tracking-wider">STEP 2 OF 3: SCHEDULING & FREQUENCY</span>
                     <h2 className="font-display text-xl font-bold text-white">Choose frequency &amp; date</h2>
                     <p className="text-xs text-slate-400">Lock in a subscription schedule to unlock percentage discounts.</p>
                   </div>
 
                   {/* Subscription Frequencies */}
                   <div className="space-y-2">
-                    <label className="text-[14px] text-slate-400 font-mono uppercase tracking-wide block">Subscription Frequency (Discounts applied instantly)</label>
+                    <label className="text-xs text-slate-400 font-mono uppercase tracking-wide block">Subscription Frequency (Discounts applied instantly)</label>
                     <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs font-sans">
                       {/* One Time */}
                       <button
@@ -797,11 +990,11 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings, init
                         className={`p-3.5 rounded-xl border text-left transition-all flex flex-col justify-between min-h-[90px] ${
                           frequency === "one-time"
                             ? "bg-sky-500/10 border-sky-500 text-sky-400 font-bold"
-                            : "bg-slate-950 border-slate-850 text-slate-300 hover:text-white"
+                            : "bg-slate-950 border-slate-855 text-slate-300 hover:text-white"
                         }`}
                       >
                         <span className="font-bold text-white block">One-Time</span>
-                        <span className="text-[14px] font-mono text-slate-400 uppercase block">Base Price</span>
+                        <span className="text-xs font-mono text-slate-400 uppercase block">Base Price</span>
                       </button>
 
                       {/* Weekly */}
@@ -810,14 +1003,14 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings, init
                         className={`p-3.5 rounded-xl border text-left transition-all flex flex-col justify-between min-h-[90px] ${
                           frequency === "weekly"
                             ? "bg-emerald-500/10 border-emerald-500 text-emerald-400 font-bold"
-                            : "bg-slate-950 border-slate-850 text-slate-300 hover:text-white"
+                            : "bg-slate-950 border-slate-855 text-slate-300 hover:text-white"
                         }`}
                       >
                         <div className="flex justify-between items-center w-full">
                           <span className="font-bold text-white">Weekly</span>
-                          <span className="text-[15px] font-mono font-bold bg-emerald-500 text-slate-950 px-1 py-0.2 rounded">-20%</span>
+                          <span className="text-xs font-mono font-bold bg-emerald-500 text-slate-950 px-1 py-0.2 rounded">-20%</span>
                         </div>
-                        <span className="text-[15px] font-mono text-emerald-400 uppercase block">Best Value</span>
+                        <span className="text-xs font-mono text-emerald-400 uppercase block">Best Value</span>
                       </button>
 
                       {/* Bi-Weekly */}
@@ -831,9 +1024,9 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings, init
                       >
                         <div className="flex justify-between items-center w-full">
                           <span className="font-bold text-white">Bi-Weekly</span>
-                          <span className="text-[15px] font-mono font-bold bg-emerald-500 text-slate-950 px-1 py-0.2 rounded">-15%</span>
+                          <span className="text-xs font-mono font-bold bg-emerald-500 text-slate-955 px-1 py-0.2 rounded">-15%</span>
                         </div>
-                        <span className="text-[15px] font-mono text-emerald-400 uppercase block">Most Popular</span>
+                        <span className="text-xs font-mono text-emerald-400 uppercase block">Most Popular</span>
                       </button>
 
                       {/* Monthly */}
@@ -842,14 +1035,14 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings, init
                         className={`p-3.5 rounded-xl border text-left transition-all flex flex-col justify-between min-h-[90px] ${
                           frequency === "monthly"
                             ? "bg-sky-500/10 border-sky-500 text-sky-400 font-bold"
-                            : "bg-slate-950 border-slate-850 text-slate-300 hover:text-white"
+                            : "bg-slate-950 border-slate-855 text-slate-300 hover:text-white"
                         }`}
                       >
                         <div className="flex justify-between items-center w-full">
                           <span className="font-bold text-white">Monthly</span>
-                          <span className="text-[15px] font-mono font-bold bg-emerald-500 text-slate-950 px-1 py-0.2 rounded">-10%</span>
+                          <span className="text-xs font-mono font-bold bg-emerald-500 text-slate-955 px-1 py-0.2 rounded">-10%</span>
                         </div>
-                        <span className="text-[14px] font-mono text-slate-400 uppercase block">Regular Clean</span>
+                        <span className="text-xs font-mono text-slate-400 uppercase block">Regular Clean</span>
                       </button>
                     </div>
                   </div>
@@ -859,7 +1052,7 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings, init
                     
                     {/* Visual 7-day picker list */}
                     <div className="space-y-2">
-                      <label className="text-[14px] text-slate-400 font-mono uppercase tracking-wide block">Select Date Slot</label>
+                      <label className="text-xs text-slate-400 font-mono uppercase tracking-wide block">Select Date Slot</label>
                       <div className="grid grid-cols-3 gap-2.5">
                         {getNextDays().map((day) => {
                           const dateStr = day.toISOString().split("T")[0];
@@ -871,14 +1064,14 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings, init
                               className={`p-2.5 rounded-xl border text-center flex flex-col gap-1 transition-all ${
                                 isSelected
                                   ? "bg-sky-500/10 border-sky-500 text-sky-400 font-bold"
-                                  : "bg-slate-950 border-slate-850 text-slate-400 hover:text-slate-200"
+                                  : "bg-slate-950 border-slate-855 text-slate-400 hover:text-slate-200"
                               }`}
                             >
-                              <span className="text-[14px] font-mono text-slate-400 uppercase block">
+                              <span className="text-xs font-mono text-slate-400 uppercase block">
                                 {day.toLocaleDateString("en-US", { weekday: 'short' })}
                               </span>
                               <span className="font-display font-bold text-sm block">{day.getDate()}</span>
-                              <span className="text-[15px] text-slate-400 uppercase block">
+                              <span className="text-xs text-slate-400 uppercase block">
                                 {day.toLocaleDateString("en-US", { month: 'short' })}
                               </span>
                             </button>
@@ -889,7 +1082,7 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings, init
 
                     {/* Preferred Arrival Window */}
                     <div className="space-y-3">
-                      <label className="text-[14px] text-slate-400 font-mono uppercase tracking-wide block">Arrival Time Window</label>
+                      <label className="text-xs text-slate-400 font-mono uppercase tracking-wide block">Arrival Time Window</label>
                       <div className="grid grid-cols-1 gap-2 text-xs">
                         {[
                           "09:00 AM - 12:00 PM",
@@ -899,14 +1092,14 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings, init
                           <button
                             key={slot}
                             onClick={() => setSelectedTimeSlot(slot)}
-                            className={`py-3 px-4 rounded-xl border text-left font-mono text-[15px] transition-all flex justify-between items-center ${
+                            className={`py-3 px-4 rounded-xl border text-left font-mono text-xs transition-all flex justify-between items-center ${
                               selectedTimeSlot === slot
                                 ? "bg-sky-500/10 border-sky-500 text-sky-400 font-bold"
-                                : "bg-slate-950 border-slate-850 text-slate-400 hover:text-slate-200"
+                                : "bg-slate-950 border-slate-855 text-slate-400 hover:text-slate-200"
                             }`}
                           >
                             <span>{slot}</span>
-                            <span className="text-[15px] text-emerald-400 uppercase font-mono font-bold">AVAILABLE</span>
+                            <span className="text-xs text-emerald-400 uppercase font-mono font-bold">AVAILABLE</span>
                           </button>
                         ))}
                       </div>
@@ -918,7 +1111,7 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings, init
                   <div className="pt-4 flex justify-between">
                     <button
                       onClick={() => setActiveStep(1)}
-                      className="px-5 py-3 border border-slate-800 rounded-xl hover:bg-slate-850 text-xs font-semibold text-slate-300 transition-colors"
+                      className="px-5 py-3 border border-slate-800 rounded-xl hover:bg-slate-855 text-xs font-semibold text-slate-300 transition-colors"
                     >
                       Back to Scoping
                     </button>
@@ -940,7 +1133,7 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings, init
                   
                   {/* Step Title */}
                   <div className="space-y-1">
-                    <span className="text-sky-400 font-mono text-[14px] uppercase font-bold tracking-wider">STEP 3 OF 3: REGISTRATION & SECURE BILLING</span>
+                    <span className="text-sky-400 font-mono text-xs uppercase font-bold tracking-wider">STEP 3 OF 3: REGISTRATION & SECURE BILLING</span>
                     <h2 className="font-display text-xl font-bold text-white">Complete booking checkout</h2>
                     <p className="text-xs text-slate-400">Card details are authorized on file before cleaning dispatch is approved.</p>
                   </div>
@@ -948,7 +1141,7 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings, init
                   {/* Delivery Info */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-sans">
                     <div className="space-y-1">
-                      <label className="text-[14px] text-slate-400 font-mono uppercase">Full Name *</label>
+                      <label className="text-xs text-slate-400 font-mono uppercase">Full Name *</label>
                       <input 
                         type="text" 
                         required 
@@ -959,7 +1152,7 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings, init
                       />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-[14px] text-slate-400 font-mono uppercase">Email Address *</label>
+                      <label className="text-xs text-slate-400 font-mono uppercase">Email Address *</label>
                       <input 
                         type="email" 
                         required 
@@ -970,7 +1163,7 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings, init
                       />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-[14px] text-slate-400 font-mono uppercase">Phone Number *</label>
+                      <label className="text-xs text-slate-400 font-mono uppercase">Phone Number *</label>
                       <input 
                         type="text" 
                         required 
@@ -981,7 +1174,7 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings, init
                       />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-[14px] text-slate-400 font-mono uppercase">Street Address *</label>
+                      <label className="text-xs text-slate-400 font-mono uppercase">Street Address *</label>
                       <input 
                         type="text" 
                         required 
@@ -995,7 +1188,7 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings, init
 
                   {/* Geolocation coordinates pinning */}
                   <div className="space-y-2 font-sans">
-                    <label className="text-[14px] text-slate-400 font-mono uppercase block">Pin Location coordinates (Drag marker to exact gates) *</label>
+                    <label className="text-xs text-slate-400 font-mono uppercase block">Pin Location coordinates (Drag marker to exact gates) *</label>
                     <div className="h-64 rounded-2xl border border-slate-850 overflow-hidden relative">
                       <MapComponent 
                         mode="pinning" 
@@ -1004,7 +1197,7 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings, init
                         onCoordinatesChange={handleCoordinatesChange} 
                       />
                     </div>
-                    <div className="flex gap-4 text-[14px] font-mono text-slate-400 justify-between px-1">
+                    <div className="flex gap-4 text-xs font-mono text-slate-400 justify-between px-1">
                       <span>Latitude: <strong className="text-emerald-400">{selectedLat.toFixed(5)}</strong></span>
                       <span>Longitude: <strong className="text-emerald-400">{selectedLng.toFixed(5)}</strong></span>
                       <button 
@@ -1019,7 +1212,7 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings, init
                   
                   {/* Access Key codes instructions */}
                   <div className="space-y-1.5 font-sans">
-                    <label className="text-[14px] text-slate-400 font-mono uppercase">Access or Key box entry instructions</label>
+                    <label className="text-xs text-slate-400 font-mono uppercase">Access or Key box entry instructions</label>
                     <textarea 
                       value={entryInstructions}
                       onChange={(e) => setEntryInstructions(e.target.value)}
@@ -1044,7 +1237,7 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings, init
                               setPaymentMethod(method as any);
                               setStep3Error("");
                             }}
-                            className={`px-3 py-1.5 rounded-lg font-mono text-[15px] font-bold border transition-all ${
+                            className={`px-3 py-1.5 rounded-lg font-mono text-xs font-bold border transition-all ${
                               paymentMethod === method
                                 ? "bg-sky-500/10 border-sky-500 text-sky-400"
                                 : "bg-slate-900 border-slate-850 text-slate-400 hover:text-slate-200"
@@ -1058,18 +1251,18 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings, init
 
                     {paymentMethod !== "Cash" ? (
                       <div className="space-y-4 animate-fadeIn">
-                        <p className="text-[15px] text-slate-400 leading-relaxed font-sans">
+                        <p className="text-xs text-slate-400 leading-relaxed font-sans">
                           Payment will be processed via local South Sudanese mobile money USSD push request. Standard rates apply.
                         </p>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-sans">
                           <div className="space-y-1">
-                            <label className="text-[14px] text-slate-400 font-mono uppercase">Selected Carrier</label>
+                            <label className="text-xs text-slate-400 font-mono uppercase">Selected Carrier</label>
                             <div className="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs font-semibold text-white">
                               {paymentMethod} Gateway
                             </div>
                           </div>
                           <div className="space-y-1">
-                            <label className="text-[14px] text-slate-400 font-mono uppercase">Mobile Money Number *</label>
+                            <label className="text-xs text-slate-400 font-mono uppercase">Mobile Money Number *</label>
                             <input 
                               type="text" 
                               required
@@ -1084,7 +1277,7 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings, init
                     ) : (
                       <div className="bg-slate-900/60 border border-slate-850 p-4 rounded-xl space-y-2 text-xs font-sans animate-fadeIn">
                         <span className="font-bold text-slate-200 block">Cash Payment (Pay on Arrival)</span>
-                        <p className="text-slate-400 leading-normal text-[15px]">
+                        <p className="text-slate-400 leading-normal text-xs">
                           Book now without credit cards or networks. Hand cash (USD or SSP equivalents) directly to the dispatch crew leader upon clean completion.
                         </p>
                       </div>
@@ -1092,7 +1285,7 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings, init
                   </div>
 
                   {step3Error && (
-                    <p className="text-red-400 font-mono text-[14px] text-center animate-pulse">{step3Error}</p>
+                    <p className="text-red-400 font-mono text-xs text-center animate-pulse">{step3Error}</p>
                   )}
 
                   {/* Bottom Navigation CTAs */}
@@ -1182,13 +1375,13 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings, init
                   {/* Add-ons line */}
                   {selectedAddons.length > 0 && (
                     <div className="space-y-1 pb-1 pt-1">
-                      <span className="text-[14px] text-slate-400 font-mono uppercase block">Add-ons detail:</span>
+                      <span className="text-xs text-slate-400 font-mono uppercase block">Add-ons detail:</span>
                       {selectedAddons.map((addon) => {
                         const addonPrice = isWasteService
                           ? (addon === "HSE Waste Binning" ? 50 : addon === "Bio-Safe Solutions" ? 75 : addon === "Secure Disposal Certification" ? 40 : 0)
                           : getAddonPrice(addon);
                         return (
-                          <div key={addon} className="flex justify-between text-[15px] text-slate-400 pl-2">
+                          <div key={addon} className="flex justify-between text-xs text-slate-400 pl-2">
                             <span>• {addon}</span>
                             <span className="font-mono">${addonPrice}</span>
                           </div>
@@ -1211,7 +1404,7 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings, init
                   )}
 
                   {/* Local Tax line */}
-                  <div className="flex justify-between text-[15px] text-slate-400">
+                  <div className="flex justify-between text-xs text-slate-400">
                     <span>Juba Local Tax (5%)</span>
                     <span className="font-mono">${localTax.toFixed(2)}</span>
                   </div>
@@ -1219,13 +1412,13 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings, init
                   {/* Estimated Grand Total */}
                   <div className="border-t border-slate-800 pt-3.5 flex justify-between items-end">
                     <div>
-                      <span className="block text-[14px] text-slate-400 uppercase font-mono leading-none mb-1">
+                      <span className="block text-xs text-slate-400 uppercase font-mono leading-none mb-1">
                         {isWasteService ? "Total Waste Price:" : "Total Clean Price:"}
                       </span>
                       <span className="text-white font-display text-xl font-extrabold font-mono tracking-tight block">${finalPrice.toFixed(2)}</span>
                       <span className="text-emerald-400 font-display text-xs font-bold font-mono block">SSP {(finalPrice * 1300).toLocaleString()}</span>
                     </div>
-                    <span className="text-[14px] text-sky-400 font-mono capitalize tracking-wide bg-sky-500/10 border border-sky-500/20 px-2 py-0.5 rounded font-bold">
+                    <span className="text-xs text-sky-400 font-mono capitalize tracking-wide bg-sky-500/10 border border-sky-500/20 px-2 py-0.5 rounded font-bold">
                       {frequency}
                     </span>
                   </div>
@@ -1233,7 +1426,7 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings, init
                 </div>
 
                 {/* Explicit Trust Integration Section */}
-                <div className="pt-4 border-t border-slate-800 space-y-3 font-sans text-[14px] text-slate-400 bg-slate-950/20 p-3 rounded-2xl">
+                <div className="pt-4 border-t border-slate-800 space-y-3 font-sans text-xs text-slate-400 bg-slate-950/20 p-3 rounded-2xl">
                   <div className="flex gap-2">
                     <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
                     <span><strong>Ministry Registered:</strong> Ministry of Environment &amp; Forestry Licensed.</span>
@@ -1291,7 +1484,7 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings, init
               <div className="space-y-1">
                 <div className="flex items-center gap-1.5">
                   <CreditCard className="w-4.5 h-4.5 text-emerald-400" />
-                  <span className="text-[14px] text-emerald-400 font-mono uppercase tracking-widest font-bold">
+                  <span className="text-xs text-emerald-400 font-mono uppercase tracking-widest font-bold">
                     South Sudan Local Checkout
                   </span>
                 </div>
@@ -1303,7 +1496,7 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings, init
               {!isProcessingPayment ? (
                 <div className="bg-slate-950 border border-slate-850 rounded-2xl p-5 space-y-4 animate-fadeIn font-sans text-xs">
                   <div className="flex justify-between items-center pb-2 border-b border-slate-850">
-                    <span className="font-mono text-[15px] font-bold text-slate-450 uppercase tracking-widest">{paymentMethod} USSD GATE</span>
+                    <span className="font-mono text-xs font-bold text-slate-400 uppercase tracking-widest">{paymentMethod} USSD GATE</span>
                     <span className="relative flex h-2 w-2">
                       <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                       <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
@@ -1311,13 +1504,13 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings, init
                   </div>
 
                   <div className="space-y-1 text-center py-2">
-                    <p className="text-[14px] text-slate-400 font-sans">Merchant: Clean World Inc.</p>
+                    <p className="text-xs text-slate-400 font-sans">Merchant: Clean World Inc.</p>
                     <p className="text-base font-black text-white font-mono">${finalPrice.toFixed(2)} / SSP {(finalPrice * 1300).toLocaleString()}</p>
-                    <p className="text-[14px] text-slate-400 font-mono">Carrier Target: {paymentPhone}</p>
+                    <p className="text-xs text-slate-400 font-mono">Carrier Target: {paymentPhone}</p>
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-[14px] text-slate-400 uppercase font-mono tracking-widest block text-center">ENTER YOUR PIN TO CONFIRM</label>
+                    <label className="text-xs text-slate-400 uppercase font-mono tracking-widest block text-center">ENTER YOUR PIN TO CONFIRM</label>
                     <input 
                       type="password"
                       maxLength={4}
@@ -1330,7 +1523,7 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings, init
 
                   <button
                     onClick={handleSimulateUSSDPayment}
-                    className="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-955 font-mono font-bold text-[14px] py-2.5 rounded-lg transition-colors"
+                    className="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-955 font-mono font-bold text-xs py-2.5 rounded-lg transition-colors"
                   >
                     Confirm &amp; Authorize
                   </button>
@@ -1340,12 +1533,12 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings, init
                   <RefreshCw className="w-10 h-10 text-emerald-400 mx-auto animate-spin" />
                   <div className="space-y-1">
                     <p className="font-bold text-white text-xs">Simulating Juba Network Transit...</p>
-                    <p className="text-[14px] text-slate-400 font-mono">Carrier: {paymentMethod} Gateway</p>
+                    <p className="text-xs text-slate-400 font-mono">Carrier: {paymentMethod} Gateway</p>
                   </div>
                 </div>
               )}
 
-              <div className="text-center font-sans text-[14px] text-slate-400 leading-normal">
+              <div className="text-center font-sans text-xs text-slate-455 leading-normal">
                 *Notice: This is a safe sandboxed payment environment. No actual funds are charged. 
                 Input any 4 digit code to verify order telemetry.
               </div>

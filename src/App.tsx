@@ -1,21 +1,45 @@
 import React, { useState, useEffect } from "react";
-import { ActiveView, ServicePillar, RiskClass, QuoteState, Product, Booking, ProductOrder } from "./types";
+import { ActiveView, ServicePillar, RiskClass, QuoteState, Product, Booking, ProductOrder, UserSession, UserRole, B2BInquiry } from "./types";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import LandingPage from "./components/LandingPage";
+import ConsultancyPage from "./components/ConsultancyPage";
 import ServicesPage from "./components/ServicesPage";
 import EcoShopPage from "./components/EcoShopPage";
 import QuoteWizard from "./components/QuoteWizard";
-import AcademyPage from "./components/AcademyPage";
 import ClientDashboard from "./components/ClientDashboard";
 import CleanerPortal from "./components/CleanerPortal";
+import LoginModal from "./components/LoginModal";
 import { useDocumentMetadata } from "./hooks/useDocumentMetadata";
 import { MessageCircle } from "lucide-react";
-import { motion } from "motion/react";
+import { motion, AnimatePresence } from "motion/react";
 
 export default function App() {
   // Navigation active state
   const [activeView, setActiveView] = useState<ActiveView>(ActiveView.Home);
+
+  // Authentication and Session state
+  const [currentUser, setCurrentUser] = useState<UserSession | null>(null);
+  const [showLoginModal, setShowLoginModal] = useState(false);
+
+  // Route Guards for Authenticated Portals
+  useEffect(() => {
+    if (activeView === ActiveView.ClientDashboard) {
+      if (!currentUser) {
+        setActiveView(ActiveView.Home);
+        setShowLoginModal(true);
+      } else if (currentUser.role !== UserRole.Client) {
+        setActiveView(ActiveView.CleanerPortal);
+      }
+    } else if (activeView === ActiveView.CleanerPortal) {
+      if (!currentUser) {
+        setActiveView(ActiveView.Home);
+        setShowLoginModal(true);
+      } else if (currentUser.role !== UserRole.Cleaner) {
+        setActiveView(ActiveView.ClientDashboard);
+      }
+    }
+  }, [activeView, currentUser]);
 
   // Dynamic SEO metadata, open graph tags and JSON-LD schema injection
   useDocumentMetadata(activeView);
@@ -147,6 +171,9 @@ export default function App() {
   // Prefilled specs state to bridge Services page selections and QuoteWizard
   const [prefilledSpecs, setPrefilledSpecs] = useState<any>(null);
 
+  // Technical scoping inquiries state
+  const [b2bInquiries, setB2bInquiries] = useState<B2BInquiry[]>([]);
+
   // Scroll to top on view changes to mimic professional routing transitions
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -200,72 +227,163 @@ export default function App() {
         activeView={activeView} 
         setActiveView={setActiveView} 
         cartCount={cartCount} 
+        currentUser={currentUser}
+        setCurrentUser={setCurrentUser}
+        onLoginClick={() => setShowLoginModal(true)}
       />
 
       {/* 2. Main Page Render Module */}
-      <main className="flex-grow">
-        {activeView === ActiveView.Home && (
-          <LandingPage 
-            setActiveView={setActiveView} 
-            setQuotePillar={handleSetQuotePillar} 
-          />
-        )}
-        
-        {activeView === ActiveView.Services && (
-          <ServicesPage 
-            setActiveView={setActiveView} 
-            setQuotePillar={handleSetQuotePillar} 
-            onAddProductToCart={handleAddProductToCart}
-            cartProducts={cartProducts}
-            setPrefilledSpecs={setPrefilledSpecs}
-          />
-        )}
+      <main className="flex-grow overflow-hidden">
+        <AnimatePresence mode="wait">
+          {activeView === ActiveView.Home && (
+            <motion.div
+              key="home"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.25, ease: "easeInOut" }}
+            >
+              <LandingPage 
+                setActiveView={setActiveView} 
+                setQuotePillar={handleSetQuotePillar} 
+              />
+            </motion.div>
+          )}
+          
+          {activeView === ActiveView.Consultancy && (
+            <motion.div
+              key="consultancy"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.25, ease: "easeInOut" }}
+            >
+              <ConsultancyPage 
+                setActiveView={setActiveView} 
+                setQuotePillar={handleSetQuotePillar} 
+                b2bInquiries={b2bInquiries}
+                onAddB2BInquiry={(inquiry) => setB2bInquiries((prev) => [inquiry, ...prev])}
+              />
+            </motion.div>
+          )}
 
-        {activeView === ActiveView.Shop && (
-          <EcoShopPage 
-            setActiveView={setActiveView} 
-            cartProducts={cartProducts}
-            onUpdateCartQuantity={handleUpdateCartQuantity}
-            onClearCart={handleClearCart}
-            onAddOrder={handleAddOrder}
-          />
-        )}
+          {activeView === ActiveView.Services && (
+            <motion.div
+              key="services"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.25, ease: "easeInOut" }}
+            >
+              <ServicesPage 
+                setActiveView={setActiveView} 
+                setQuotePillar={handleSetQuotePillar} 
+                onAddProductToCart={handleAddProductToCart}
+                cartProducts={cartProducts}
+                setPrefilledSpecs={setPrefilledSpecs}
+              />
+            </motion.div>
+          )}
 
-        {activeView === ActiveView.QuoteFlow && (
-          <QuoteWizard 
-            setActiveView={setActiveView} 
-            bookings={bookings}
-            setBookings={setBookings}
-            initialSpecs={prefilledSpecs}
-          />
-        )}
+          {activeView === ActiveView.Shop && (
+            <motion.div
+              key="shop"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.25, ease: "easeInOut" }}
+            >
+              <EcoShopPage 
+                setActiveView={setActiveView} 
+                cartProducts={cartProducts}
+                onUpdateCartQuantity={handleUpdateCartQuantity}
+                onClearCart={handleClearCart}
+                onAddOrder={handleAddOrder}
+              />
+            </motion.div>
+          )}
 
-        {activeView === ActiveView.ClientDashboard && (
-          <ClientDashboard 
-            bookings={bookings}
-            setBookings={setBookings}
-            setActiveView={setActiveView}
-            productOrders={productOrders}
-          />
-        )}
+          {activeView === ActiveView.QuoteFlow && (
+            <motion.div
+              key="quote"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.25, ease: "easeInOut" }}
+            >
+              <QuoteWizard 
+                setActiveView={setActiveView} 
+                bookings={bookings}
+                setBookings={setBookings}
+                initialSpecs={prefilledSpecs}
+                currentUser={currentUser}
+                onRegisterSuccess={(session) => {
+                  // Set user without auto-navigating — keep them on the receipt
+                  setCurrentUser(session);
+                }}
+              />
+            </motion.div>
+          )}
 
-        {activeView === ActiveView.CleanerPortal && (
-          <CleanerPortal 
-            bookings={bookings}
-            setBookings={setBookings}
-            setActiveView={setActiveView}
-          />
-        )}
+          {activeView === ActiveView.ClientDashboard && (
+            <motion.div
+              key="client-dashboard"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.25, ease: "easeInOut" }}
+            >
+              <ClientDashboard 
+                bookings={bookings}
+                setBookings={setBookings}
+                setActiveView={setActiveView}
+                productOrders={productOrders}
+              />
+            </motion.div>
+          )}
 
-        {activeView === ActiveView.Academy && (
-          <AcademyPage 
-            setActiveView={setActiveView} 
-          />
-        )}
+          {activeView === ActiveView.CleanerPortal && (
+            <motion.div
+              key="cleaner-portal"
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.25, ease: "easeInOut" }}
+            >
+              <CleanerPortal 
+                bookings={bookings}
+                setBookings={setBookings}
+                setActiveView={setActiveView}
+              />
+            </motion.div>
+          )}
+
+
+
+
+        </AnimatePresence>
       </main>
 
       {/* 3. Footer with 24/7 Rapid Emergency Response Banner */}
       <Footer setActiveView={setActiveView} />
+
+      {/* Login Modal Overlay */}
+      <AnimatePresence>
+        {showLoginModal && (
+          <LoginModal 
+            onClose={() => setShowLoginModal(false)}
+            onLoginSuccess={(session) => {
+              setCurrentUser(session);
+              // Auto route to respective portal
+              if (session.role === UserRole.Client) {
+                setActiveView(ActiveView.ClientDashboard);
+              } else {
+                setActiveView(ActiveView.CleanerPortal);
+              }
+            }}
+          />
+        )}
+      </AnimatePresence>
 
     </div>
   );

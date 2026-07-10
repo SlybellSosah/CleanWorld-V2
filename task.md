@@ -1,8 +1,29 @@
-- [x] Make CleanerPortal.tsx outer layout responsive (hide device mockups on mobile)
-- [x] Upgrade text colors and font sizes in CleanerPortal.tsx
-- [x] Upgrade text colors and font sizes in ClientDashboard.tsx
-- [x] Upgrade text colors and font sizes in AcademyPage.tsx
-- [x] Upgrade text colors and font sizes in ServicesPage.tsx
-- [x] Upgrade text colors and font sizes in EcoShopPage.tsx
-- [x] Upgrade text colors and font sizes in Footer.tsx
-- [x] Verify changes with compilation and Playwright tests
+# Checklist: Navigation Cleanup & Role-Based Auth
+
+- [x] Step 1: Update core types and models
+  - [x] Add `UserSession` interface in `src/types.ts`
+- [x] Step 2: Implement the `LoginModal` component
+  - [x] Create `src/components/LoginModal.tsx` with clean dark-mode design and quick-login triggers
+- [x] Step 3: Integrate authentication state in App root
+  - [x] Initialize `currentUser` state in `src/App.tsx`
+  - [x] Implement route guards / redirects for client and cleaner dashboard views
+  - [x] Pass auth props to `<Navbar>`
+- [x] Step 4: Refactor Navbar and Footer navigation
+  - [x] Update `navItems` in `src/components/Navbar.tsx` to omit internal dashboards from the public header
+  - [x] Add "Log In" trigger and User Profile Avatar dropdown in `src/components/Navbar.tsx`
+  - [x] Update Footer links in `src/components/Footer.tsx` to reference "Operations Portal (ops.cleanworld.live)" and support direct routing
+- [x] Step 5: Implement Operations Subdomain Indicator
+  - [x] Add simulated subdomain banner in `src/components/CleanerPortal.tsx`
+- [x] Step 6: Verify and Run E2E Tests
+  - [x] Update Playwright E2E tests to click "Log In" and login first before interacting with private portals
+  - [x] Run `npm run build` and `npm run lint` to verify zero errors
+  - [x] Run `npx playwright test` to verify all tests pass successfully
+- [x] Step 7: Complete Removal of Training Academy
+  - [x] Delete `src/components/AcademyPage.tsx` from the filesystem
+  - [x] Remove the Academy item from `Navbar.tsx` and routes/imports in `App.tsx` and `types.ts`
+  - [x] Clean up `useDocumentMetadata.ts` metadata and dynamic schema configuration
+  - [x] Clean up test suites in `clean-world.spec.ts` and `screenshot.spec.ts` to remove academy references
+- [x] Step 8: Refine Footer Alignment
+  - [x] Apply `w-full justify-start text-left` to footer navigation buttons to prevent centering on wrap
+  - [x] Add `shrink-0` to the `<ArrowUpRight>` icon inside footer button list elements
+  - [x] Verify compilation and run test suites to ensure zero issues

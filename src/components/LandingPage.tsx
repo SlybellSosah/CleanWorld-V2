@@ -61,7 +61,7 @@ const PILLARS = [
     accentBtnText: "text-slate-950",
     badge: "CORE BUSINESS",
     title: "Integrated Facility & Cleaning Management",
-    desc: "Premium deep cleaning and facility management custom-tailored for embassies, corporate offices, and commercial sites.",
+    desc: "Elite facility cleaning custom-engineered for embassies, offices, and commercial compounds.",
     tags: ["100% Eco-Safe Sanitizers", "Flexible Recurring Care"],
     cta: "Request Facility Assessment",
     pillar: ServicePillar.Management,
@@ -79,7 +79,7 @@ const PILLARS = [
     accentBtnText: "text-slate-950",
     badge: "REGULATORY AUDITS",
     title: "Environmental Consultancy",
-    desc: "Rigorous EIA audits, certified waste management streams, and official regulatory compliance documentation.",
+    desc: "Regulatory environmental audits, EIA certifications, and ESG compliance mapping.",
     tags: ["ISO 9001 Alignment"],
     cta: "Consult Now",
     pillar: ServicePillar.Consultancy,
@@ -98,7 +98,7 @@ const PILLARS = [
     accentBtnText: "text-white",
     badge: "ELITE RISK MITIGATION",
     title: "Fumigation & Pest Control",
-    desc: "Elite pest control and bio-risk mitigation for aviation, oilfield complexes, and high-stakes infrastructure.",
+    desc: "Treatment tiers and malaria vector prevention for high-stakes oilfield complexes and infrastructure.",
     tags: ["PPE Compliance", "HSE-Certified"],
     cta: "Secure Your Facility",
     pillar: ServicePillar.Fumigation,
@@ -116,7 +116,7 @@ const PILLARS = [
     accentBtnText: "text-slate-950",
     badge: "GARDEN DESIGN",
     title: "Landscaping & Garden Design",
-    desc: "Professional turf planning, flora selection, and sustainable drainage solutions for embassies and luxury estates.",
+    desc: "Sustainable garden designs, turf restoration, and estate grounds maintenance.",
     tags: ["Turf & Flora Selection", "Diplomatic & Estate Grounds"],
     cta: "Request Garden Design",
     pillar: ServicePillar.Landscaping,
@@ -177,7 +177,7 @@ function BentoCard({ p, onCta }: { p: typeof PILLARS[0]; onCta: () => void; key?
         <span className={`p-2 rounded-xl border backdrop-blur-sm shadow-lg ${p.accentIcon}`}>
           <Icon className="w-4 h-4" />
         </span>
-        <span className={`text-[14px] font-mono uppercase tracking-widest px-3 py-1 rounded-full border backdrop-blur-md ${p.accentIcon} bg-slate-950/40`}>
+        <span className={`text-xs font-mono uppercase tracking-widest px-3 py-1 rounded-full border backdrop-blur-md ${p.accentIcon} bg-slate-950/40`}>
           {p.badge}
         </span>
       </div>
@@ -201,7 +201,7 @@ function BentoCard({ p, onCta }: { p: typeof PILLARS[0]; onCta: () => void; key?
 
         <div className="flex flex-wrap gap-2">
           {p.tags.map(tag => (
-            <span key={tag} className="text-[15px] font-mono text-white/85 bg-slate-950/55 border border-white/10 px-3 py-1.5 rounded-lg backdrop-blur-md">
+            <span key={tag} className="text-xs font-mono text-white/85 bg-slate-950/55 border border-white/10 px-2.5 py-1 rounded-lg backdrop-blur-md">
               {tag}
             </span>
           ))}
@@ -382,8 +382,12 @@ export default function LandingPage({ setActiveView, setQuotePillar }: LandingPa
   };
 
   const handleQuickAssessmentDeepLink = (pillar: ServicePillar) => {
-    setQuotePillar(pillar);
-    setActiveView(ActiveView.QuoteFlow);
+    if (pillar === ServicePillar.Consultancy) {
+      setActiveView(ActiveView.Consultancy);
+    } else {
+      setQuotePillar(pillar);
+      setActiveView(ActiveView.QuoteFlow);
+    }
   };
 
   return (
@@ -425,25 +429,20 @@ export default function LandingPage({ setActiveView, setQuotePillar }: LandingPa
 
           <motion.p 
             variants={itemVariants}
-            className="font-sans text-lg sm:text-xl text-slate-300 max-w-3xl mx-auto leading-relaxed"
+            className="font-sans text-xs sm:text-sm text-slate-350 max-w-xl mx-auto leading-relaxed"
           >
-            Clean World Inc. provides world-class{" "}
-            <span className="text-blue-300 font-semibold">Cleaning &amp; Waste Management Services</span>,{" "}
-            <span className="text-emerald-300 font-semibold">Environmental Consultancy</span>,{" "}
-            <span className="text-violet-300 font-semibold">Fumigation Risk Mitigation</span>, and{" "}
-            <span className="text-teal-300 font-semibold">Landscaping &amp; Gardening Design</span>{" "}
-            for residential, office and corporate compounds.
+            Premium cleaning, regulatory compliance, and sustainable landscaping engineered for Juba's commercial complexes and private estates.
           </motion.p>
 
           {/* Neighborhood Service Area Gatekeeper Component */}
           <motion.div 
             variants={itemVariants}
-            className="max-w-2xl mx-auto bg-slate-950/80 border border-slate-800 p-6 rounded-3xl space-y-4 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.05)] backdrop-blur-md" 
+            className="max-w-xl mx-auto bg-slate-950/80 border border-slate-800 p-6 rounded-3xl space-y-4 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.05)] backdrop-blur-md" 
             id="zip-gatekeeper-card"
           >
             <div className="text-center">
-              <span className="text-emerald-400 font-mono text-[14px] font-bold uppercase tracking-wider block mb-1">Check Coverage Area</span>
-              <h2 className="text-lg font-display font-extrabold text-white">Do We Cover Your Area in Juba?</h2>
+              <span className="text-emerald-400 font-mono text-xs font-bold uppercase tracking-wider block mb-1">Check Coverage Area</span>
+              <h2 className="text-base font-display font-extrabold text-white">Do We Cover Your Area in Juba?</h2>
             </div>
 
             {neighborhoodCheckResult === null ? (
@@ -511,7 +510,7 @@ export default function LandingPage({ setActiveView, setQuotePillar }: LandingPa
                     setNeighborhoodInput("");
                     setEmailCaptured(false);
                   }}
-                  className="text-[14px] text-slate-500 hover:text-slate-300 underline font-mono"
+                  className="text-xs text-slate-500 hover:text-slate-300 underline font-mono"
                 >
                   Check another neighborhood
                 </button>
@@ -556,21 +555,21 @@ export default function LandingPage({ setActiveView, setQuotePillar }: LandingPa
         <div className="max-w-7xl mx-auto space-y-12">
           
           <div className="max-w-2xl">
-            <span className="text-emerald-500 font-mono text-[14px] font-semibold tracking-widest uppercase">THE CLEAN WORLD ADVANTAGE</span>
-            <h2 className="font-display text-3xl sm:text-4xl font-extrabold tracking-tight text-white mt-2">
+            <span className="text-emerald-500 font-mono text-xs font-semibold tracking-widest uppercase">THE CLEAN WORLD ADVANTAGE</span>
+            <h2 className="font-display text-2xl sm:text-3xl font-extrabold tracking-tight text-white mt-2">
               Why Choose Us
             </h2>
-            <p className="text-slate-400 text-xs sm:text-sm mt-2 leading-relaxed max-w-xl">
+            <p className="text-slate-400 text-xs sm:text-sm mt-1 leading-relaxed max-w-xl">
               Strict compliance with premium HSE protocols, delivering uncompromised quality with a minimalist, high-impact approach.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {[
-              { icon: Leaf, title: "100% Bio-Certified Solutions", desc: "Zero harsh synthetic chemical fumes or hazardous residues." },
-              { icon: Shield, title: "Full HSE Audits & Quality Protocols", desc: "Formal quality verification and validation checklists on every visit." },
-              { icon: Award, title: "Specialist Teams with First Aid Training", desc: "Elite, fully-trained professionals who respect your corporate or residential space." },
-              { icon: Clock, title: "On-Time Operational Execution", desc: "Precision workflow scheduling designed to align seamlessly with your lifestyle." }
+              { icon: Leaf, title: "100% Bio-Certified Solutions", desc: "Biodegradable, non-toxic sanitization." },
+              { icon: Shield, title: "Full HSE Audits & Quality Protocols", desc: "Documented audits for regulatory safety compliance." },
+              { icon: Award, title: "Specialist Teams with First Aid Training", desc: "Certified technicians with first-aid certification." },
+              { icon: Clock, title: "On-Time Operational Execution", desc: "Timely dispatch and automated scheduling." }
             ].map((item, i) => (
               <div key={i} className="flex items-center justify-between border border-slate-800/60 bg-slate-900/10 p-5 rounded-2xl hover:border-emerald-500/30 transition-all duration-300">
                 <div className="flex items-center gap-4">
@@ -579,7 +578,7 @@ export default function LandingPage({ setActiveView, setQuotePillar }: LandingPa
                   </div>
                   <div>
                     <h4 className="text-xs sm:text-sm font-bold text-white">{item.title}</h4>
-                    <p className="text-[15px] text-slate-400 mt-1 leading-relaxed">{item.desc}</p>
+                    <p className="text-xs text-slate-450 mt-1 leading-relaxed">{item.desc}</p>
                   </div>
                 </div>
               </div>
@@ -645,7 +644,7 @@ export default function LandingPage({ setActiveView, setQuotePillar }: LandingPa
               </div>
 
               <p className="text-xs text-slate-400 leading-relaxed pt-2 border-t border-slate-900">
-                Under Kevina Aber's direct leadership, Clean World Inc. has grown from a local Juba cleaning crew into a trusted national environmental partner, bringing safe, eco-friendly cleaning to communities along the White Nile.
+                Clean World Inc. is a trusted environmental partner providing certified eco-friendly cleaning along the White Nile.
               </p>
             </div>
 
@@ -663,13 +662,13 @@ export default function LandingPage({ setActiveView, setQuotePillar }: LandingPa
                 <CheckCircle className="w-7 h-7" />
               </div>
               <div className="space-y-1">
-                <h3 className="font-display text-xl font-extrabold text-white">Inquiry Received Successfully</h3>
-                <p className="text-[14px] text-slate-400 font-mono">
+                <h3 className="font-display text-xl font-extrabold text-white">Inquiry Received</h3>
+                <p className="text-xs text-slate-400 font-mono">
                   DISPATCH ID: <span className="text-emerald-400">CW-BOOK-{Math.floor(100000 + Math.random() * 900000)}</span>
                 </p>
               </div>
-              <p className="text-xs text-slate-300 leading-relaxed max-w-sm mx-auto">
-                Our Juba rapid response team has logged your details and will contact you directly within 2 hours.
+              <p className="text-xs text-slate-350 leading-relaxed max-w-sm mx-auto">
+                Logged. We will contact you within 2 hours.
               </p>
               <button 
                 onClick={() => setSubmitSuccess(false)}
@@ -681,31 +680,31 @@ export default function LandingPage({ setActiveView, setQuotePillar }: LandingPa
           ) : (
             <div className="bg-slate-900 border border-slate-800 rounded-3xl overflow-hidden shadow-2xl grid grid-cols-1 lg:grid-cols-12 animate-fadeIn">
               <div className="p-8 sm:p-12 lg:col-span-7 space-y-6">
-                <div className="space-y-2">
-                  <span className="text-emerald-500 font-mono text-[14px] tracking-widest uppercase font-bold">INSTANT ONLINE INQUIRY</span>
-                  <h3 className="font-display text-2xl sm:text-3xl font-bold text-white tracking-tight">
-                    Book Your Clean World Today!
+                <div className="space-y-1">
+                  <span className="text-emerald-500 font-mono text-xs tracking-widest uppercase font-bold">ONLINE INQUIRY</span>
+                  <h3 className="font-display text-xl sm:text-2xl font-bold text-white tracking-tight">
+                    Book Services
                   </h3>
                   <p className="text-xs text-slate-400 leading-relaxed">
-                    Enter your details below to lock in Juba's finest certified eco-cleaning specialists.
+                    Enter details to request a custom booking quote.
                   </p>
                 </div>
 
                 <form onSubmit={handleQuickSubmit} className="space-y-4">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-[14px] font-mono text-slate-400 uppercase mb-1.5">Home / Business Location</label>
+                      <label className="block text-xs font-mono text-slate-400 uppercase mb-1.5">Home / Business Location</label>
                       <input 
                         type="text" required value={formFacility} onChange={(e) => setFormFacility(e.target.value)}
-                        placeholder="e.g. Compound or Office"
+                        placeholder="Compound or Office Name"
                         className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-xs text-slate-200 focus:outline-none focus:border-emerald-500 transition-colors"
                       />
                     </div>
                     <div>
-                      <label className="block text-[14px] font-mono text-slate-400 uppercase mb-1.5">Your Full Name</label>
+                      <label className="block text-xs font-mono text-slate-400 uppercase mb-1.5">Your Full Name</label>
                       <input 
                         type="text" required value={formContact} onChange={(e) => setFormContact(e.target.value)}
-                        placeholder="e.g. James Deng"
+                        placeholder="James Deng"
                         className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-xs text-slate-200 focus:outline-none focus:border-emerald-500 transition-colors"
                       />
                     </div>
@@ -713,7 +712,7 @@ export default function LandingPage({ setActiveView, setQuotePillar }: LandingPa
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-[14px] font-mono text-slate-400 uppercase mb-1.5">Phone Number</label>
+                      <label className="block text-xs font-mono text-slate-400 uppercase mb-1.5">Phone Number</label>
                       <input 
                         type="tel" required value={formPhone} onChange={(e) => setFormPhone(e.target.value)}
                         placeholder="+211 920 000 000"
@@ -721,7 +720,7 @@ export default function LandingPage({ setActiveView, setQuotePillar }: LandingPa
                       />
                     </div>
                     <div>
-                      <label className="block text-[14px] font-mono text-slate-400 uppercase mb-1.5">Primary Cleaning Service</label>
+                      <label className="block text-xs font-mono text-slate-400 uppercase mb-1.5">Primary Cleaning Service</label>
                       <select 
                         value={formPillar} onChange={(e) => setFormPillar(e.target.value as ServicePillar)}
                         className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-xs text-slate-200 focus:outline-none focus:border-emerald-500 transition-colors"
@@ -736,7 +735,7 @@ export default function LandingPage({ setActiveView, setQuotePillar }: LandingPa
 
                   <button 
                     type="submit" disabled={isSubmitting}
-                    className="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-display font-bold text-xs py-3.5 rounded-xl transition-all shadow-lg shadow-emerald-500/10 flex items-center justify-center gap-2"
+                    className="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-955 font-display font-bold text-xs py-3.5 rounded-xl transition-all shadow-lg shadow-emerald-500/10 flex items-center justify-center gap-2"
                   >
                     {isSubmitting ? "Processing..." : "GET A FREE QUOTE"}
                     <ArrowRight className="w-4 h-4" />
@@ -763,13 +762,13 @@ export default function LandingPage({ setActiveView, setQuotePillar }: LandingPa
                   <div className="p-2 w-fit rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
                     <Sprout className="w-5 h-5" />
                   </div>
-                  <h4 className="font-display font-extrabold text-white text-lg leading-tight">100% Green Disinfection</h4>
-                  <p className="text-xs text-slate-300 leading-relaxed">
-                    Clean World exclusively deploys chemical-free, eco-safe botanical disinfectants certified by international safety boards. Safe for children and pets.
+                  <h4 className="font-display font-extrabold text-white text-base leading-tight">Eco Disinfection</h4>
+                  <p className="text-xs text-slate-350 leading-relaxed">
+                    Exclusively deploys botanical safety-certified disinfectants. Safe for children and pets.
                   </p>
                 </div>
                 
-                <div className="relative z-10 flex items-center gap-3 text-slate-400 text-[14px] font-mono">
+                <div className="relative z-10 flex items-center gap-3 text-slate-400 text-xs font-mono">
                   <Shield className="w-3.5 h-3.5 text-emerald-400" />
                   <span>ISO 14001 ENVIRONMENTAL PRACTICE</span>
                 </div>

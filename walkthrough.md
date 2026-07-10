@@ -1,68 +1,93 @@
-# Walkthrough - Legibility & Font Size Scale-Up at Lower Resolutions
+# Walkthrough - Clean World Booking & Operations Platform Refactoring
 
-This walkthrough details the visual audit, styling, and structural corrections made to address text legibility, contrast, and layout issues when the viewport resolution is scaled down to 30%-50% or mobile viewports.
-
-## Changes Implemented
-
-### 1. Global Font Scaling (+4px Total Increase from Baseline)
-To optimize readability at lower resolutions (30%-50% viewport scale), we scaled up all text across the entire application by exactly **4px** in two +2px increments:
-- **Tailwind Theme Overrides**: Redefined standard font sizes inside the `@theme` block in [index.css](file:///home/pop_i9/Development/Web/Clean_World_Inc/src/index.css) to shift standard `rem`-based font sizes up by 4px:
-  - `text-xs` (12px) ➔ **`16px`** (`1rem`)
-  - `text-sm` (14px) ➔ **`18px`** (`1.125rem`)
-  - `text-base` (16px) ➔ **`20px`** (`1.25rem`)
-  - `text-lg` (18px) ➔ **`22px`** (`1.375rem`)
-  - `text-xl` (20px) ➔ **`24px`** (`1.5rem`)
-  - `text-2xl` (24px) ➔ **`28px`** (`1.75rem`)
-  - `text-3xl` (30px) ➔ **`34px`** (`2.125rem`)
-  - `text-4xl` (36px) ➔ **`40px`** (`2.5rem`)
-- **Custom Pixel Size Conversions**: Scaled all hardcoded absolute/pixel-based font sizes (`text-[...px]`) in component files up by **+4px**:
-  - `text-[7px]` ➔ **`text-[11px]`**
-  - `text-[8px]` ➔ **`text-[12px]`**
-  - `text-[9px]` ➔ **`text-[13px]`**
-  - `text-[10px]` ➔ **`text-[14px]`**
-  - `text-[11px]` ➔ **`text-[15px]`**
+This document walks through the architectural, navigational, and verification changes implemented in the Clean World booking platform.
 
 ---
 
-### 2. Unified Typography & Contrast (General Elements)
-- Audited the entire codebase for low-contrast color utilities.
-- Upgraded body copy, tags, subtitles, and captions using weak Tailwind utilities (e.g. `text-slate-500` and `text-slate-650`) to highly legible alternatives:
-  - Text labels and descriptions upgraded from `text-slate-500` to `text-slate-400` or `text-slate-350`.
-  - Icon fills adjusted from `text-slate-500` to `text-slate-400` to ensure clear recognition.
+## Part 1: Dedicated B2B Environmental Consultancy Page (Option A)
+
+To optimize conversion rates for enterprise B2B clients and prevent cross-segment confusion, the high-level **Environmental Consultancy** service was split into its own dedicated page.
+
+### Changes Implemented
+1. **Created Dedicated Page**: 
+   - [ConsultancyPage.tsx](file:///home/pop_i9/Development/Web/Clean_World_Inc/src/components/ConsultancyPage.tsx) renders the animated SVG compliance sectors donut ring, operational specifications table, and the Nilepet B2B scoping audit modal overlay.
+2. **Restructured Navigation**:
+   - Added a top-level `"Consultancy"` route to the global header [Navbar.tsx](file:///home/pop_i9/Development/Web/Clean_World_Inc/src/components/Navbar.tsx) and footer [Footer.tsx](file:///home/pop_i9/Development/Web/Clean_World_Inc/src/components/Footer.tsx).
+3. **Updated Landing Page CTAs**:
+   - Directs enterprise users directly to the B2B Consultancy page instead of the residential Quote Wizard.
+4. **Cleaned Up Services Page**:
+   - Removed B2B consultancy tabs and modal definitions from [ServicesPage.tsx](file:///home/pop_i9/Development/Web/Clean_World_Inc/src/components/ServicesPage.tsx), making standard "Cleaning Services" the default view.
+5. **GovernmentService SEO & JSON-LD**:
+   - Programmed GovernmentService JSON-LD schema dynamically injected on the Consultancy view in [useDocumentMetadata.ts](file:///home/pop_i9/Development/Web/Clean_World_Inc/src/hooks/useDocumentMetadata.ts).
 
 ---
 
-### 3. Component Enhancements
+## Part 2: Navigation Cleanup & Role-Based Auth
 
-#### A. [Fumigation Panel](file:///home/pop_i9/Development/Web/Clean_World_Inc/src/components/FumigationPanel.tsx)
-- Replaced low-contrast and redundant elements.
-- Adjusted typography size and tracking across headings, subheadings, and details sections.
-- Restored the paragraph description block for clarity.
+To eliminate cognitive load and prevent residential clients from seeing internal/secured dashboards in the public header, we decoupled public marketing views from secured portals via a modular role-based authentication model.
 
-#### B. [Services Page & Scoping Form Modal](file:///home/pop_i9/Development/Web/Clean_World_Inc/src/components/ServicesPage.tsx)
-- Corrected tag hierarchy and fixed missing wrapper divs for textareas.
-- Updated text labels on technical parameters, coordinates display, and Case Registered receipt sections to `text-slate-400`.
-- Ensured perfect tag balance to fix compilation issues.
+### Changes Implemented
+1. **Types and Models**:
+   - Defined `UserSession` interface and roles (`client` | `cleaner`) in [types.ts](file:///home/pop_i9/Development/Web/Clean_World_Inc/src/types.ts).
+2. **Modular Auth Modal**:
+   - Created [LoginModal.tsx](file:///home/pop_i9/Development/Web/Clean_World_Inc/src/components/LoginModal.tsx) with a responsive, glassmorphic design and one-tap demo logins for **Demo Client** and **Demo Cleaner Crew**.
+3. **State Integration & Route Guards**:
+   - Managed session state in [App.tsx](file:///home/pop_i9/Development/Web/Clean_World_Inc/src/App.tsx) and implemented automatic page redirects if an unauthenticated user attempts to visit the private client dashboard or cleaner portal.
+4. **Cleaned Header Navigation**:
+   - Removed `Client Portal` and `Cleaner Dispatch` from the main navbar in [Navbar.tsx](file:///home/pop_i9/Development/Web/Clean_World_Inc/src/components/Navbar.tsx).
+   - Replaced them with a **"Log In"** button that opens the auth modal.
+   - When authenticated, it renders a custom user profile avatar dropdown on desktop and a profile widget in the mobile drawer containing active session stats and logout actions.
+5. **Subdomain Separation Indicator**:
+   - Added a simulated subdomain banner in [CleanerPortal.tsx](file:///home/pop_i9/Development/Web/Clean_World_Inc/src/components/CleanerPortal.tsx) specifying the isolated `ops.cleanworld.live` workspace to mirror standard B2B enterprise routing setups.
+6. **Footer Portal Linking**:
+   - Cleaned up [Footer.tsx](file:///home/pop_i9/Development/Web/Clean_World_Inc/src/components/Footer.tsx) to explicitly reference and link the `Operations Portal (ops.cleanworld.live)` as an independent subdomain path.
 
-#### C. [Quote Wizard](file:///home/pop_i9/Development/Web/Clean_World_Inc/src/components/QuoteWizard.tsx)
-- Resolved structural/JSX tag nesting errors by introducing the missing closing `</div>` tag on the coordinate input section wrapper.
-- Improved link styling and contrast for "Use Current GPS" triggers.
+---
 
-#### D. [Academy Page](file:///home/pop_i9/Development/Web/Clean_World_Inc/src/components/AcademyPage.tsx)
-- Elevated contrast for starter-kit subtitles from `text-slate-500` to `text-slate-400`.
+## Part 3: Removal of the Training Academy
 
-#### E. [Eco-Shop Checkout](file:///home/pop_i9/Development/Web/Clean_World_Inc/src/components/EcoShopPage.tsx)
-- Enhanced amount display captions and carrier detail descriptors to high-contrast variables.
+The **Training Academy** was removed from the codebase to align with the core environmental business focus, eliminating redundant certificate registry portals.
 
-#### F. [Footer & Emergencies](file:///home/pop_i9/Development/Web/Clean_World_Inc/src/components/Footer.tsx)
-- Upgraded legal terms links and copyright captions to `text-slate-400` to ensure readability on small screens.
+### Changes Implemented
+1. **Deleted Component**:
+   - Deleted the obsolete `src/components/AcademyPage.tsx` component.
+2. **Removed References**:
+   - Removed the `"Training Academy"` view and enum fields from [Navbar.tsx](file:///home/pop_i9/Development/Web/Clean_World_Inc/src/components/Navbar.tsx), [App.tsx](file:///home/pop_i9/Development/Web/Clean_World_Inc/src/App.tsx), and [types.ts](file:///home/pop_i9/Development/Web/Clean_World_Inc/src/types.ts).
+3. **SEO Adjustments**:
+   - Removed the custom Course schema and page metadata case block from the document header hook [useDocumentMetadata.ts](file:///home/pop_i9/Development/Web/Clean_World_Inc/src/hooks/useDocumentMetadata.ts).
+4. **Test Adjustments**:
+   - Removed the defunct `HSE Compliance Academy certificate verification registry` test case from E2E test file [clean-world.spec.ts](file:///home/pop_i9/Development/Web/Clean_World_Inc/tests/clean-world.spec.ts).
+   - Updated the indexability test case inside [clean-world.spec.ts](file:///home/pop_i9/Development/Web/Clean_World_Inc/tests/clean-world.spec.ts) to verify indexing and `Product` JSON-LD schema using the public **Eco-Shop** page instead of the Academy page.
+   - Removed the Academy view rendering and screenshot assertion checks from [screenshot.spec.ts](file:///home/pop_i9/Development/Web/Clean_World_Inc/tests/screenshot.spec.ts).
+
+---
+
+## Part 4: Footer Alignment Refinement
+
+To fix the text alignment issues in the Services and Portals columns inside the footer, we addressed how `<button>` elements handle text wrapping.
+
+### Changes Implemented
+1. **Left-Alignment for Navigation Buttons**:
+   - Added `w-full justify-start text-left` to all service and portal selection buttons in [Footer.tsx](file:///home/pop_i9/Development/Web/Clean_World_Inc/src/components/Footer.tsx). This forces button elements (which default to browser centered text alignment) to align flush-left with their column headers when text wraps on narrow/scaled viewports.
+2. **Layout Stability for Icons**:
+   - Added `shrink-0` to the `<ArrowUpRight>` indicator icons inside the footer links to prevent them from distorting or shrinking when the text wrapping occurs in tight viewport layouts.
 
 ---
 
 ## Verification & Build Validation
-- Executed local production builds to guarantee code syntax and component rendering integrity.
-- Build successfully compiled with no errors:
-  ```bash
-  npm run build
-  # Output: built in 2.21s (dist/assets/index.js, dist/assets/index.css)
-  ```
+
+### 1. Build Verification
+Validated that the codebase builds and compiles cleanly with zero warnings:
+```bash
+npm run build
+# Result: built in 2.18s (production build succeeded)
+npm run lint
+# Result: tsc --noEmit (succeeded with exit code 0)
+```
+
+### 2. E2E Test Suite Verification
+All 7 tests pass successfully:
+```bash
+npx playwright test
+# Result: 7 tests passed successfully in 14.5s!
+```

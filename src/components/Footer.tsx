@@ -65,14 +65,14 @@ export default function Footer({ setActiveView }: FooterProps) {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
               </span>
-              <span className="text-[14px] font-mono uppercase tracking-widest text-red-400 font-extrabold">Emergency Line 24/7</span>
+              <span className="text-xs font-mono uppercase tracking-widest text-red-400 font-extrabold">Emergency Line 24/7</span>
             </div>
             <div>
               <p className="text-sm font-display text-white font-medium leading-tight tracking-tight">
-                Clean World emergency response is active now.
+                Emergency response is active now.
               </p>
-              <p className="text-[15px] text-slate-400 mt-1 font-sans">
-                On-site within 60 minutes for urgent disinfection, deep cleaning, or pest containment.
+              <p className="text-xs text-slate-400 mt-1 font-sans">
+                Emergency response dispatched in 60 minutes across Juba districts.
               </p>
             </div>
           </div>
@@ -117,66 +117,67 @@ export default function Footer({ setActiveView }: FooterProps) {
                 <span className="font-display font-black text-lg tracking-tight bg-gradient-to-r from-white via-slate-100 to-slate-200 bg-clip-text text-transparent leading-none">
                   CLEAN WORLD
                 </span>
-                <span className="text-[15px] tracking-wider px-1 py-0.5 font-bold leading-none ml-1 shadow-sm text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 rounded">
+                <span className="text-xs tracking-wider px-1 py-0.5 font-bold leading-none ml-1 shadow-sm text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 rounded">
                   INC.
                 </span>
               </div>
             </div>
 
             <p className="text-xs text-slate-400 leading-relaxed font-sans max-w-sm">
-              South Sudan's premier eco-responsible hygiene and sanitization services. Delivering medical-grade decontamination, premium vector control, and professional janitorial solutions with absolute compliance and environmental stewardship.
+              South Sudan's premier eco-responsible hygiene and sanitization service provider, delivering medical-grade decontamination, vector control, and professional custodial care.
             </p>
 
-            <div className="space-y-2 text-[15px] text-slate-500 font-sans">
+            <div className="space-y-2 text-xs text-slate-500 font-sans">
               <div className="flex items-start gap-2">
                 <MapPin className="w-3.5 h-3.5 text-slate-600 shrink-0 mt-0.5" />
                 <span>Airport Road, Juba, South Sudan</span>
               </div>
               <div className="flex items-start gap-2">
                 <ShieldCheck className="w-3.5 h-3.5 text-slate-600 shrink-0 mt-0.5" />
-                <span className="font-mono">Ministry of Environment Licensed No. SS/ME/2026-928</span>
+                <span className="font-mono text-xs">Ministry of Environment Licensed No. SS/ME/2026-928</span>
               </div>
             </div>
           </div>
 
           {/* Column 2: Service Navigation (spans 1) */}
           <div className="space-y-4">
-            <h4 className="text-[14px] font-display font-bold text-slate-200 tracking-wider uppercase">Services</h4>
+            <h4 className="text-xs font-display font-bold text-slate-200 tracking-wider uppercase">Services</h4>
             <ul className="space-y-2.5 text-xs font-sans">
               <li>
                 <button 
-                  onClick={() => setActiveView(ActiveView.Services)} 
-                  className="text-slate-400 hover:text-emerald-400 hover:translate-x-1 transition-all cursor-pointer flex items-center gap-1 group"
+                  onClick={() => setActiveView(ActiveView.Consultancy)} 
+                  className="text-slate-400 hover:text-emerald-400 hover:translate-x-1 transition-all cursor-pointer flex items-center justify-start text-left w-full gap-1 group"
                 >
-                  Services
-                  <ArrowUpRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  Environmental Consultancy
+                  <ArrowUpRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
+                </button>
+              </li>
+              <li>
+                <button 
+                  onClick={() => setActiveView(ActiveView.Services)} 
+                  className="text-slate-400 hover:text-emerald-400 hover:translate-x-1 transition-all cursor-pointer flex items-center justify-start text-left w-full gap-1 group"
+                >
+                  Operational Services
+                  <ArrowUpRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
                 </button>
               </li>
               <li>
                 <button 
                   onClick={() => setActiveView(ActiveView.Shop)} 
-                  className="text-slate-400 hover:text-emerald-400 hover:translate-x-1 transition-all cursor-pointer flex items-center gap-1 group"
+                  className="text-slate-400 hover:text-emerald-400 hover:translate-x-1 transition-all cursor-pointer flex items-center justify-start text-left w-full gap-1 group"
                 >
                   Cleaning Supplies
-                  <ArrowUpRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <ArrowUpRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
                 </button>
               </li>
-              <li>
-                <button 
-                  onClick={() => setActiveView(ActiveView.Academy)} 
-                  className="text-slate-400 hover:text-emerald-400 hover:translate-x-1 transition-all cursor-pointer flex items-center gap-1 group"
-                >
-                  Training Academy
-                  <ArrowUpRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
-                </button>
-              </li>
+
               <li>
                 <button 
                   onClick={() => setActiveView(ActiveView.QuoteFlow)} 
-                  className="text-slate-400 hover:text-emerald-400 hover:translate-x-1 transition-all cursor-pointer flex items-center gap-1 group"
+                  className="text-slate-400 hover:text-emerald-400 hover:translate-x-1 transition-all cursor-pointer flex items-center justify-start text-left w-full gap-1 group"
                 >
                   Get a Free Quote
-                  <ArrowUpRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <ArrowUpRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
                 </button>
               </li>
             </ul>
@@ -184,24 +185,24 @@ export default function Footer({ setActiveView }: FooterProps) {
 
           {/* Column 3: Platform Portals (spans 1) */}
           <div className="space-y-4">
-            <h4 className="text-[14px] font-display font-bold text-slate-200 tracking-wider uppercase">Portals</h4>
+            <h4 className="text-xs font-display font-bold text-slate-200 tracking-wider uppercase">Portals</h4>
             <ul className="space-y-2.5 text-xs font-sans">
               <li>
                 <button 
                   onClick={() => setActiveView(ActiveView.ClientDashboard)} 
-                  className="text-slate-400 hover:text-emerald-400 hover:translate-x-1 transition-all cursor-pointer flex items-center gap-1 group"
+                  className="text-slate-400 hover:text-emerald-400 hover:translate-x-1 transition-all cursor-pointer flex items-center justify-start text-left w-full gap-1 group"
                 >
-                  Client Account
-                  <ArrowUpRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  Client Dashboard
+                  <ArrowUpRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
                 </button>
               </li>
               <li>
                 <button 
                   onClick={() => setActiveView(ActiveView.CleanerPortal)} 
-                  className="text-slate-400 hover:text-emerald-400 hover:translate-x-1 transition-all cursor-pointer flex items-center gap-1 group"
+                  className="text-slate-400 hover:text-emerald-400 hover:translate-x-1 transition-all cursor-pointer flex items-center justify-start text-left w-full gap-1 group"
                 >
-                  Cleaner Dispatch
-                  <ArrowUpRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity" />
+                  Operations Portal (ops.cleanworld.live)
+                  <ArrowUpRight className="w-3 h-3 opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
                 </button>
               </li>
             </ul>
@@ -209,7 +210,7 @@ export default function Footer({ setActiveView }: FooterProps) {
 
           {/* Column 4: Operations Center & Socials (spans 2) */}
           <div className="md:col-span-2 space-y-4">
-            <h4 className="text-[14px] font-display font-bold text-slate-200 tracking-wider uppercase">Operations Hub</h4>
+            <h4 className="text-xs font-display font-bold text-slate-200 tracking-wider uppercase">Operations Hub</h4>
             
             <div className="bg-slate-900/40 border border-slate-900 p-4 rounded-xl space-y-3">
               <div className="flex items-center gap-2">
@@ -217,7 +218,7 @@ export default function Footer({ setActiveView }: FooterProps) {
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                 </span>
-                <span className="text-[14px] font-mono uppercase tracking-widest text-emerald-400 font-bold">
+                <span className="text-xs font-mono uppercase tracking-widest text-emerald-400 font-bold">
                   All Systems Operational
                 </span>
               </div>
@@ -228,11 +229,11 @@ export default function Footer({ setActiveView }: FooterProps) {
                 </div>
                 <div className="flex items-center gap-2">
                   <Phone className="w-3.5 h-3.5 text-slate-500" />
-                  <span className="font-mono">+211 928 300 400</span>
+                  <span className="font-mono text-xs">+211 928 300 400</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Mail className="w-3.5 h-3.5 text-slate-500" />
-                  <span className="font-mono">dispatch@cleanworld.live</span>
+                  <span className="font-mono text-xs">dispatch@cleanworld.live</span>
                 </div>
               </div>
             </div>
@@ -255,7 +256,7 @@ export default function Footer({ setActiveView }: FooterProps) {
         </div>
 
         {/* Copyright and Legal footer bar */}
-        <div className="border-t border-slate-900 mt-12 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-[14px] text-slate-400 font-mono">
+        <div className="border-t border-slate-900 mt-12 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400 font-mono">
           <div>
             © {new Date().getFullYear()} Clean World Inc. All rights reserved.
           </div>
@@ -302,11 +303,11 @@ export default function Footer({ setActiveView }: FooterProps) {
                 <AlertTriangle className="w-5 h-5 text-red-400 shrink-0 mt-0.5" />
                 <div>
                   <span className="font-semibold block text-red-400 mb-0.5">Juba Dispatch Team Online</span>
-                  Our certified cleaning, bio-hazard containment, and urgent vector control teams are stationed locally in Juba. On-site response is guaranteed within <strong>60 minutes</strong>.
+                  Emergency response team dispatched within 60 minutes across Juba.
                 </div>
               </div>
-              <p className="text-slate-400 text-[15px] leading-normal font-sans">
-                Serving all main sectors: Tongping, Airport Road, Munuki, Gudele, Gumbo, and the wider Central Equatoria area.
+              <p className="text-slate-400 text-xs leading-normal font-sans">
+                Serving Tongping, Airport Road, Munuki, Gudele, Gumbo, and wider Central Equatoria.
               </p>
             </div>
 
@@ -317,7 +318,7 @@ export default function Footer({ setActiveView }: FooterProps) {
                 className="w-full bg-red-600 hover:bg-red-500 text-white font-mono font-bold text-sm py-3 px-4 rounded-xl flex items-center justify-center gap-2.5 transition-all shadow-lg shadow-red-600/10 hover:shadow-red-600/20 cursor-pointer"
               >
                 <PhoneCall className="w-4 h-4 animate-bounce" />
-                Call Urgent Hotline: +211 928 300 400
+                Call Hotline: +211 928 300 400
               </a>
               
               <a 
@@ -337,13 +338,13 @@ export default function Footer({ setActiveView }: FooterProps) {
                 }}
                 className="w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-display font-bold text-xs py-2.5 rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer"
               >
-                Submit Electronic Dispatch Ticket
+                Submit Dispatch Ticket
                 <ArrowUpRight className="w-3.5 h-3.5" />
               </button>
             </div>
 
             {/* Footer stamp */}
-            <div className="text-[14px] text-center text-slate-500 font-mono">
+            <div className="text-xs text-center text-slate-500 font-mono">
               Licensed by Ministry of Environment No. SS/ME/2026-928
             </div>
 
@@ -357,12 +358,12 @@ export default function Footer({ setActiveView }: FooterProps) {
             href="https://wa.me/211928300400?text=Hello%20Clean%20World%2C%20I%20would%20like%20to%20request%20an%20HSE%20consultation%20or%20service%20quote."
             target="_blank"
             rel="noopener noreferrer"
-            className="bg-emerald-500/20 backdrop-blur-md border border-emerald-500/30 text-emerald-400 p-3.5 sm:p-4 rounded-full shadow-[0_20px_50px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.15)] hover:bg-emerald-500 hover:text-slate-950 hover:border-emerald-400 transition-all duration-300 group flex items-center justify-center cursor-pointer"
+            className="bg-emerald-500/20 backdrop-blur-md border border-emerald-500/30 text-emerald-400 p-3.5 sm:p-4 rounded-full shadow-[0_20px_50px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.15)] hover:bg-emerald-500 hover:text-slate-955 hover:border-emerald-400 transition-all duration-300 group flex items-center justify-center cursor-pointer"
             aria-label="Contact on WhatsApp"
             id="whatsapp-floating-cta"
           >
             <MessageCircle className="w-5.5 h-5.5 sm:w-6 sm:h-6 transition-transform group-hover:scale-110" />
-            <span className="max-w-0 overflow-hidden group-hover:max-w-xs group-hover:ml-2 font-display text-[14px] sm:text-xs font-extrabold tracking-wider uppercase transition-all duration-300 ease-in-out whitespace-nowrap">
+            <span className="max-w-0 overflow-hidden group-hover:max-w-xs group-hover:ml-2 font-display text-xs font-extrabold tracking-wider uppercase transition-all duration-300 ease-in-out whitespace-nowrap">
               WhatsApp 24/7
             </span>
           </a>

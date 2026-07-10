@@ -1,9 +1,9 @@
 export enum ActiveView {
   Home = "home",
+  Consultancy = "consultancy",
   Services = "services",
   Shop = "shop",
   QuoteFlow = "quote-flow",
-  Academy = "academy",
   ClientDashboard = "client-dashboard",
   CleanerPortal = "cleaner-portal"
 }
@@ -120,3 +120,25 @@ export interface QuoteState {
   items: CartItem[];
   subscriptionFrequency?: string; // e.g. "Monthly", "Bi-Monthly", "Single"
 }
+
+export interface UserSession {
+  email: string;
+  role: UserRole;
+  name?: string;   // display name after registration
+  phone?: string;  // phone number (primary identifier for consumers)
+}
+
+export interface B2BInquiry {
+  id: string;
+  companyName: string;
+  contactName: string;
+  contactPhone: string;
+  contactEmail: string;
+  facilityType: string;
+  complianceSectors: string[];
+  siteArea: number;
+  notes: string;
+  createdAt: string;
+  status: "received" | "contacted" | "quoted";
+}
+

@@ -7,30 +7,6 @@ test.describe('Clean World Inc E2E Test Suite', () => {
     await page.goto('/');
   });
 
-  test('HSE Compliance Academy certificate verification registry', async ({ page }) => {
-    // Click Training Academy navbar link
-    await page.locator('#nav-link-academy').click();
-
-    // Verify header exists
-    await expect(page.getByRole('heading', { name: 'Verify HSE Credentials' })).toBeVisible();
-
-    // 1. Test invalid certificate ID
-    await page.getByPlaceholder('Enter Certificate ID (e.g. CW-CERT-4201)').fill('CW-CERT-0000');
-    await page.getByRole('button', { name: 'Verify Certificate' }).click();
-
-    // Assert validation error card is shown
-    await expect(page.locator('text=No certificate matching "CW-CERT-0000" was located')).toBeVisible();
-
-    // 2. Test valid certificate ID
-    await page.getByPlaceholder('Enter Certificate ID (e.g. CW-CERT-4201)').fill('CW-CERT-4201');
-    await page.getByRole('button', { name: 'Verify Certificate' }).click();
-
-    // Assert student details card is shown
-    await expect(page.locator('text=VALID CERTIFICATE LEDGER')).toBeVisible();
-    await expect(page.getByRole('heading', { name: 'Rebecca Nyandeng' })).toBeVisible();
-    await expect(page.locator('text=Course: Safe Chemical & Cleaning Product Handling')).toBeVisible();
-    await expect(page.locator('text=RSS MOE & WHO')).toBeVisible();
-  });
 
   test('B2B Quote Funnel Booking and Invoice Receipt Coordinates', async ({ page }) => {
     // Click Get a Free Quote CTA button in navbar
@@ -75,8 +51,9 @@ test.describe('Clean World Inc E2E Test Suite', () => {
   });
 
   test('Live Cleaner Crew Telemetry Vehicle Tracker', async ({ page }) => {
-    // Click Client Portal navbar link
-    await page.locator('#nav-link-client-dashboard').click();
+    // Click Log In and authenticate as client
+    await page.locator('#nav-login-btn').click();
+    await page.getByRole('button', { name: 'Demo Client' }).click();
 
     // Verify Dashboard active bookings list renders
     await expect(page.getByText('Your Cleaning Bookings')).toBeVisible();
@@ -97,8 +74,11 @@ test.describe('Clean World Inc E2E Test Suite', () => {
   });
 
   test('Cleaner Portal Active Route Guidance Map', async ({ page }) => {
-    // Click Cleaner Dispatch navbar link
-    await page.locator('#nav-link-cleaner-portal').click();
+    // Click Log In and authenticate as cleaner
+    await page.locator('#nav-login-btn').click();
+    // Switch to Field Staff tab first
+    await page.getByRole('button', { name: 'Field Staff' }).click();
+    await page.getByRole('button', { name: 'Demo Cleaner Crew' }).click();
 
     // Verify Cleaner Active Jobs Dashboard
     await expect(page.getByText("Today's Assigned Route")).toBeVisible();
@@ -138,24 +118,36 @@ test.describe('Clean World Inc E2E Test Suite', () => {
     expect(schemaContent).toContain('Hai Kuwait, Juba');
 
     // 2. Navigate to Client Dashboard (Secure Portal) - Should exclude indexing
-    await page.locator('#nav-link-client-dashboard').click();
+    await page.locator('#nav-login-btn').click();
+    await page.getByRole('button', { name: 'Demo Client' }).click();
     await expect(page).toHaveTitle('Client Dashboard | Clean World Inc.');
     await expect(metaRobots).toHaveAttribute('content', 'noindex, nofollow');
 
+    // Log out first before switching to Cleaner Portal
+    await page.locator('#nav-user-dropdown-toggle').click();
+    await page.locator('button:has-text("Log Out")').click();
+
     // 3. Navigate to Cleaner Portal (Secure Portal) - Should exclude indexing
-    await page.locator('#nav-link-cleaner-portal').click();
+    await page.locator('#nav-login-btn').click();
+    // Switch to Field Staff tab first
+    await page.getByRole('button', { name: 'Field Staff' }).click();
+    await page.getByRole('button', { name: 'Demo Cleaner Crew' }).click();
     await expect(page).toHaveTitle('Cleaner Portal | Clean World Inc.');
     await expect(metaRobots).toHaveAttribute('content', 'noindex, nofollow');
 
-    // 4. Navigate back to a public view (Academy) - Should re-enable indexing & Course schema
-    await page.locator('#nav-link-academy').click();
-    await expect(page).toHaveTitle('Academy (LMS) | Clean World Inc.');
+    // Log out so we are on a public view / standard state
+    await page.locator('#nav-user-dropdown-toggle').click();
+    await page.locator('button:has-text("Log Out")').click();
+
+    // 4. Navigate back to a public view (Shop) - Should re-enable indexing & Product schema
+    await page.locator('#nav-link-shop').click();
+    await expect(page).toHaveTitle('Eco-Shop | Clean World Inc.');
     await expect(metaRobots).toHaveAttribute('content', 'index, follow');
 
-    // Verify Course schema exists
-    const academySchemaContent = await schemaScript.textContent();
-    expect(academySchemaContent).toContain('Course');
-    expect(academySchemaContent).toContain('Mosquito & Vector Control');
+    // Verify Product schema exists
+    const shopSchemaContent = await schemaScript.textContent();
+    expect(shopSchemaContent).toContain('Product');
+    expect(shopSchemaContent).toContain('Bio-Clean Pro-X');
   });
 
 });
