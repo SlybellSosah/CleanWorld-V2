@@ -604,7 +604,7 @@ export default function ServicesPage({
                         </div>
                         <button
                           onClick={() => onAddProductToCart(prod, 1)}
-                          className={`p-2 rounded-lg transition-all shrink-0 ${isInCart ? `${theme.bgSolid} text-slate-955 shadow-md ${theme.glow}` : "bg-[#1E293B] text-slate-300 hover:bg-slate-800"}`}
+                          className={`p-2 rounded-lg transition-all shrink-0 ${isInCart ? `${theme.bgSolid} text-slate-950 shadow-md ${theme.glow}` : "bg-[#1E293B] text-slate-300 hover:bg-slate-800"}`}
                         >
                           {isInCart ? <Check className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
                         </button>
@@ -813,7 +813,7 @@ export default function ServicesPage({
                           ].map((addon) => {
                             const isSelected = wasteAddons.includes(addon);
                             return (
-                              <button key={addon} onClick={() => handleToggleAddon(addon, wasteAddons, setWasteAddons)} className={`px-2.5 py-1.5 rounded-full border text-left text-xs font-semibold transition-all ${isSelected ? `${theme.bgSelected} ${theme.border} ${theme.text} font-bold` : "bg-[#0F172A] border-slate-800 text-slate-355"}`}>
+                              <button key={addon} onClick={() => handleToggleAddon(addon, wasteAddons, setWasteAddons)} className={`px-2.5 py-1.5 rounded-full border text-left text-xs font-semibold transition-all ${isSelected ? `${theme.bgSelected} ${theme.border} ${theme.text} font-bold` : "bg-[#0F172A] border-slate-800 text-slate-350"}`}>
                                 {addon}
                               </button>
                             );

@@ -6,6 +6,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import MapComponent from "./MapComponent";
+import { bookingLabel } from "../data";
 
 interface ClientDashboardProps {
   bookings: Booking[];
@@ -115,6 +116,7 @@ export default function ClientDashboard({ bookings, setBookings, setActiveView, 
   };
 
   const submitTip = () => {
+    if (tipAmount <= 0) return;
     actualSetBookings((prev: Booking[]) =>
       prev.map((b) =>
         b.id === selectedBookingForTip?.id
@@ -273,7 +275,7 @@ export default function ClientDashboard({ bookings, setBookings, setActiveView, 
                                   ? "bg-purple-500/10 text-purple-400 border border-purple-500/20"
                                   : "bg-blue-500/10 text-blue-400 border border-blue-500/20"
                               }`}>
-                                {booking.cleanType === "deep" ? "Deep Clean" : booking.cleanType === "move-in-out" ? "Move-In/Out Clean" : "Standard Clean"}
+                                {bookingLabel(booking)}
                               </span>
                               <span className={`font-mono text-xs font-semibold px-2 py-0.5 rounded capitalize ${
                                 booking.status === "completed"
@@ -304,8 +306,12 @@ export default function ClientDashboard({ bookings, setBookings, setActiveView, 
 
                               <div className="space-y-2 border-t sm:border-t-0 sm:border-l border-slate-800 pt-2 sm:pt-0 sm:pl-4">
                                 <div>
-                                  <span className="text-slate-400 font-mono text-xs uppercase block">House size:</span>
-                                  <span className="font-semibold">{booking.bedrooms} Bed, {booking.bathrooms} Bath • <span className="text-xs text-slate-400">{booking.sqFtRange}</span></span>
+                                  <span className="text-slate-400 font-mono text-xs uppercase block">{booking.serviceType === "waste" ? "Refuse volume:" : "House size:"}</span>
+                                  {booking.serviceType === "waste" ? (
+                                    <span className="font-semibold">{booking.sqFtRange}</span>
+                                  ) : (
+                                    <span className="font-semibold">{booking.bedrooms} Bed, {booking.bathrooms} Bath • <span className="text-xs text-slate-400">{booking.sqFtRange}</span></span>
+                                  )}
                                 </div>
                                 {booking.addons.length > 0 && (
                                   <div>
@@ -339,9 +345,9 @@ export default function ClientDashboard({ bookings, setBookings, setActiveView, 
                                 <div className="flex gap-4">
                                   {booking.beforePhoto && (
                                     <div className="space-y-1">
-                                      <div className="h-20 w-28 bg-slate-950 rounded-lg overflow-hidden border border-slate-855 relative">
+                                      <div className="h-20 w-28 bg-slate-950 rounded-lg overflow-hidden border border-slate-850 relative">
                                         <img src={booking.beforePhoto} alt="Before" className="h-full w-full object-cover" referrerPolicy="no-referrer" />
-                                        <span className="absolute bottom-1 right-1 bg-black/70 text-xs font-mono font-bold text-red-400 px-1 py-0.2 rounded">BEFORE</span>
+                                        <span className="absolute bottom-1 right-1 bg-black/70 text-xs font-mono font-bold text-red-400 px-1 py-0.5 rounded">BEFORE</span>
                                       </div>
                                     </div>
                                   )}
@@ -349,7 +355,7 @@ export default function ClientDashboard({ bookings, setBookings, setActiveView, 
                                     <div className="space-y-1">
                                       <div className="h-20 w-28 bg-slate-950 rounded-lg overflow-hidden border border-emerald-500/30 relative">
                                         <img src={booking.afterPhoto} alt="After" className="h-full w-full object-cover" referrerPolicy="no-referrer" />
-                                        <span className="absolute bottom-1 right-1 bg-emerald-950/80 text-xs font-mono font-bold text-emerald-400 px-1 py-0.2 rounded">AFTER</span>
+                                        <span className="absolute bottom-1 right-1 bg-emerald-950/80 text-xs font-mono font-bold text-emerald-400 px-1 py-0.5 rounded">AFTER</span>
                                       </div>
                                     </div>
                                   )}
@@ -568,7 +574,7 @@ export default function ClientDashboard({ bookings, setBookings, setActiveView, 
                         paymentProfile.method === "MTN MoMo" ? "text-slate-900/60" : "text-slate-300/60"
                       }`}>Profile Holder</span>
                       <span className={`text-xs font-bold tracking-wide uppercase truncate block max-w-[120px] ${
-                        paymentProfile.method === "MTN MoMo" ? "text-slate-955" : "text-white"
+                        paymentProfile.method === "MTN MoMo" ? "text-slate-950" : "text-white"
                       }`}>{paymentProfile.holder}</span>
                     </div>
                     <div className="text-right">
@@ -576,7 +582,7 @@ export default function ClientDashboard({ bookings, setBookings, setActiveView, 
                         paymentProfile.method === "MTN MoMo" ? "text-slate-900/60" : "text-slate-300/60"
                       }`}>Channel</span>
                       <span className={`text-xs font-bold block ${
-                        paymentProfile.method === "MTN MoMo" ? "text-slate-955" : "text-white"
+                        paymentProfile.method === "MTN MoMo" ? "text-slate-950" : "text-white"
                       }`}>{paymentProfile.method === "Cash" ? "Juba Cash" : "USSD Push"}</span>
                     </div>
                   </div>
@@ -857,9 +863,10 @@ export default function ClientDashboard({ bookings, setBookings, setActiveView, 
                     <div className="relative max-w-[150px] mx-auto">
                       <span className="absolute left-3 top-3.5 text-slate-400 font-mono">$</span>
                       <input 
-                        type="number" 
+                        type="number"
+                        min={0}
                         value={tipAmount}
-                        onChange={(e) => setTipAmount(parseFloat(e.target.value) || 0)}
+                        onChange={(e) => setTipAmount(Math.max(0, parseFloat(e.target.value) || 0))}
                         className="w-full bg-slate-950 border border-slate-800 rounded-xl pl-8 pr-4 py-3 text-center text-sm font-mono focus:outline-none focus:border-emerald-500"
                         placeholder="0.00"
                       />
@@ -877,7 +884,8 @@ export default function ClientDashboard({ bookings, setBookings, setActiveView, 
                     <button
                       type="button"
                       onClick={submitTip}
-                      className="w-full sm:w-auto px-6 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-display font-bold text-xs rounded-xl shadow-lg shadow-emerald-500/10 transition-colors"
+                      disabled={tipAmount <= 0}
+                      className="w-full sm:w-auto px-6 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-display font-bold text-xs rounded-xl shadow-lg shadow-emerald-500/10 transition-colors disabled:opacity-50"
                     >
                       Authorize Tip
                     </button>
@@ -967,7 +975,7 @@ export default function ClientDashboard({ bookings, setBookings, setActiveView, 
               <div className="flex justify-end pt-2">
                 <button
                   onClick={() => setSelectedBookingForTracking(null)}
-                  className="w-full sm:w-auto px-6 py-2.5 bg-slate-800 hover:bg-slate-700 text-white font-semibold text-xs rounded-xl transition-colors border border-slate-755"
+                  className="w-full sm:w-auto px-6 py-2.5 bg-slate-800 hover:bg-slate-700 text-white font-semibold text-xs rounded-xl transition-colors border border-slate-750"
                 >
                   Close Tracker
                 </button>

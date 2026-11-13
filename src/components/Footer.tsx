@@ -358,7 +358,7 @@ export default function Footer({ setActiveView }: FooterProps) {
             href="https://wa.me/211928300400?text=Hello%20Clean%20World%2C%20I%20would%20like%20to%20request%20an%20HSE%20consultation%20or%20service%20quote."
             target="_blank"
             rel="noopener noreferrer"
-            className="bg-emerald-500/20 backdrop-blur-md border border-emerald-500/30 text-emerald-400 p-3.5 sm:p-4 rounded-full shadow-[0_20px_50px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.15)] hover:bg-emerald-500 hover:text-slate-955 hover:border-emerald-400 transition-all duration-300 group flex items-center justify-center cursor-pointer"
+            className="bg-emerald-500/20 backdrop-blur-md border border-emerald-500/30 text-emerald-400 p-3.5 sm:p-4 rounded-full shadow-[0_20px_50px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.15)] hover:bg-emerald-500 hover:text-slate-950 hover:border-emerald-400 transition-all duration-300 group flex items-center justify-center cursor-pointer"
             aria-label="Contact on WhatsApp"
             id="whatsapp-floating-cta"
           >

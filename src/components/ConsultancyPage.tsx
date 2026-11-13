@@ -651,7 +651,7 @@ export default function ConsultancyPage({ setActiveView, setQuotePillar, b2bInqu
                   </div>
 
                   <div className="space-y-2">
-                    <label className="text-xs text-slate-455 font-mono uppercase tracking-wide block">Estimated Site Area Range</label>
+                    <label className="text-xs text-slate-450 font-mono uppercase tracking-wide block">Estimated Site Area Range</label>
                     <div className="flex items-center gap-4">
                       <input
                         type="range"
@@ -669,7 +669,7 @@ export default function ConsultancyPage({ setActiveView, setQuotePillar, b2bInqu
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-xs text-slate-455 font-mono uppercase tracking-wide block">Risk Classification</label>
+                    <label className="text-xs text-slate-450 font-mono uppercase tracking-wide block">Risk Classification</label>
                     <div className="relative">
                       <select
                         value={inlineRiskClass}
@@ -692,7 +692,7 @@ export default function ConsultancyPage({ setActiveView, setQuotePillar, b2bInqu
                   </h4>
 
                   <div className="space-y-2">
-                    <label className="text-xs text-slate-455 font-mono uppercase tracking-wide block">Required Scopes</label>
+                    <label className="text-xs text-slate-450 font-mono uppercase tracking-wide block">Required Scopes</label>
                     <div className="grid grid-cols-2 gap-2">
                       {CORE_SERVICES.map((srv) => {
                         const isChecked = inlineScopes.includes(srv.label);
@@ -812,15 +812,15 @@ export default function ConsultancyPage({ setActiveView, setQuotePillar, b2bInqu
 
               <div className="max-w-md mx-auto bg-slate-950 border border-slate-850 p-5 rounded-2xl text-left font-mono text-xs text-slate-300 space-y-3.5">
                 <div className="flex justify-between border-b border-slate-800/80 pb-2">
-                  <span className="text-slate-455 font-mono font-bold">CASE REFERENCE ID</span>
+                  <span className="text-slate-450 font-mono font-bold">CASE REFERENCE ID</span>
                   <span className="text-white font-bold">{inlineQuoteId}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-455">ORGANIZATION / SITE</span>
+                  <span className="text-slate-450">ORGANIZATION / SITE</span>
                   <span className="text-white truncate max-w-[200px]">{inlineFacilityName}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-455">FACILITY PROFILE</span>
+                  <span className="text-slate-450">FACILITY PROFILE</span>
                   <span className="text-white">{inlineFacilityType}</span>
                 </div>
                 <div className="flex justify-between">
@@ -844,7 +844,7 @@ export default function ConsultancyPage({ setActiveView, setQuotePillar, b2bInqu
                     setInlineNotes("");
                     setInlineQuoteId("");
                   }}
-                  className="bg-slate-950 border border-slate-855 hover:border-slate-700 text-white font-sans font-semibold text-xs px-8 py-3 rounded-xl transition-all cursor-pointer"
+                  className="bg-slate-950 border border-slate-850 hover:border-slate-700 text-white font-sans font-semibold text-xs px-8 py-3 rounded-xl transition-all cursor-pointer"
                 >
                   Submit Another Inquiry
                 </button>
@@ -929,7 +929,7 @@ export default function ConsultancyPage({ setActiveView, setQuotePillar, b2bInqu
                       <Clock className="w-3.5 h-3.5 text-slate-650" /> Scoping &amp; Focal Point Details
                     </h4>
                     <div className="space-y-2">
-                      <label className="text-xs text-slate-455 font-mono uppercase tracking-wide block">Required Audit Scopes</label>
+                      <label className="text-xs text-slate-450 font-mono uppercase tracking-wide block">Required Audit Scopes</label>
                       <div className="space-y-2">
                         {CORE_SERVICES.map((srv) => {
                           const isChecked = selectedScopes.includes(srv.label);
@@ -955,16 +955,16 @@ export default function ConsultancyPage({ setActiveView, setQuotePillar, b2bInqu
                           <input type="text" required value={contactName} onChange={(e) => setContactName(e.target.value)} placeholder="e.g. Rebecca Nyandeng" className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-emerald-500 text-slate-200" />
                         </div>
                         <div className="space-y-1">
-                          <label className="text-xs text-slate-455 font-mono uppercase block">Official Email Address *</label>
+                          <label className="text-xs text-slate-450 font-mono uppercase block">Official Email Address *</label>
                           <input type="email" required value={contactEmail} onChange={(e) => setContactEmail(e.target.value)} placeholder="e.g. nyandeng@nile-petroleum.com" className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-emerald-500 text-slate-200" />
                         </div>
                       </div>
                       <div className="space-y-1">
-                        <label className="text-xs text-slate-455 font-mono uppercase block">Official Contact Phone *</label>
+                        <label className="text-xs text-slate-450 font-mono uppercase block">Official Contact Phone *</label>
                         <input type="text" required value={contactPhone} onChange={(e) => setContactPhone(e.target.value)} placeholder="e.g. +211 912 400 300" className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-emerald-500 text-slate-200 font-mono" />
                       </div>
                       <div className="space-y-1">
-                        <label className="text-xs text-slate-455 font-mono uppercase block">Project Brief / Scope Directives</label>
+                        <label className="text-xs text-slate-450 font-mono uppercase block">Project Brief / Scope Directives</label>
                         <textarea value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Outline specific regulatory requirements, targeted dates, or site details..." className="w-full h-16 bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-emerald-500 resize-none font-sans text-slate-200" />
                       </div>
                     </div>
@@ -983,7 +983,7 @@ export default function ConsultancyPage({ setActiveView, setQuotePillar, b2bInqu
                   </div>
                   <div className="flex gap-3 w-full sm:w-auto">
                     <button type="button" onClick={() => { setIsModalOpen(false); handleResetForm(); }} className="flex-1 sm:flex-none px-5 py-3 border border-slate-850 rounded-xl hover:bg-slate-850 text-xs font-semibold text-slate-300 transition-colors">Cancel</button>
-                    <button type="submit" disabled={isSubmitting} className="flex-grow sm:flex-grow-0 bg-emerald-500 hover:bg-emerald-400 disabled:bg-emerald-800 disabled:text-slate-650 text-slate-955 font-display font-black text-xs px-8 py-3.5 rounded-xl transition-colors shadow-lg shadow-emerald-500/10 flex items-center justify-center gap-1.5 uppercase tracking-wider">
+                    <button type="submit" disabled={isSubmitting} className="flex-grow sm:flex-grow-0 bg-emerald-500 hover:bg-emerald-400 disabled:bg-emerald-800 disabled:text-slate-650 text-slate-950 font-display font-black text-xs px-8 py-3.5 rounded-xl transition-colors shadow-lg shadow-emerald-500/10 flex items-center justify-center gap-1.5 uppercase tracking-wider">
                       {isSubmitting ? (
                         <>
                           <span className="h-3.5 w-3.5 border-2 border-slate-950 border-t-transparent rounded-full animate-spin"></span>
@@ -1023,7 +1023,7 @@ export default function ConsultancyPage({ setActiveView, setQuotePillar, b2bInqu
                     <span className="text-white">{areaSize.toLocaleString()} m²</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-slate-455">RISK CLASSIFICATION</span>
+                    <span className="text-slate-450">RISK CLASSIFICATION</span>
                     <span className="text-emerald-400 font-semibold">{riskClass}</span>
                   </div>
                   <div className="flex justify-between">

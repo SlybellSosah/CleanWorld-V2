@@ -139,7 +139,7 @@ export default function Navbar({
               >
                 <ShoppingBag className="w-5 h-5" />
                 {cartCount > 0 && (
-                  <span className="absolute -top-1 -right-1 font-mono text-[10px] font-extrabold h-4 w-4 flex items-center justify-center animate-pulse bg-emerald-500 text-slate-955 rounded-full border border-slate-950">
+                  <span className="absolute -top-1 -right-1 font-mono text-[10px] font-extrabold h-4 w-4 flex items-center justify-center animate-pulse bg-emerald-500 text-slate-950 rounded-full border border-slate-950">
                     {cartCount}
                   </span>
                 )}
@@ -151,9 +151,9 @@ export default function Navbar({
                   <button
                     id="nav-user-dropdown-toggle"
                     onClick={() => setDropdownOpen(!dropdownOpen)}
-                    className="flex items-center gap-2 px-3 py-1.5 bg-slate-955/40 hover:bg-slate-900 border border-slate-800 hover:border-slate-700/60 rounded-xl transition-all cursor-pointer"
+                    className="flex items-center gap-2 px-3 py-1.5 bg-slate-950/40 hover:bg-slate-900 border border-slate-800 hover:border-slate-700/60 rounded-xl transition-all cursor-pointer"
                   >
-                    <div className="w-6 h-6 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-slate-955 font-mono font-bold text-xs">
+                    <div className="w-6 h-6 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-slate-950 font-mono font-bold text-xs">
                       {currentUser.email.substring(0, 2).toUpperCase()}
                     </div>
                     <span className="text-xs font-semibold text-slate-200">
@@ -251,7 +251,7 @@ export default function Navbar({
                 onClick={() => setActiveView(ActiveView.QuoteFlow)}
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.98 }}
-                className="transform hover:-translate-y-0.5 transition-all duration-200 flex items-center gap-2 uppercase tracking-wide font-extrabold text-xs py-3 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-slate-955 px-5 rounded-xl shadow-lg shadow-emerald-500/10 hover:shadow-emerald-500/25"
+                className="transform hover:-translate-y-0.5 transition-all duration-200 flex items-center gap-2 uppercase tracking-wide font-extrabold text-xs py-3 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-400 text-slate-950 px-5 rounded-xl shadow-lg shadow-emerald-500/10 hover:shadow-emerald-500/25"
               >
                 <ShieldAlert className="w-4 h-4" />
                 Get a Free Quote
@@ -320,7 +320,7 @@ export default function Navbar({
                   <div className="space-y-1.5 pt-2 border-t border-slate-900/60">
                     <div className="px-4 py-2.5 bg-slate-900/50 rounded-xl border border-slate-800/80 flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-slate-955 font-mono font-bold text-[10px]">
+                        <div className="w-6 h-6 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-slate-950 font-mono font-bold text-[10px]">
                           {currentUser.email.substring(0, 2).toUpperCase()}
                         </div>
                         <div className="text-left">
@@ -340,7 +340,7 @@ export default function Navbar({
                             setActiveView(ActiveView.ClientDashboard);
                             setMobileMenuOpen(false);
                           }}
-                          className="w-full text-left px-4 py-3 font-sans text-xs font-semibold uppercase tracking-wide text-slate-355 hover:text-emerald-400 hover:bg-slate-900 rounded-xl transition-all flex items-center gap-2"
+                          className="w-full text-left px-4 py-3 font-sans text-xs font-semibold uppercase tracking-wide text-slate-350 hover:text-emerald-400 hover:bg-slate-900 rounded-xl transition-all flex items-center gap-2"
                         >
                           <LayoutDashboard className="w-4 h-4 text-emerald-400" />
                           Client Dashboard
@@ -350,7 +350,7 @@ export default function Navbar({
                             setActiveView(ActiveView.QuoteFlow);
                             setMobileMenuOpen(false);
                           }}
-                          className="w-full text-left px-4 py-3 font-sans text-xs font-semibold uppercase tracking-wide text-slate-355 hover:text-emerald-400 hover:bg-slate-900 rounded-xl transition-all flex items-center gap-2"
+                          className="w-full text-left px-4 py-3 font-sans text-xs font-semibold uppercase tracking-wide text-slate-350 hover:text-emerald-400 hover:bg-slate-900 rounded-xl transition-all flex items-center gap-2"
                         >
                           <ShieldAlert className="w-4 h-4 text-emerald-400" />
                           Book a Service
@@ -362,7 +362,7 @@ export default function Navbar({
                           setActiveView(ActiveView.CleanerPortal);
                           setMobileMenuOpen(false);
                         }}
-                        className="w-full text-left px-4 py-3 font-sans text-xs font-semibold uppercase tracking-wide text-slate-355 hover:text-emerald-400 hover:bg-slate-900 rounded-xl transition-all flex items-center gap-2"
+                        className="w-full text-left px-4 py-3 font-sans text-xs font-semibold uppercase tracking-wide text-slate-350 hover:text-emerald-400 hover:bg-slate-900 rounded-xl transition-all flex items-center gap-2"
                       >
                         <LayoutDashboard className="w-4 h-4 text-emerald-400" />
                         Operations Portal
@@ -389,7 +389,7 @@ export default function Navbar({
                       onLoginClick();
                       setMobileMenuOpen(false);
                     }}
-                    className="w-full text-left px-4 py-3 font-sans text-xs font-semibold uppercase tracking-wide text-slate-355 hover:text-emerald-400 hover:bg-slate-900 rounded-xl transition-all flex items-center gap-2 border-t border-slate-900/60"
+                    className="w-full text-left px-4 py-3 font-sans text-xs font-semibold uppercase tracking-wide text-slate-350 hover:text-emerald-400 hover:bg-slate-900 rounded-xl transition-all flex items-center gap-2 border-t border-slate-900/60"
                   >
                     <User className="w-4 h-4 text-emerald-400" />
                     Log In to Account

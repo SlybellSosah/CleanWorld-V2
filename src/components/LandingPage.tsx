@@ -735,7 +735,7 @@ export default function LandingPage({ setActiveView, setQuotePillar }: LandingPa
 
                   <button 
                     type="submit" disabled={isSubmitting}
-                    className="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-955 font-display font-bold text-xs py-3.5 rounded-xl transition-all shadow-lg shadow-emerald-500/10 flex items-center justify-center gap-2"
+                    className="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-display font-bold text-xs py-3.5 rounded-xl transition-all shadow-lg shadow-emerald-500/10 flex items-center justify-center gap-2"
                   >
                     {isSubmitting ? "Processing..." : "GET A FREE QUOTE"}
                     <ArrowRight className="w-4 h-4" />

@@ -64,7 +64,7 @@ export default function EcoShopPage({
   const [createdOrder, setCreatedOrder] = useState<ProductOrder | null>(null);
   const [checkoutError, setCheckoutError] = useState("");
 
-  const categories = ["All", "Sanitizers", "Aerosols", "Equipment"];
+  const categories = ["All", ...Array.from(new Set(PRODUCTS.map(p => p.category)))];
   const exchangeRate = 1300; // Local rate: 1 USD = 1,300 SSP
 
   const filteredProducts = selectedCategory === "All"
@@ -185,7 +185,7 @@ export default function EcoShopPage({
     }, 2200);
   };
 
-  const handleFinishOrder = () => {
+  const resetCheckout = () => {
     onClearCart();
     setIsCheckoutOpen(false);
     setCheckoutStep(1);
@@ -195,7 +195,20 @@ export default function EcoShopPage({
     setPaymentCarrier("");
     setUssdPin("");
     setCreatedOrder(null);
+  };
+
+  const handleFinishOrder = () => {
+    resetCheckout();
     setActiveView(ActiveView.ClientDashboard);
+  };
+
+  // Once the order exists (step 4), dismissing the modal must also empty the cart
+  const handleCloseCheckout = () => {
+    if (checkoutStep === 4) {
+      resetCheckout();
+    } else {
+      setIsCheckoutOpen(false);
+    }
   };
 
   return (
@@ -368,7 +381,7 @@ export default function EcoShopPage({
                         onClick={() => onUpdateCartQuantity(prod.id, 1)}
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
-                        className="bg-slate-800 hover:bg-emerald-500 text-slate-200 hover:text-slate-950 font-display font-semibold text-xs px-4 py-2.5 rounded-xl transition-all border border-slate-705 flex items-center gap-1.5"
+                        className="bg-slate-800 hover:bg-emerald-500 text-slate-200 hover:text-slate-950 font-display font-semibold text-xs px-4 py-2.5 rounded-xl transition-all border border-slate-700 flex items-center gap-1.5"
                       >
                         <ShoppingCart className="w-3.5 h-3.5" />
                         Add to Order
@@ -543,7 +556,7 @@ export default function EcoShopPage({
               {/* Close Icon */}
               <button 
                 onClick={() => setSelectedProduct(null)}
-                className="absolute top-4 right-4 p-2 text-slate-400 hover:text-white rounded-full bg-slate-950 border border-slate-855"
+                className="absolute top-4 right-4 p-2 text-slate-400 hover:text-white rounded-full bg-slate-950 border border-slate-850"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -706,7 +719,7 @@ export default function EcoShopPage({
               exit={{ opacity: 0 }}
               onClick={() => {
                 if (checkoutStep !== 3 || !isProcessingPayment) {
-                  setIsCheckoutOpen(false);
+                  handleCloseCheckout();
                 }
               }}
               className="absolute inset-0 bg-black/80 backdrop-blur-sm"
@@ -721,8 +734,8 @@ export default function EcoShopPage({
             >
               {/* Close Button */}
               {checkoutStep !== 3 && (
-                <button 
-                  onClick={() => setIsCheckoutOpen(false)}
+                <button
+                  onClick={handleCloseCheckout}
                   className="absolute top-4 right-4 p-2 text-slate-400 hover:text-white rounded-full bg-slate-950"
                 >
                   <X className="w-4 h-4" />
@@ -964,7 +977,7 @@ export default function EcoShopPage({
 
                         <button
                           onClick={handleSimulateUSSDPayment}
-                          className="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-955 font-mono font-bold text-xs py-2 rounded-lg transition-colors"
+                          className="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-mono font-bold text-xs py-2 rounded-lg transition-colors"
                         >
                           Confirm &amp; Authorize
                         </button>

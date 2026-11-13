@@ -14,6 +14,12 @@ L.Icon.Default.mergeOptions({
 });
 
 import { Booking } from "../types";
+import { bookingLabel } from "../data";
+
+const EMPTY_BOOKINGS: Booking[] = [];
+
+const escapeHtml = (value: string) =>
+  value.replace(/[&<>"']/g, (ch) => `&#${ch.charCodeAt(0)};`);
 
 interface MapComponentProps {
   mode: "pinning" | "tracking" | "routing" | "all-dispatches";
@@ -35,9 +41,14 @@ export default function MapComponent({
   targetLng,
   onCoordinatesChange,
   crewName = "Clean World Alpha Team",
-  bookings = [],
+  bookings = EMPTY_BOOKINGS,
   onSelectBooking
 }: MapComponentProps) {
+  // Callbacks live in refs so a new function identity doesn't rebuild the map
+  const onCoordinatesChangeRef = useRef(onCoordinatesChange);
+  const onSelectBookingRef = useRef(onSelectBooking);
+  onCoordinatesChangeRef.current = onCoordinatesChange;
+  onSelectBookingRef.current = onSelectBooking;
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<L.Map | null>(null);
   const markerRef = useRef<L.Marker | null>(null);
@@ -50,6 +61,9 @@ export default function MapComponent({
 
   useEffect(() => {
     if (!mapContainerRef.current) return;
+
+    let cancelled = false;
+    let animationTimer: ReturnType<typeof setTimeout> | undefined;
 
     // Initialize map centering
     let initialLat = lat;
@@ -143,17 +157,13 @@ export default function MapComponent({
 
       marker.on("dragend", () => {
         const position = marker.getLatLng();
-        if (onCoordinatesChange) {
-          onCoordinatesChange(position.lat, position.lng);
-        }
+        onCoordinatesChangeRef.current?.(position.lat, position.lng);
       });
 
       map.on("click", (e) => {
         const clickPos = e.latlng;
         marker.setLatLng(clickPos);
-        if (onCoordinatesChange) {
-          onCoordinatesChange(clickPos.lat, clickPos.lng);
-        }
+        onCoordinatesChangeRef.current?.(clickPos.lat, clickPos.lng);
       });
     } else if (mode === "all-dispatches") {
       // HQ Dispatch Center
@@ -179,27 +189,27 @@ export default function MapComponent({
         
         popupContent.innerHTML = `
           <div class="flex justify-between items-center gap-2">
-            <span class="font-mono font-bold text-sky-400 text-xs">${booking.id}</span>
+            <span class="font-mono font-bold text-sky-400 text-xs">${escapeHtml(booking.id)}</span>
             <span class="text-xs uppercase px-1.5 py-0.5 rounded font-bold ${
               booking.status === "completed" ? "bg-emerald-500/20 text-emerald-400" : "bg-amber-500/20 text-amber-400"
             }">${booking.status}</span>
           </div>
-          <div class="font-bold text-white text-xs capitalize">${booking.cleanType} Clean</div>
-          <div class="text-xs text-slate-300">${booking.address}</div>
-          ${booking.landmark ? `<div class="text-xs text-slate-400 italic leading-tight mt-0.5">📍 Landmark: ${booking.landmark}</div>` : ""}
+          <div class="font-bold text-white text-xs capitalize">${escapeHtml(bookingLabel(booking))}</div>
+          <div class="text-xs text-slate-300">${escapeHtml(booking.address)}</div>
+          ${booking.landmark ? `<div class="text-xs text-slate-400 italic leading-tight mt-0.5">📍 Landmark: ${escapeHtml(booking.landmark)}</div>` : ""}
           <div class="flex justify-between items-center text-xs border-t border-slate-800/80 pt-1.5 mt-0.5">
             <span class="font-mono text-emerald-400 font-bold">$${booking.price.toFixed(0)} / SSP ${sspPrice.toLocaleString()}</span>
             <span class="text-xs font-semibold text-slate-400 bg-slate-900 px-1 py-0.5 rounded">${booking.transportMode === "boda" ? "🏍️ Boda-Boda" : "🚚 Crew Truck"}</span>
           </div>
         `;
 
-        if (onSelectBooking && booking.status !== "cancelled") {
+        if (onSelectBookingRef.current && booking.status !== "cancelled") {
           const btn = document.createElement("button");
           btn.className = "w-full mt-2 py-1.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold rounded uppercase transition-colors pointer-events-auto cursor-pointer";
           btn.innerText = "Open Job Sheet";
           btn.onclick = (e) => {
             e.stopPropagation();
-            onSelectBooking(booking);
+            onSelectBookingRef.current?.(booking);
           };
           popupContent.appendChild(btn);
         }
@@ -291,7 +301,7 @@ export default function MapComponent({
       // Truck marker initialized at HQ
       const truckMarker = L.marker(startPoint, { icon: truckIcon })
         .addTo(map)
-        .bindPopup(`<b>${crewName}</b><br/>En Route (Live Tracker)`)
+        .bindPopup(`<b>${escapeHtml(crewName)}</b><br/>En Route (Live Tracker)`)
         .openPopup();
 
       truckMarkerRef.current = truckMarker;
@@ -302,17 +312,16 @@ export default function MapComponent({
       const stepsPerSegment = 40; // smoothness
 
       const animate = () => {
-        if (!mapRef.current || !truckMarkerRef.current || !routeLineRef.current) return;
+        if (cancelled) return;
 
         if (pointIndex >= routePoints.length - 1) {
           // Restart animation after arrival
-          setTimeout(() => {
-            if (truckMarkerRef.current) {
-              truckMarkerRef.current.setLatLng(startPoint);
-              pointIndex = 0;
-              step = 0;
-              animate();
-            }
+          animationTimer = setTimeout(() => {
+            if (cancelled) return;
+            truckMarker.setLatLng(startPoint);
+            pointIndex = 0;
+            step = 0;
+            animate();
           }, 4000);
           return;
         }
@@ -323,7 +332,7 @@ export default function MapComponent({
         const lat = start.lat + (end.lat - start.lat) * (step / stepsPerSegment);
         const lng = start.lng + (end.lng - start.lng) * (step / stepsPerSegment);
 
-        truckMarkerRef.current.setLatLng([lat, lng]);
+        truckMarker.setLatLng([lat, lng]);
 
         step++;
         if (step > stepsPerSegment) {
@@ -331,20 +340,34 @@ export default function MapComponent({
           pointIndex++;
         }
 
-        setTimeout(animate, 100);
+        animationTimer = setTimeout(animate, 100);
       };
 
       animate();
     }
 
     return () => {
-      // Clean up map instance
-      if (mapRef.current) {
-        mapRef.current.remove();
-        mapRef.current = null;
-      }
+      cancelled = true;
+      clearTimeout(animationTimer);
+      map.remove();
+      mapRef.current = null;
+      markerRef.current = null;
+      truckMarkerRef.current = null;
+      routeLineRef.current = null;
     };
-  }, [mode, lat, lng, targetLat, targetLng, crewName, bookings, onSelectBooking]);
+    // lat/lng are only the initial centre; pin moves are synced by the effect below
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mode, targetLat, targetLng, crewName, bookings]);
+
+  // Follow external pin changes (e.g. "Use Current GPS") without rebuilding the map
+  useEffect(() => {
+    if (mode !== "pinning" || !markerRef.current || !mapRef.current) return;
+    const current = markerRef.current.getLatLng();
+    if (current.lat !== lat || current.lng !== lng) {
+      markerRef.current.setLatLng([lat, lng]);
+      mapRef.current.panTo([lat, lng]);
+    }
+  }, [mode, lat, lng]);
 
   return (
     <div className="relative w-full h-full rounded-2xl overflow-hidden border border-slate-800 shadow-inner min-h-[300px]">

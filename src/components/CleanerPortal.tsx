@@ -6,6 +6,7 @@ import {
   Signal, Wifi, Battery, Database, Map, Route, Truck
 } from "lucide-react";
 import MapComponent from "./MapComponent";
+import { bookingLabel } from "../data";
 
 interface CleanerPortalProps {
   bookings: Booking[];
@@ -46,6 +47,26 @@ export default function CleanerPortal({ bookings, setBookings, setActiveView }: 
 
   // Derive dynamic checklist based on booking parameters
   const getRequiredTasks = (booking: Booking): string[] => {
+    if (booking.serviceType === "waste") {
+      const wasteList = [
+        "Confirm waste volume and risk class against the dispatch sheet",
+        "Wear PPE matching the material risk tier",
+        "Load and seal waste in approved containers",
+        "Record drop-off at the certified disposal site",
+        "Submit Boda-Boda or Crew Truck fuel mileage log"
+      ];
+      if (booking.addons.includes("HSE Waste Binning")) {
+        wasteList.push("[Binning Add-on] Deliver sealed HSE waste bins to site");
+      }
+      if (booking.addons.includes("Bio-Safe Solutions")) {
+        wasteList.push("[Bio-Safe Add-on] Disinfect the collection area after loading");
+      }
+      if (booking.addons.includes("Secure Disposal Certification")) {
+        wasteList.push("[Certification Add-on] Issue disposal certificate to the client");
+      }
+      return wasteList;
+    }
+
     const list = [
       "Sweep and vacuum all floors",
       "Sanitize countertops, sinks and tables",
@@ -353,7 +374,7 @@ export default function CleanerPortal({ bookings, setBookings, setActiveView }: 
                         </div>
 
                         <div className="space-y-1">
-                          <span className="block font-display font-extrabold text-white text-sm capitalize">{booking.cleanType} Clean</span>
+                          <span className="block font-display font-extrabold text-white text-sm capitalize">{bookingLabel(booking)}</span>
                           <div className="flex items-center gap-1.5 text-xs text-slate-300">
                             <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                             <span className="truncate">{booking.address}</span>
@@ -422,7 +443,7 @@ export default function CleanerPortal({ bookings, setBookings, setActiveView }: 
                 
                 <div className="flex justify-between items-start gap-2">
                   <div>
-                    <h3 className="font-display font-black text-base text-white capitalize leading-tight">{selectedJob.cleanType} Cleaning Service</h3>
+                    <h3 className="font-display font-black text-base text-white capitalize leading-tight">{bookingLabel(selectedJob)}</h3>
                     {selectedJob.landmark && (
                       <span className="text-xs text-slate-400 italic block mt-1">📍 Landmark: {selectedJob.landmark}</span>
                     )}
@@ -490,7 +511,7 @@ export default function CleanerPortal({ bookings, setBookings, setActiveView }: 
               </div>
 
               {/* Dispatch Route Map Pinning */}
-              <div className="h-56 rounded-2xl border border-slate-855 overflow-hidden relative shadow-inner">
+              <div id="job-route-map" className="h-56 rounded-2xl border border-slate-850 overflow-hidden relative shadow-inner">
                 <MapComponent 
                   mode={mapMode} 
                   targetLat={selectedJob.lat || 4.85610} 
@@ -623,7 +644,7 @@ export default function CleanerPortal({ bookings, setBookings, setActiveView }: 
               {selectedJob.status !== "completed" ? (
                 <button
                   onClick={handleCompleteJob}
-                  className="w-full py-4.5 bg-emerald-500 hover:bg-emerald-400 text-slate-955 font-display font-black text-xs tracking-wider rounded-2xl shadow-lg shadow-emerald-500/15 transition-all flex items-center justify-center gap-2 uppercase shrink-0"
+                  className="w-full py-4.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-display font-black text-xs tracking-wider rounded-2xl shadow-lg shadow-emerald-500/15 transition-all flex items-center justify-center gap-2 uppercase shrink-0"
                 >
                   <ShieldCheck className="w-5 h-5" />
                   Complete Dispatch Ticket

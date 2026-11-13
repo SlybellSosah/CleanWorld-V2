@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import { toLocalDateString, daysFromToday } from "./data";
 import { ActiveView, ServicePillar, RiskClass, QuoteState, Product, Booking, ProductOrder, UserSession, UserRole, B2BInquiry } from "./types";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
@@ -86,7 +87,7 @@ export default function App() {
       deliveryAddress: "Plot 42, Airport Road, Tongping",
       transactionRef: "MG-9102-JUB",
       status: "dispatched",
-      createdAt: "2026-07-01T15:30:00Z"
+      createdAt: daysFromToday(-1).toISOString()
     }
   ]);
 
@@ -106,7 +107,7 @@ export default function App() {
       cleanType: "deep",
       addons: ["Inside Fridge", "Inside Oven", "Wet Wiping Baseboards"],
       frequency: "bi-weekly",
-      date: "2026-07-02",
+      date: toLocalDateString(daysFromToday(3)),
       timeSlot: "09:00 AM - 12:00 PM",
       price: 185.00,
       status: "pending",
@@ -114,7 +115,7 @@ export default function App() {
       beforePhoto: null,
       afterPhoto: null,
       checkedTasks: [],
-      createdAt: "2026-06-29T10:00:00Z",
+      createdAt: daysFromToday(-1).toISOString(),
       lat: 4.85610,
       lng: 31.58100,
       landmark: "Near Juba International Airport (opposite Zain HQ Office)",
@@ -135,7 +136,7 @@ export default function App() {
       cleanType: "standard",
       addons: ["Interior Windows"],
       frequency: "monthly",
-      date: "2026-06-28",
+      date: toLocalDateString(daysFromToday(-2)),
       timeSlot: "01:00 PM - 04:00 PM",
       price: 165.50,
       status: "completed",
@@ -143,7 +144,7 @@ export default function App() {
       beforePhoto: "https://images.unsplash.com/photo-1581578731548-c64695cc6952?q=80&w=400&auto=format&fit=crop",
       afterPhoto: "https://images.unsplash.com/photo-1527515637462-cff94eecc1ac?q=80&w=400&auto=format&fit=crop",
       checkedTasks: ["Sweep and vacuum all floors", "Sanitize countertops, sinks and tables", "Dust visible surfaces, baseboards and electronics", "Empty trash bins and replace liners"],
-      createdAt: "2026-06-27T08:30:00Z",
+      createdAt: daysFromToday(-3).toISOString(),
       lat: 4.84320,
       lng: 31.57210,
       landmark: "Behind Turkish Embassy (Amarat Street 3)",
@@ -177,6 +178,15 @@ export default function App() {
   // Scroll to top on view changes to mimic professional routing transitions
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [activeView]);
+
+  // Drop Services-page prefill once the quote flow is left, so a later visit starts clean
+  const previousViewRef = useRef(activeView);
+  useEffect(() => {
+    if (previousViewRef.current === ActiveView.QuoteFlow && activeView !== ActiveView.QuoteFlow) {
+      setPrefilledSpecs(null);
+    }
+    previousViewRef.current = activeView;
   }, [activeView]);
 
   // Cart operations helpers

@@ -89,7 +89,7 @@ test.describe('Clean World Inc E2E Test Suite', () => {
     await jobCard.click();
 
     // Verify that the route map component and customer details open
-    await expect(page.locator('.border-slate-855')).toBeVisible();
+    await expect(page.locator('#job-route-map')).toBeVisible();
     await expect(page.getByText('Access & Entry Code')).toBeVisible();
   });
 

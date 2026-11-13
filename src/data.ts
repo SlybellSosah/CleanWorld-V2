@@ -1,4 +1,25 @@
-import { Product, ServicePillar, JubaLocation } from "./types";
+import { Product, ServicePillar, JubaLocation, Booking } from "./types";
+
+export const bookingLabel = (booking: Booking): string => {
+  if (booking.serviceType === "waste") return "Waste Collection";
+  if (booking.cleanType === "deep") return "Deep Clean";
+  if (booking.cleanType === "move-in-out") return "Move-In/Out Clean";
+  return "Standard Clean";
+};
+
+// Local calendar date as YYYY-MM-DD (toISOString would shift it to UTC)
+export const toLocalDateString = (date: Date): string => {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
+};
+
+export const daysFromToday = (offset: number): Date => {
+  const date = new Date();
+  date.setDate(date.getDate() + offset);
+  return date;
+};
 
 export const PRODUCTS: Product[] = [
   {

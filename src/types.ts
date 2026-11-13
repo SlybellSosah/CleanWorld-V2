@@ -25,6 +25,7 @@ export interface Booking {
   bathrooms: number;
   sqFtRange: string; // e.g. "< 1000", "1000 - 1999", etc.
   cleanType: "standard" | "deep" | "move-in-out";
+  serviceType?: "cleaning" | "waste";
   addons: string[];
   frequency: "one-time" | "weekly" | "bi-weekly" | "monthly";
   date: string;

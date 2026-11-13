@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import MapComponent from "./MapComponent";
+import { toLocalDateString, daysFromToday } from "../data";
 
 
 // ─── Progressive Registration Nudge ──────────────────────────────────────────
@@ -221,7 +222,7 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings, init
 
   // STEP 2 STATE: Scheduling & Subscription Frequency
   const [frequency, setFrequency] = useState<"one-time" | "weekly" | "bi-weekly" | "monthly">("bi-weekly");
-  const [selectedDate, setSelectedDate] = useState<string>("2026-07-01");
+  const [selectedDate, setSelectedDate] = useState<string>(() => toLocalDateString(daysFromToday(1)));
   const [selectedTimeSlot, setSelectedTimeSlot] = useState<string>("09:00 AM - 12:00 PM");
 
   // STEP 3 STATE: Personal Registration & Local Payment Details
@@ -335,8 +336,18 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings, init
     { name: "Wet Wiping Baseboards", price: 25, icon: "🧹" }
   ];
 
+  // Add-ons that arrive prefilled from the Services page calculators
+  const SERVICE_ADDON_PRICES: Record<string, number> = {
+    "Malaria Vector Containment": 45,
+    "Larvicide Treatment": 30,
+    "Rodent Baiting": 35,
+    "Irrigation Regulation": 60,
+    "Flower Bed Design": 45,
+    "Native Grass Planting": 30
+  };
+
   const getAddonPrice = (name: string) => {
-    return ADDONS_LIST.find(a => a.name === name)?.price || 0;
+    return ADDONS_LIST.find(a => a.name === name)?.price ?? SERVICE_ADDON_PRICES[name] ?? 0;
   };
 
   // Pricing formula calculations
@@ -417,7 +428,7 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings, init
 
   // ADVANCE TO STEP 3
   const handleGoToStep3 = () => {
-    if (!selectedDate) {
+    if (!selectedDate || selectedDate < toLocalDateString(new Date())) {
       alert("Please select your clean schedule date.");
       return;
     }
@@ -480,6 +491,7 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings, init
         bathrooms: isWasteService ? 0 : bathrooms,
         sqFtRange: isWasteService ? `${wasteVolume} m³ Volume` : sqFtRange,
         cleanType: isWasteService ? "deep" : cleanType,
+        serviceType: isWasteService ? "waste" : "cleaning",
         addons: selectedAddons,
         frequency: frequency,
         date: selectedDate,
@@ -505,17 +517,8 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings, init
     }, 1200);
   };
 
-  // Generate 7-day calendar array starting today
-  const getNextDays = () => {
-    const days = [];
-    const baseDate = new Date();
-    for (let i = 0; i < 14; i++) {
-      const nextDay = new Date(baseDate);
-      nextDay.setDate(baseDate.getDate() + i);
-      days.push(nextDay);
-    }
-    return days;
-  };
+  // Generate 14-day calendar array starting today
+  const getNextDays = () => Array.from({ length: 14 }, (_, i) => daysFromToday(i));
 
   return (
     <div className="bg-slate-950 text-slate-100 min-h-screen py-12 px-4 sm:px-6 lg:px-8 font-sans" id="booking-wizard-root">
@@ -901,7 +904,7 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings, init
                             className={`p-4 rounded-2xl border text-left transition-all flex flex-col justify-between gap-4 ${
                               cleanType === "move-in-out"
                                 ? "bg-purple-500/5 border-purple-500 text-purple-400"
-                                : "bg-slate-950 border-slate-855 text-slate-400 hover:text-slate-200"
+                                : "bg-slate-950 border-slate-850 text-slate-400 hover:text-slate-200"
                             }`}
                           >
                             <div className="space-y-1">
@@ -929,7 +932,7 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings, init
                                 className={`p-3.5 rounded-xl border text-left transition-all flex flex-col justify-between gap-3 ${
                                   isSelected
                                     ? "bg-sky-500/10 border-sky-500 text-sky-400 font-bold"
-                                    : "bg-slate-950 border-slate-855 text-slate-300 hover:text-white"
+                                    : "bg-slate-950 border-slate-850 text-slate-300 hover:text-white"
                                 }`}
                               >
                                 <div className="flex justify-between items-center w-full">
@@ -990,7 +993,7 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings, init
                         className={`p-3.5 rounded-xl border text-left transition-all flex flex-col justify-between min-h-[90px] ${
                           frequency === "one-time"
                             ? "bg-sky-500/10 border-sky-500 text-sky-400 font-bold"
-                            : "bg-slate-950 border-slate-855 text-slate-300 hover:text-white"
+                            : "bg-slate-950 border-slate-850 text-slate-300 hover:text-white"
                         }`}
                       >
                         <span className="font-bold text-white block">One-Time</span>
@@ -1003,12 +1006,12 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings, init
                         className={`p-3.5 rounded-xl border text-left transition-all flex flex-col justify-between min-h-[90px] ${
                           frequency === "weekly"
                             ? "bg-emerald-500/10 border-emerald-500 text-emerald-400 font-bold"
-                            : "bg-slate-950 border-slate-855 text-slate-300 hover:text-white"
+                            : "bg-slate-950 border-slate-850 text-slate-300 hover:text-white"
                         }`}
                       >
                         <div className="flex justify-between items-center w-full">
                           <span className="font-bold text-white">Weekly</span>
-                          <span className="text-xs font-mono font-bold bg-emerald-500 text-slate-950 px-1 py-0.2 rounded">-20%</span>
+                          <span className="text-xs font-mono font-bold bg-emerald-500 text-slate-950 px-1 py-0.5 rounded">-20%</span>
                         </div>
                         <span className="text-xs font-mono text-emerald-400 uppercase block">Best Value</span>
                       </button>
@@ -1024,7 +1027,7 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings, init
                       >
                         <div className="flex justify-between items-center w-full">
                           <span className="font-bold text-white">Bi-Weekly</span>
-                          <span className="text-xs font-mono font-bold bg-emerald-500 text-slate-955 px-1 py-0.2 rounded">-15%</span>
+                          <span className="text-xs font-mono font-bold bg-emerald-500 text-slate-950 px-1 py-0.5 rounded">-15%</span>
                         </div>
                         <span className="text-xs font-mono text-emerald-400 uppercase block">Most Popular</span>
                       </button>
@@ -1035,12 +1038,12 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings, init
                         className={`p-3.5 rounded-xl border text-left transition-all flex flex-col justify-between min-h-[90px] ${
                           frequency === "monthly"
                             ? "bg-sky-500/10 border-sky-500 text-sky-400 font-bold"
-                            : "bg-slate-950 border-slate-855 text-slate-300 hover:text-white"
+                            : "bg-slate-950 border-slate-850 text-slate-300 hover:text-white"
                         }`}
                       >
                         <div className="flex justify-between items-center w-full">
                           <span className="font-bold text-white">Monthly</span>
-                          <span className="text-xs font-mono font-bold bg-emerald-500 text-slate-955 px-1 py-0.2 rounded">-10%</span>
+                          <span className="text-xs font-mono font-bold bg-emerald-500 text-slate-950 px-1 py-0.5 rounded">-10%</span>
                         </div>
                         <span className="text-xs font-mono text-slate-400 uppercase block">Regular Clean</span>
                       </button>
@@ -1055,7 +1058,7 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings, init
                       <label className="text-xs text-slate-400 font-mono uppercase tracking-wide block">Select Date Slot</label>
                       <div className="grid grid-cols-3 gap-2.5">
                         {getNextDays().map((day) => {
-                          const dateStr = day.toISOString().split("T")[0];
+                          const dateStr = toLocalDateString(day);
                           const isSelected = selectedDate === dateStr;
                           return (
                             <button
@@ -1064,7 +1067,7 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings, init
                               className={`p-2.5 rounded-xl border text-center flex flex-col gap-1 transition-all ${
                                 isSelected
                                   ? "bg-sky-500/10 border-sky-500 text-sky-400 font-bold"
-                                  : "bg-slate-950 border-slate-855 text-slate-400 hover:text-slate-200"
+                                  : "bg-slate-950 border-slate-850 text-slate-400 hover:text-slate-200"
                               }`}
                             >
                               <span className="text-xs font-mono text-slate-400 uppercase block">
@@ -1095,7 +1098,7 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings, init
                             className={`py-3 px-4 rounded-xl border text-left font-mono text-xs transition-all flex justify-between items-center ${
                               selectedTimeSlot === slot
                                 ? "bg-sky-500/10 border-sky-500 text-sky-400 font-bold"
-                                : "bg-slate-950 border-slate-855 text-slate-400 hover:text-slate-200"
+                                : "bg-slate-950 border-slate-850 text-slate-400 hover:text-slate-200"
                             }`}
                           >
                             <span>{slot}</span>
@@ -1111,7 +1114,7 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings, init
                   <div className="pt-4 flex justify-between">
                     <button
                       onClick={() => setActiveStep(1)}
-                      className="px-5 py-3 border border-slate-800 rounded-xl hover:bg-slate-855 text-xs font-semibold text-slate-300 transition-colors"
+                      className="px-5 py-3 border border-slate-800 rounded-xl hover:bg-slate-850 text-xs font-semibold text-slate-300 transition-colors"
                     >
                       Back to Scoping
                     </button>
@@ -1223,7 +1226,7 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings, init
 
                   {/* Local Payment Selection Panel */}
                   <div className="p-5 bg-slate-950 border border-slate-850 rounded-2xl space-y-4 text-left">
-                    <div className="flex justify-between items-center pb-2 border-b border-slate-905">
+                    <div className="flex justify-between items-center pb-2 border-b border-slate-900">
                       <h4 className="text-white font-semibold font-display text-xs flex items-center gap-1.5 uppercase tracking-wide">
                         <CreditCard className="w-4 h-4 text-sky-400" />
                         South Sudan Payment Gateway
@@ -1523,7 +1526,7 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings, init
 
                   <button
                     onClick={handleSimulateUSSDPayment}
-                    className="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-955 font-mono font-bold text-xs py-2.5 rounded-lg transition-colors"
+                    className="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-mono font-bold text-xs py-2.5 rounded-lg transition-colors"
                   >
                     Confirm &amp; Authorize
                   </button>
@@ -1538,7 +1541,7 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings, init
                 </div>
               )}
 
-              <div className="text-center font-sans text-xs text-slate-455 leading-normal">
+              <div className="text-center font-sans text-xs text-slate-450 leading-normal">
                 *Notice: This is a safe sandboxed payment environment. No actual funds are charged. 
                 Input any 4 digit code to verify order telemetry.
               </div>

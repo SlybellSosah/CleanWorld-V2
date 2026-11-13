@@ -15,6 +15,28 @@
   --font-size-2xl: 1.5rem;
   --font-size-3xl: 1.875rem;
   --font-size-4xl: 2.25rem;
+
+  /* Half-step slate shades used across the UI */
+  --color-slate-350: color-mix(in oklab, var(--color-slate-300), var(--color-slate-400));
+  --color-slate-450: color-mix(in oklab, var(--color-slate-400), var(--color-slate-500));
+  --color-slate-550: color-mix(in oklab, var(--color-slate-500), var(--color-slate-600));
+  --color-slate-650: color-mix(in oklab, var(--color-slate-600), var(--color-slate-700));
+  --color-slate-750: color-mix(in oklab, var(--color-slate-700), var(--color-slate-800));
+  --color-slate-850: color-mix(in oklab, var(--color-slate-800), var(--color-slate-900));
+
+  --animate-fadeIn: fadeIn 0.3s ease-out;
+  --animate-spin-slow: spin 3s linear infinite;
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
 }
 
 /* Custom dark mode leaflet styling to look extremely premium */
