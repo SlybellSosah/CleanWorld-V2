@@ -53,7 +53,7 @@ content-source/       original images, not served
 
 | Area | Spec | Status |
 |---|---|---|
-| Layout, navigation, contact bar, not-found | `/specs/ui-shell.md` | implemented (v1.0) |
+| Layout, navigation, contact bar, not-found | `/specs/ui-shell.md` | implemented (v1.1) |
 | Home | `/specs/view-home.md` | implemented (v1.0) |
 | Services | `/specs/view-services.md` | implemented (v1.0) |
 | Quote request | `/specs/view-quote.md` | implemented (v1.0) |

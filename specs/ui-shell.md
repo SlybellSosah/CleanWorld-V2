@@ -1,6 +1,6 @@
 # Spec: Site shell (layout, navigation, contact, not-found, theme)
 **Status:** implemented
-**Version:** 1.0
+**Version:** 1.1
 **Created:** 2026-11-16
 **Last Updated:** 2026-11-16
 
@@ -24,8 +24,8 @@
 
 ## Process
 
-1. Render the document with `lang="en"`, viewport meta, and per-page title, description, canonical link and Open Graph tags.
-2. Header: wordmark linking to `/`; links to Services, How to pay; "Request a quote" button. Under 768 px the links collapse into a menu button that opens a dialog.
+1. Render the document with `lang="en"`, viewport meta, the logo as tab icon (`favicon.png`) and home-screen icon (`apple-touch-icon.png`), and per-page title, description, canonical link and Open Graph tags including the full logo (`logo.jpg`) as the preview image.
+2. Header: the company logo mark (`public/logo-mark.png`, decorative, empty `alt`) beside the name "Clean World", together linking to `/`; links to Services, How to pay; "Request a quote" button. Under 768 px the links collapse into a menu button that opens a dialog.
 3. A "Skip to content" link is the first focusable element.
 4. Footer: service links, How to pay, Privacy, and each contact fact that is visible.
 5. Contact bar, fixed to the bottom on screens under 768 px: "Call" and "WhatsApp" for visible facts, and "Get a quote". Hidden on `/quote` and `/admin`.
@@ -76,3 +76,4 @@ Not-found view; HTTP 404 from the host.
 | Version | Date | Change | Reason | Re-approved by |
 |---|---|---|---|---|
 | 1.0 | 2026-11-16 | Initial spec | — | Owner standing instruction (auto-approve) |
+| 1.1 | 2026-11-16 | Placeholder leaf icon replaced by the owner's logo in header, footer, tab icon, home-screen icon and link preview | Owner supplied the logo | Owner request |

@@ -19,7 +19,11 @@ export function pageMeta(page: PageMeta, siteUrl: string | undefined): Descripto
   if (page.noindex) tags.push({ name: "robots", content: "noindex, nofollow" });
   if (siteUrl && !page.noindex) {
     const url = siteUrl.replace(/\/$/, "") + (page.path === "/" ? "/" : page.path);
-    tags.push({ tagName: "link", rel: "canonical", href: url }, { property: "og:url", content: url });
+    tags.push(
+      { tagName: "link", rel: "canonical", href: url },
+      { property: "og:url", content: url },
+      { property: "og:image", content: siteUrl.replace(/\/$/, "") + "/logo.jpg" },
+    );
   }
   return tags;
 }
