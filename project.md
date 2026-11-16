@@ -116,7 +116,7 @@ Deferred edge cases and later phases.
 - [x] No specs remain `draft`, `approved` or `amended` with open changes
 - [x] All deferred edge cases are in the backlog above
 - [x] Spec index is complete
-- [ ] Owner fact sheet confirmed (`src/content/company.ts` — every fact is currently unconfirmed)
+- [x] Owner fact sheet confirmed (`src/content/company.ts`, 2026-11-16) — mobile-money merchant numbers still to be supplied
 - [ ] Integrations in section 2 provisioned
 
 ## Handoff Log
