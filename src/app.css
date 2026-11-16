@@ -1,0 +1,55 @@
+@import "tailwindcss";
+@import "@fontsource-variable/inter";
+@import "@fontsource-variable/space-grotesk";
+
+@theme {
+  --color-paper: #f8fafc;
+  --color-ink: #0f172a;
+  --color-navy: #0f172a;
+  --color-navy-soft: #1e293b;
+  --color-leaf: #047857;
+  --color-leaf-deep: #065f46;
+  --color-sun: #f9f54b;
+  --color-sky: #0369a1;
+  --color-mist: #7dd3fc;
+  --color-muted: #475569;
+  --color-line: #d5dde6;
+  --color-alert: #b91c1c;
+  --font-sans: "Inter Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Space Grotesk Variable", "Inter Variable", ui-sans-serif, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+}
+
+@layer base {
+  html {
+    background: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: 100%;
+    line-height: 1.6;
+    -webkit-text-size-adjust: 100%;
+    scroll-padding-top: 5rem;
+  }
+  h1, h2, h3 {
+    font-family: var(--font-display);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+  p, li { text-wrap: pretty; }
+  :focus-visible {
+    outline: 3px solid var(--color-sky);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+  .on-navy :focus-visible { outline-color: var(--color-sun); }
+  dialog::backdrop { background: rgb(15 23 42 / 0.6); }
+}
+
+@layer components {
+  .wrap { width: 100%; max-width: 72rem; margin-inline: auto; padding-inline: 1.25rem; }
+  .prose-block { max-width: 40rem; }
+  .link { color: var(--color-sky); text-decoration: underline; text-underline-offset: 3px; }
+  .link:hover { text-decoration-thickness: 2px; }
+  .on-navy .link { color: var(--color-mist); }
+}

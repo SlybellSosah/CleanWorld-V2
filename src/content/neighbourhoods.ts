@@ -1,0 +1,40 @@
+import type { Neighbourhood } from "../types";
+
+// Names and common spellings, to be checked by the owner. Coordinates are added with the map (phase 3).
+export const neighbourhoods: Neighbourhood[] = [
+  { name: "Amarat", aliases: ["Hai Amarat"] },
+  { name: "Atlabara", aliases: ["Atla Bara"] },
+  { name: "Buluk", aliases: [] },
+  { name: "Checkpoint", aliases: ["Check Point"] },
+  { name: "Custom", aliases: ["Custom Market"] },
+  { name: "Gudele", aliases: ["Gudele 1", "Gudele 2"] },
+  { name: "Gumbo", aliases: ["Gumbo Sherikat"] },
+  { name: "Gurei", aliases: ["Gurey"] },
+  { name: "Hai Cinema", aliases: ["Cinema"] },
+  { name: "Hai Jalaba", aliases: ["Jalaba"] },
+  { name: "Hai Kuwait", aliases: ["Hai Kuweit", "Kuwait"] },
+  { name: "Hai Malakal", aliases: ["Malakal"] },
+  { name: "Hai Mauna", aliases: ["Mauna"] },
+  { name: "Hai Neem", aliases: ["Neem"] },
+  { name: "Hai Referendum", aliases: ["Referendum"] },
+  { name: "Hai Thoura", aliases: ["Thoura", "Hai Thawra"] },
+  { name: "Jebel", aliases: ["Jebel Kujur", "Jebel Market"] },
+  { name: "Juba Na Bari", aliases: ["Juba Nabari"] },
+  { name: "Juba Town", aliases: ["Juba Market", "Town"] },
+  { name: "Kator", aliases: [] },
+  { name: "Kololo", aliases: [] },
+  { name: "Konyo Konyo", aliases: ["Konyokonyo"] },
+  { name: "Lologo", aliases: [] },
+  { name: "Mangateen", aliases: ["Mangaten"] },
+  { name: "Mia Saba", aliases: ["107"] },
+  { name: "Munuki", aliases: ["Munuki Block A", "Munuki Block B", "Munuki Block C"] },
+  { name: "New Site", aliases: ["Newsite"] },
+  { name: "Nimra Talata", aliases: ["Nimra Talatta"] },
+  { name: "Nyokuron", aliases: ["Nyakuron"] },
+  { name: "Rock City", aliases: [] },
+  { name: "Sherikat", aliases: ["Shirikat"] },
+  { name: "Thongpiny", aliases: ["Thong Piny"] },
+  { name: "Tongping", aliases: ["Tompping", "Tomping"] },
+];
+
+export const neighbourhoodNames: string[] = neighbourhoods.map((n) => n.name);

@@ -1,20 +1,32 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
-</div>
+# Clean World Inc.
 
-# Run and deploy your AI Studio app
+Website for Clean World Inc., Juba: services, a quote request that reaches staff, and a staff list of requests.
 
-This contains everything you need to run your app locally.
+- Source of truth: `project.md` (B.L.A.S.T.) and `specs/` (one SDD spec per feature).
+- Structure, decisions and commands: `architecture/blueprint.md`.
+- Design rationale and research: `specs/rebuild-design.md`.
 
-View your app in AI Studio: https://ai.studio/apps/b0ebbc04-f04f-4997-b1a3-a59de9a0e1d9
+## Run locally
 
-## Run Locally
+```bash
+npm install
+cp .dev.vars.example .dev.vars
+npm run db:migrate:local
+npm run preview
+```
 
-**Prerequisites:**  Node.js
+Then open http://localhost:8787. Staff list: http://localhost:8787/admin.
 
+## Checks
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+```bash
+npm run lint
+npm test
+npm run test:e2e
+```
+
+## Before the first deploy
+
+1. Confirm the facts in `src/content/company.ts` and set `confirmed: true` on each.
+2. Create the database (`wrangler d1 create clean-world`), put its id in `wrangler.jsonc`, and apply migrations with `--remote`.
+3. Provision the integrations listed in `project.md` section 2.

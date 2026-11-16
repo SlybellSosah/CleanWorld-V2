@@ -1,145 +1,100 @@
-export enum ActiveView {
-  Home = "home",
-  Consultancy = "consultancy",
-  Services = "services",
-  Shop = "shop",
-  QuoteFlow = "quote-flow",
-  ClientDashboard = "client-dashboard",
-  CleanerPortal = "cleaner-portal"
-}
+// Generated from the global data schema in project.md. Change the schema first.
 
-export enum UserRole {
-  Client = "client",
-  Cleaner = "cleaner"
-}
+export const SERVICE_SLUGS = ["fumigation", "cleaning", "waste-collection", "landscaping", "consultancy"] as const;
+export type ServiceSlug = (typeof SERVICE_SLUGS)[number];
 
-export interface Booking {
+export const FREQUENCIES = ["one-time", "weekly", "fortnightly", "monthly", "contract"] as const;
+export type Frequency = (typeof FREQUENCIES)[number];
+
+export const CUSTOMER_TYPES = ["organisation", "household"] as const;
+export type CustomerType = (typeof CUSTOMER_TYPES)[number];
+
+export const QUOTE_STATUSES = ["new", "contacted", "quoted", "won", "lost", "spam"] as const;
+export type QuoteStatus = (typeof QUOTE_STATUSES)[number];
+
+export type NotifyStatus = "pending" | "sent" | "failed";
+
+export interface QuoteRequestInput {
   id: string;
-  clientName: string;
-  clientEmail: string;
-  clientPhone: string;
-  address: string;
-  zipCode: string;
-  entryInstructions: string;
-  bedrooms: number;
-  bathrooms: number;
-  sqFtRange: string; // e.g. "< 1000", "1000 - 1999", etc.
-  cleanType: "standard" | "deep" | "move-in-out";
-  serviceType?: "cleaning" | "waste";
-  addons: string[];
-  frequency: "one-time" | "weekly" | "bi-weekly" | "monthly";
-  date: string;
-  timeSlot: string;
-  price: number;
-  status: "pending" | "completed" | "cancelled";
-  tipAmount: number;
-  beforePhoto: string | null;
-  afterPhoto: string | null;
-  checkedTasks: string[];
-  createdAt: string;
-  lat?: number;
-  lng?: number;
-  paymentMethod?: "m-GURUSH" | "MTN MoMo" | "Zain Cash" | "Cash";
-  paymentPhone?: string;
-  transactionRef?: string;
+  customerType: CustomerType;
+  service: ServiceSlug;
+  scope?: string;
+  frequency?: Frequency;
+  neighbourhood: string;
   landmark?: string;
-  transportMode?: "boda" | "truck";
-  roadCondition?: "clear" | "muddy" | "flooded" | "construction";
-}
-
-export enum ServicePillar {
-  Consultancy = "Consultancy",
-  Management = "Management",
-  Fumigation = "Fumigation",
-  Landscaping = "Landscaping"
-}
-
-export enum RiskClass {
-  Low = "Class I (Low Risk)",
-  Medium = "Class II (Medium Risk)",
-  High = "Class III (High Risk)"
-}
-
-export interface Product {
-  id: string;
   name: string;
-  price: number;
-  description: string;
-  image: string;
-  unit: string;
-  category: string;
-  ingredients?: string[];
-  usageGuide?: string[];
-  hazards?: string;
-  hseCertifications?: string[];
-  ecoMetrics?: {
-    carbonSaved?: string;
-    biodegradable?: string;
-    waterSaved?: string;
-  };
+  phone: string;
+  organisation?: string;
+  email?: string;
+  poReference?: string;
+  turnstileToken?: string;
 }
 
-export interface CartItem {
-  product: Product;
-  quantity: number;
-}
-
-export interface ProductOrder {
-  id: string;
-  items: CartItem[];
-  totalUSD: number;
-  totalSSP: number;
-  currencyPaid: "USD" | "SSP";
-  paymentMethod: "m-GURUSH" | "MTN MoMo" | "Zain Cash" | "Cash";
-  phonePaid: string;
-  deliveryLocation: string;
-  deliveryAddress: string;
-  transactionRef: string;
-  status: "processing" | "dispatched" | "delivered";
+export interface QuoteRequest extends Omit<QuoteRequestInput, "turnstileToken"> {
+  reference: string;
   createdAt: string;
+  status: QuoteStatus;
+  notifyStatus: NotifyStatus;
+  notifyTries: number;
 }
 
-export interface JubaLocation {
+export type ErrorCode =
+  | "INVALID_JSON"
+  | "UNAUTHORIZED"
+  | "SPAM_CHECK_FAILED"
+  | "NOT_FOUND"
+  | "METHOD_NOT_ALLOWED"
+  | "PAYLOAD_TOO_LARGE"
+  | "VALIDATION_FAILED"
+  | "SERVER_ERROR"
+  | "ADMIN_NOT_CONFIGURED";
+
+export type FieldErrors = Partial<Record<keyof QuoteRequestInput | "status", string>>;
+
+export interface ApiSuccess<T> {
+  status: "success";
+  data: T;
+}
+
+export interface ApiError {
+  status: "error";
+  code: ErrorCode;
+  message: string;
+  fields?: FieldErrors;
+}
+
+export type ApiResponse<T> = ApiSuccess<T> | ApiError;
+
+export interface CompanyFact<T> {
+  value: T;
+  confirmed: boolean;
+}
+
+export interface MerchantNumber {
+  provider: string;
+  number: string;
   name: string;
-  lat: number;
-  lng: number;
-  description: string;
 }
 
-export interface QuoteState {
-  servicePillar: ServicePillar;
-  areaSize: number; // in square meters
-  riskClass: RiskClass;
-  locationName: string;
-  lat: number;
-  lng: number;
-  contactName: string;
-  facilityName: string;
-  contactPhone: string;
-  contactEmail: string;
-  notes: string;
-  items: CartItem[];
-  subscriptionFrequency?: string; // e.g. "Monthly", "Bi-Monthly", "Single"
+export interface Service {
+  slug: ServiceSlug;
+  title: string;
+  short: string;
+  summary: string;
+  intro: string;
+  includes: string[];
+  method: string[];
+  safety: string[];
+  frequency: string;
+  goodFor: string[];
 }
 
-export interface UserSession {
-  email: string;
-  role: UserRole;
-  name?: string;   // display name after registration
-  phone?: string;  // phone number (primary identifier for consumers)
+export interface Neighbourhood {
+  name: string;
+  aliases: string[];
 }
 
-export interface B2BInquiry {
-  id: string;
-  companyName: string;
-  contactName: string;
-  contactPhone: string;
-  contactEmail: string;
-  facilityType: string;
-  complianceSectors: string[];
-  siteArea: number;
-  notes: string;
-  createdAt: string;
-  status: "received" | "contacted" | "quoted";
+export interface QuoteDraft {
+  step: number;
+  fields: Partial<QuoteRequestInput> & { id: string };
 }
-

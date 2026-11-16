@@ -1,14 +1,24 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "cleanworldv2",
+  "main": "worker/index.ts",
   "compatibility_date": "2026-07-10",
-  "observability": {
-    "enabled": true
-  },
+  "observability": { "enabled": true },
   "assets": {
-    "not_found_handling": "single-page-application"
+    "directory": "./build/client",
+    "binding": "ASSETS",
+    "not_found_handling": "404-page",
+    "html_handling": "drop-trailing-slash",
+    "run_worker_first": ["/api/*", "/admin", "/admin/*"]
   },
-  "compatibility_flags": [
-    "nodejs_compat"
-  ]
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "clean-world",
+      // Replace with the id printed by `wrangler d1 create clean-world` before the first deploy.
+      "database_id": "00000000-0000-0000-0000-000000000000",
+      "migrations_dir": "worker/db/migrations"
+    }
+  ],
+  "triggers": { "crons": ["*/5 * * * *"] }
 }
