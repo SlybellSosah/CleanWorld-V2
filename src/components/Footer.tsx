@@ -13,7 +13,7 @@ export function Footer() {
   const hasContact = phone || whatsapp || email || address;
 
   return (
-    <footer className="on-navy mt-6 border-t border-line/40 bg-navy pb-28 pt-14 text-slate-200 md:mt-10 md:pb-14 md:pt-16">
+    <footer className="on-navy border-t border-white/10 bg-navy pb-28 pt-14 text-slate-200 md:pb-14 md:pt-16">
       <div className="wrap grid gap-10 md:grid-cols-[1.4fr_1fr_1fr]">
         <div>
           <div className="flex items-center gap-3">
@@ -65,6 +65,11 @@ export function Footer() {
               </li>
             )}
             {address && <li className="py-1.5">{address}</li>}
+            <li>
+              <Link to="/quote" className="inline-block py-1.5 hover:text-white hover:underline">
+                Request a quote
+              </Link>
+            </li>
             <li>
               <Link to="/how-to-pay" className="inline-block py-1.5 hover:text-white hover:underline">
                 How to pay

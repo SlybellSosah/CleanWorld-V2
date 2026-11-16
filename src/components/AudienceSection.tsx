@@ -8,10 +8,8 @@ import { Reveal } from "./Reveal";
 
 interface AudienceGroup {
   kind: "organisation" | "household";
-  eyebrow: string;
   title: string;
   body: string;
-  sectors: string[];
   steps: string[];
   cta: string;
 }
@@ -19,19 +17,15 @@ interface AudienceGroup {
 const AUDIENCES: AudienceGroup[] = [
   {
     kind: "organisation",
-    eyebrow: "01 · Institutional & Commercial",
     title: "Organisations",
     body: "NGOs, UN agencies, embassies, hotels, clinics and companies. You get a written quotation, we work to your purchase order, and you pay by bank transfer against an invoice.",
-    sectors: ["NGOs & UN agencies", "Embassies", "Hotels & clinics", "Companies"],
     steps: ["Written quotation", "Purchase order", "Work & invoice", "Bank transfer"],
     cta: "Request a quote for an organisation",
   },
   {
     kind: "household",
-    eyebrow: "02 · Homes & Family Compounds",
     title: "Households",
     body: "Homes and family compounds. Send a request, we confirm the price by phone or WhatsApp, and you pay in cash or by mobile money when the work is done.",
-    sectors: ["Homes", "Family compounds", "One-off or regular"],
     steps: ["Send a request", "Phone or WhatsApp price", "Work completed", "Cash or mobile money"],
     cta: "Request a quote for your home",
   },
@@ -81,29 +75,7 @@ export function AudienceSection({ reduceMotion }: { reduceMotion: boolean }) {
                   photo={`audience-${item.kind}`}
                   sizes="(min-width: 1024px) 540px, 92vw"
                 />
-                <div
-                  aria-hidden="true"
-                  className="pointer-events-none absolute inset-0 bg-gradient-to-b from-navy/40 via-transparent to-navy/30"
-                />
                 <div aria-hidden="true" className="audience-spotlight pointer-events-none absolute inset-0" />
-                <div className="absolute inset-x-4 top-4 z-10 flex flex-wrap items-center justify-between gap-2">
-                  <span
-                    aria-hidden="true"
-                    className="inline-flex items-center rounded-full border border-ink/10 bg-white/95 px-3 py-1 font-display text-xs font-bold uppercase tracking-[0.1em] text-ink shadow-xs"
-                  >
-                    {item.eyebrow}
-                  </span>
-                  <div aria-hidden="true" className="hidden flex-wrap gap-1.5 sm:flex">
-                    {item.sectors.slice(0, 2).map((sector) => (
-                      <span
-                        key={sector}
-                        className="rounded-full border border-ink/10 bg-white/95 px-2.5 py-1 text-xs font-medium text-ink shadow-xs"
-                      >
-                        {sector}
-                      </span>
-                    ))}
-                  </div>
-                </div>
               </div>
 
               <div className="flex flex-1 flex-col p-6 pt-4 sm:p-7 sm:pt-5">

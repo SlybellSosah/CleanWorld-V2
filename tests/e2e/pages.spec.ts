@@ -95,6 +95,16 @@ test("spec view-home edge case 03: all images in main are decorative and backdro
   const bgImage = await backdrop.evaluate((el) => getComputedStyle(el).backgroundImage);
   expect(bgImage).toContain("hero-juba");
 
+  if (test.info().project.name === "desktop") {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.goto("/");
+    const slipBox = await page.locator('form[aria-labelledby="slip-title"]').boundingBox();
+    const ctaBox = await page.locator('section.hero-visual-tile a[href="/quote"]').boundingBox();
+    expect(slipBox).not.toBeNull();
+    expect(ctaBox).not.toBeNull();
+    expect(Math.abs(slipBox!.y + slipBox!.height - (ctaBox!.y + ctaBox!.height))).toBeLessThanOrEqual(1);
+  }
+
   await page.route("**/hero-juba-*", (route) => route.abort());
   await page.route("**/cards/*", (route) => route.abort());
   await page.emulateMedia({ reducedMotion: "reduce" });

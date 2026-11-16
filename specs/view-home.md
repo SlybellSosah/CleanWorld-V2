@@ -1,6 +1,6 @@
 # Spec: Home (`/`)
 **Status:** implemented
-**Version:** 1.5
+**Version:** 1.6
 **Created:** 2026-11-16
 **Last Updated:** 2026-11-16
 
@@ -29,7 +29,6 @@
 4. "How it works": four numbered rounded-bento step cards — request, call-back and site visit, quotation, service and payment — plus an outline pill CTA to `/how-to-pay`.
 5. "Why this work matters in Juba": full-bleed dark navy section housing three rounded sub-cards on mosquito-borne illness, disinfection and waste, with no statistics that are not sourced in `specs/rebuild-design.md`.
 6. Founder panel: rounded bento quote card rendered only if the founder name and quote are visible facts.
-7. Closing call to action (rounded navy bento band) linking to `/quote`.
 
 ---
 
@@ -75,3 +74,4 @@ None; the page has no data requests.
 | 1.3 | 2026-11-16 | Redesign "Who we work with" into dual-world buyer dossiers with multi-plane inline SVG scenes, 4-step workflow rails, and reduced-motion-safe hover/spotlight choreography | Owner requested graphics and advanced motion effects backed by EGM analysis | Owner request |
 | 1.4 | 2026-11-16 | Adopt Cleandy-inspired unified 1-tile rounded bento hero, rounded-3xl step/health/founder cards, and split-pill circular disc CTAs while preserving Clean World brand colors | Owner requested Cleandy typography, rounded corners, hover styling, and a unified 1-tile hero while maintaining theme colors | Owner request |
 | 1.5 | 2026-11-16 | Make hero bar full-bleed viewport-height under the menu bar; replace vector illustrations in "What we do" and "Who we work with" with optimized realistic photography (`alt=""`, solid surface fallback) | Owner requested full-screen-width hero bar and realistic photographic card placeholders | Owner request |
+| 1.6 | 2026-11-16 | Remove redundant bottom `QuoteBand` from Home (`/`) after EGM Goldfish review | Avoid repeating CTA/copy directly above full-bleed navy `Footer` while keeping quote link in `Footer` | Owner approved `quote_band_egm_review.md` (Option A) |

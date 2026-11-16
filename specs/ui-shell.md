@@ -1,6 +1,6 @@
 # Spec: Site shell (layout, navigation, contact, not-found, theme)
 **Status:** implemented
-**Version:** 1.2
+**Version:** 1.3
 **Created:** 2026-11-16
 **Last Updated:** 2026-11-16
 
@@ -27,7 +27,7 @@
 1. Render the document with `lang="en"`, viewport meta, the Clean World emblem as SVG/ICO/PNG tab icons (`favicon.svg`, `favicon.ico`, `favicon.png`) and home-screen icon (`apple-touch-icon.png`), and per-page title, description, canonical link and Open Graph tags including the full logo (`logo.jpg`) as the preview image.
 2. Header: the company logo mark (`public/logo-mark.png`, decorative, empty `alt`) beside the name "Clean World", together linking to `/`; uppercase wide-tracked `Space Grotesk` links to Services and How to pay with an active dot indicator, confirmed telephone link on desktop, and a rounded split-pill "Request a quote" CTA with nested circular arrow disc. Under 768 px the links collapse into a menu button that opens a dialog.
 3. A "Skip to content" link is the first focusable element.
-4. Footer: full-bleed dark-navy section with service links, How to pay, Privacy, and each contact fact that is visible.
+4. Footer: full-bleed dark-navy section with service links, Request a quote, How to pay, Privacy, and each contact fact that is visible. Subpage `<QuoteBand />` closing bands use a light `.bento-card` container with emerald CTA to avoid dark-navy stacking above the footer.
 5. Contact bar, fixed to the bottom as a floating pill dock on screens under 768 px: "Call" and "WhatsApp" for visible facts, and "Get a quote". Hidden on `/quote` and `/admin`.
 6. A fact is visible when `confirmed` is true, or `VITE_SHOW_UNCONFIRMED` is `1`. When any unconfirmed fact is shown, a banner states "Preview — showing details not yet confirmed by the owner".
 7. Unknown paths render the not-found view with links to Home and Request a quote.
@@ -78,3 +78,4 @@ Not-found view; HTTP 404 from the host.
 | 1.0 | 2026-11-16 | Initial spec | — | Owner standing instruction (auto-approve) |
 | 1.1 | 2026-11-16 | Placeholder leaf icon replaced by the owner's logo in header, footer, tab icon, home-screen icon and link preview | Owner supplied the logo | Owner request |
 | 1.2 | 2026-11-16 | Vector `favicon.svg` + multi-res `favicon.ico` suite, Cleandy-inspired rounded bento surfaces, uppercase wide-tracked grotesque nav/eyebrows, and split-pill circular arrow disc buttons | Owner requested Cleandy typography/rounded bento/hover styling and favicon while keeping brand colors | Owner request |
+| 1.3 | 2026-11-16 | Add Request a quote link to Footer and restyle subpage `QuoteBand` onto a light `.bento-card` surface | Close bottom-of-DOM navigation path and remove double-navy collision above full-bleed Footer | Owner approved `quote_band_egm_review.md` (Option A) |

@@ -7,7 +7,7 @@ import { AudienceSection } from "../components/AudienceSection";
 import { ButtonLink } from "../components/Button";
 import { CardPhoto, type CardPhotoKey } from "../components/CardPhoto";
 import { HeroBento } from "../components/HeroBento";
-import { Asterisk, Eyebrow, QuoteBand } from "../components/PageHeader";
+import { Asterisk, Eyebrow } from "../components/PageHeader";
 import { Reveal } from "../components/Reveal";
 import { company, fact } from "../content/company";
 import { metaFor } from "../content/meta";
@@ -98,22 +98,10 @@ export default function Home() {
                       photo={`service-${s.slug}` as CardPhotoKey}
                       sizes="(min-width: 1024px) 520px, (min-width: 768px) 46vw, 92vw"
                     />
-                    <div
-                      aria-hidden="true"
-                      className="pointer-events-none absolute inset-0 bg-gradient-to-b from-navy/35 via-transparent to-navy/25"
-                    />
-                    <div className="absolute inset-x-3.5 top-3.5 z-10 flex items-center justify-between gap-2">
-                      <span
-                        aria-hidden="true"
-                        className="inline-flex items-center rounded-full border border-ink/10 bg-white/95 px-3 py-1 font-display text-xs font-bold uppercase tracking-[0.1em] text-ink shadow-xs"
-                      >
-                        0{i + 1} · {s.short}
-                      </span>
-                      <span aria-hidden="true" className="service-card-arrow shadow-xs">
-                        <ArrowUpRight className="btn-arrow-a size-4" aria-hidden="true" />
-                        <ArrowUpRight className="btn-arrow-b size-4" aria-hidden="true" />
-                      </span>
-                    </div>
+                    <span aria-hidden="true" className="service-card-arrow absolute right-3.5 top-3.5 z-10 shadow-xs">
+                      <ArrowUpRight className="btn-arrow-a size-4" aria-hidden="true" />
+                      <ArrowUpRight className="btn-arrow-b size-4" aria-hidden="true" />
+                    </span>
                   </div>
                   <h3 className="px-6 pt-3 text-xl font-bold text-ink transition-colors group-hover:text-leaf md:text-2xl">
                     {s.title}
@@ -223,8 +211,6 @@ export default function Home() {
           </figure>
         </section>
       )}
-
-      <QuoteBand heading="Tell us what you need. We will call you back." />
     </>
   );
 }

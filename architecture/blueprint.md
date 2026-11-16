@@ -53,8 +53,8 @@ content-source/       original images, not served
 
 | Area | Spec | Status |
 |---|---|---|
-| Layout, navigation, contact bar, not-found | `/specs/ui-shell.md` | implemented (v1.2) |
-| Home | `/specs/view-home.md` | implemented (v1.5) |
+| Layout, navigation, contact bar, not-found | `/specs/ui-shell.md` | implemented (v1.3) |
+| Home | `/specs/view-home.md` | implemented (v1.6) |
 | Services | `/specs/view-services.md` | implemented (v1.0) |
 | Quote request | `/specs/view-quote.md` | implemented (v1.0) |
 | How to pay | `/specs/view-how-to-pay.md` | implemented (v1.0) |

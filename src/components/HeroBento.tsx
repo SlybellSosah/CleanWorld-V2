@@ -16,11 +16,11 @@ export function HeroBento({ reduceMotion }: { reduceMotion: boolean }) {
   const address = fact(company.address);
 
   return (
-    <section className="hero-visual-tile on-navy group relative overflow-hidden bg-navy text-white">
+    <section className="hero-visual-tile on-navy group relative flex overflow-hidden bg-navy text-white md:min-h-[calc(100svh-4.5rem)] md:items-center">
       <div aria-hidden="true" className="hero-backdrop pointer-events-none absolute inset-0" />
       <div aria-hidden="true" className="hero-scrim pointer-events-none absolute inset-0" />
 
-      <div className="wrap relative z-10 grid gap-10 py-16 md:min-h-[calc(100svh-4.5rem)] md:grid-cols-[1.25fr_1fr] md:items-center md:py-20 lg:gap-12">
+      <div className="wrap relative z-10 grid gap-10 py-16 md:grid-cols-[1.25fr_1fr] md:items-end md:py-20 lg:gap-12">
         <div>
           <p className="inline-flex w-fit items-center gap-2 rounded-full border border-white/20 bg-navy/90 px-3.5 py-1.5 font-display text-xs font-bold uppercase tracking-[0.12em] text-white">
             <span aria-hidden="true" className="size-2 rounded-full bg-sun" />

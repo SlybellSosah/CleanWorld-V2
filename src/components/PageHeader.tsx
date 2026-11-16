@@ -62,17 +62,16 @@ export function PageHeader({
 
 export function QuoteBand({ heading, to = "/quote", label = "Request a quote" }: { heading: string; to?: string; label?: string }) {
   return (
-    <section className="wrap py-8 md:py-12">
-      <div className="on-navy group relative overflow-hidden rounded-[var(--radius-bento)] bg-navy px-7 py-10 text-white sm:px-10 md:flex md:items-center md:justify-between md:gap-10 md:px-14 md:py-12">
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_90%_20%,rgb(4_120_87_/_0.28),transparent_55%)]"
-        />
-        <div className="relative max-w-xl">
-          <Eyebrow tone="dark">Written quotation · Juba</Eyebrow>
-          <h2 className="mt-4 text-3xl font-bold md:text-4xl">{heading}</h2>
+    <section className="wrap pb-12 pt-4 md:pb-16 md:pt-6">
+      <div className="bento-card group relative overflow-hidden p-7 sm:p-10 md:flex md:items-center md:justify-between md:gap-8 md:p-12">
+        <div className="max-w-2xl">
+          <Eyebrow>Written quotation · Juba</Eyebrow>
+          <h2 className="mt-3 text-2xl font-bold text-ink sm:text-3xl">{heading}</h2>
+          <p className="mt-2 text-muted">
+            We call back to confirm the scope and send a written price — never pay on this website.
+          </p>
         </div>
-        <ButtonLink to={to} tone="sun" className="relative mt-6 shrink-0 md:mt-0">
+        <ButtonLink to={to} tone="leaf" className="mt-6 shrink-0 md:mt-0">
           {label}
         </ButtonLink>
       </div>
