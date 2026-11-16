@@ -25,15 +25,21 @@ export default function Privacy() {
 
   return (
     <>
-      <PageHeader title="Privacy" lead="We collect only what we need to answer your quote request." />
-      <dl className="wrap max-w-3xl space-y-8 py-12 md:py-16">
-        {sections.map(([title, text]) => (
-          <div key={title}>
-            <dt className="font-display text-xl font-semibold">{title}</dt>
-            <dd className="mt-2 text-muted">{text}</dd>
-          </div>
-        ))}
-      </dl>
+      <PageHeader
+        eyebrow="Data & privacy"
+        title="Privacy"
+        lead="We collect only what we need to answer your quote request."
+      />
+      <div className="wrap py-8 md:py-12">
+        <dl className="bento-card max-w-3xl divide-y divide-line p-7 sm:p-10">
+          {sections.map(([title, text]) => (
+            <div key={title} className="py-5 first:pt-0 last:pb-0">
+              <dt className="font-display text-xl font-bold">{title}</dt>
+              <dd className="mt-2 text-muted">{text}</dd>
+            </div>
+          ))}
+        </dl>
+      </div>
     </>
   );
 }

@@ -1,11 +1,28 @@
+import { ArrowUpRight } from "lucide-react";
+import { useReducedMotion } from "motion/react";
 import * as m from "motion/react-m";
+import { type LinksFunction } from "react-router";
 import { Link } from "react-router";
-import { ButtonLink, buttonClass } from "../components/Button";
-import { QuoteBand } from "../components/PageHeader";
+import { AudienceSection } from "../components/AudienceSection";
+import { ButtonLink } from "../components/Button";
+import { CardPhoto, type CardPhotoKey } from "../components/CardPhoto";
+import { HeroBento } from "../components/HeroBento";
+import { Asterisk, Eyebrow, QuoteBand } from "../components/PageHeader";
 import { Reveal } from "../components/Reveal";
 import { company, fact } from "../content/company";
 import { metaFor } from "../content/meta";
 import { services } from "../content/services";
+
+export const links: LinksFunction = () => [
+  {
+    rel: "preload",
+    as: "image",
+    type: "image/avif",
+    href: "/hero-juba-1x.avif",
+    imageSrcSet: "/hero-juba-1x.avif 1x, /hero-juba-2x.avif 2x",
+    ...({ fetchPriority: "high" } as Record<string, string>),
+  },
+];
 
 export const meta = () =>
   metaFor({
@@ -37,164 +54,146 @@ const REASONS = [
   },
 ];
 
-const rise = (delay: number) => ({
-  initial: { opacity: 0, y: 16 },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.5, ease: "easeOut" as const, delay },
-});
-
 export default function Home() {
+  const reduceMotion = useReducedMotion() === true;
   const founderName = fact(company.founderName);
   const founderQuote = fact(company.founderQuote);
   const founderRole = fact(company.founderRole);
 
   return (
     <>
-      <section className="on-navy relative overflow-hidden bg-navy text-white">
-        <div aria-hidden="true" className="pointer-events-none absolute -right-40 -top-40 size-[34rem] rounded-full border-[3rem] border-leaf/25" />
-        <div className="wrap relative grid gap-12 py-16 md:grid-cols-[1.25fr_1fr] md:items-end md:py-24">
-          <div>
-            <m.h1 {...rise(0)} className="text-[2.6rem] font-bold leading-[1.02] sm:text-6xl lg:text-7xl">
-              Cleaner compounds. Fewer mosquitoes. Waste gone on schedule.
-            </m.h1>
-            <m.p {...rise(0.12)} className="mt-6 max-w-xl text-lg text-slate-300">
-              Clean World is a Juba company that cleans, fumigates and collects waste for organisations and households.
-              Tell us what you need and we will call you back with a quotation.
-            </m.p>
-            <m.div {...rise(0.22)} className="mt-8 flex flex-wrap gap-3 md:hidden">
-              <ButtonLink to="/quote" tone="sun">
-                Request a quote
-              </ButtonLink>
-              <ButtonLink to="/services" tone="outline-light">
-                See services
-              </ButtonLink>
-            </m.div>
-          </div>
+      <HeroBento reduceMotion={reduceMotion} />
 
-          <m.form
-            {...rise(0.22)}
-            action="/quote"
-            method="get"
-            className="hidden rounded-lg bg-paper p-6 text-ink shadow-2xl md:block"
-            aria-labelledby="slip-title"
-          >
-            <h2 id="slip-title" className="text-2xl font-bold">
-              Start a quote request
-            </h2>
-            <label htmlFor="slip-service" className="mt-5 block font-medium">
-              What do you need?
-            </label>
-            <select
-              id="slip-service"
-              name="service"
-              defaultValue={services[0].slug}
-              className="mt-2 min-h-12 w-full rounded-md border border-line bg-white px-3 text-base"
-            >
-              {services.map((s) => (
-                <option key={s.slug} value={s.slug}>
-                  {s.title}
-                </option>
-              ))}
-            </select>
-            <button type="submit" className={buttonClass("leaf", "mt-5 w-full")}>
-              Continue
-            </button>
-            <p className="mt-4 text-sm text-muted">
-              No payment on this website. See <Link to="/services" className="text-sky underline underline-offset-4">all services</Link>.
-            </p>
-          </m.form>
+      <section className="relative overflow-x-clip py-16 md:py-22" aria-labelledby="what-title">
+        <div aria-hidden="true" className="pointer-events-none absolute right-6 top-10 hidden text-leaf/10 md:block">
+          <Asterisk className="size-36" />
         </div>
-      </section>
-
-      <section className="wrap py-16 md:py-24" aria-labelledby="what-title">
-        <Reveal>
-          <h2 id="what-title" className="text-3xl font-bold md:text-4xl">
-            What we do
-          </h2>
-        </Reveal>
-        <ul className="mt-8 border-t border-ink">
-          {services.map((s) => (
-            <li key={s.slug} className="border-b border-line">
-              <Link
-                to={`/services/${s.slug}`}
-                className="group grid gap-2 py-6 md:grid-cols-[1fr_1.4fr_auto] md:items-baseline md:gap-8"
-              >
-                <h3 className="text-2xl font-semibold group-hover:text-leaf md:text-3xl">{s.title}</h3>
-                <p className="text-muted">{s.summary}</p>
-                <span className="font-medium text-sky underline underline-offset-4">Details</span>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      <section className="border-y border-line bg-white" aria-labelledby="who-title">
-        <div className="wrap py-16 md:py-24">
+        <div className="wrap relative">
           <Reveal>
-            <h2 id="who-title" className="text-3xl font-bold md:text-4xl">
-              Who we work with
-            </h2>
+            <Eyebrow>Services in Juba</Eyebrow>
+            <div className="mt-3 flex flex-col gap-2 md:flex-row md:items-end md:justify-between md:gap-8">
+              <h2 id="what-title" className="text-3xl font-bold md:text-4xl">
+                What we do
+              </h2>
+              <p className="max-w-md text-muted">
+                Five practical services for compounds, offices and homes, each priced by written quotation.
+              </p>
+            </div>
           </Reveal>
-          <div className="mt-10 grid gap-10 md:grid-cols-2 md:gap-16">
-            <div>
-              <h3 className="text-2xl font-semibold">Organisations</h3>
-              <p className="mt-3 text-muted">
-                NGOs, UN agencies, embassies, hotels, clinics and companies. You get a written quotation, we work to
-                your purchase order, and you pay by bank transfer against an invoice.
-              </p>
-              <Link to="/quote" className="link mt-4 inline-block py-2 font-medium">
-                Request a quote for an organisation
-              </Link>
-            </div>
-            <div>
-              <h3 className="text-2xl font-semibold">Households</h3>
-              <p className="mt-3 text-muted">
-                Homes and family compounds. Send a request, we confirm the price by phone or WhatsApp, and you pay in
-                cash or by mobile money when the work is done.
-              </p>
-              <Link to="/quote" className="link mt-4 inline-block py-2 font-medium">
-                Request a quote for your home
-              </Link>
-            </div>
-          </div>
+          <ul role="list" className="service-grid mt-10">
+            {services.map((s, i) => (
+              <m.li
+                key={s.slug}
+                className="service-card-item"
+                initial={{ opacity: 0, y: 16 }}
+                animate={reduceMotion ? { opacity: 1, y: 0 } : undefined}
+                whileInView={reduceMotion ? undefined : { opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "0px 0px -8% 0px" }}
+                transition={reduceMotion ? { duration: 0 } : { duration: 0.45, ease: "easeOut", delay: i * 0.07 }}
+                whileTap={reduceMotion ? undefined : { scale: 0.99 }}
+              >
+                <Link to={`/services/${s.slug}`} className="service-card group" data-service={s.slug}>
+                  <div className="service-card-stage relative m-2.5 aspect-[16/10] overflow-hidden rounded-[calc(var(--radius-bento)-0.5rem)]">
+                    <CardPhoto
+                      photo={`service-${s.slug}` as CardPhotoKey}
+                      sizes="(min-width: 1024px) 520px, (min-width: 768px) 46vw, 92vw"
+                    />
+                    <div
+                      aria-hidden="true"
+                      className="pointer-events-none absolute inset-0 bg-gradient-to-b from-navy/35 via-transparent to-navy/25"
+                    />
+                    <div className="absolute inset-x-3.5 top-3.5 z-10 flex items-center justify-between gap-2">
+                      <span
+                        aria-hidden="true"
+                        className="inline-flex items-center rounded-full border border-ink/10 bg-white/95 px-3 py-1 font-display text-xs font-bold uppercase tracking-[0.1em] text-ink shadow-xs"
+                      >
+                        0{i + 1} · {s.short}
+                      </span>
+                      <span aria-hidden="true" className="service-card-arrow shadow-xs">
+                        <ArrowUpRight className="btn-arrow-a size-4" aria-hidden="true" />
+                        <ArrowUpRight className="btn-arrow-b size-4" aria-hidden="true" />
+                      </span>
+                    </div>
+                  </div>
+                  <h3 className="px-6 pt-3 text-xl font-bold text-ink transition-colors group-hover:text-leaf md:text-2xl">
+                    {s.title}
+                  </h3>
+                  <p className="px-6 pt-2.5 text-muted">{s.summary}</p>
+                  <div className="mt-5 flex items-center justify-between border-t border-line/70 px-6 py-4 text-sm">
+                    <span className="font-display text-xs font-bold uppercase tracking-[0.12em] text-sky group-hover:text-leaf-deep">
+                      Details
+                    </span>
+                    <span aria-hidden="true" className="font-display text-xs font-medium text-muted">
+                      {s.goodFor[0]}
+                    </span>
+                  </div>
+                </Link>
+              </m.li>
+            ))}
+          </ul>
         </div>
       </section>
 
-      <section className="wrap py-16 md:py-24" aria-labelledby="how-title">
+      <AudienceSection reduceMotion={reduceMotion} />
+
+      <section className="wrap py-16 md:py-22" aria-labelledby="how-title">
         <Reveal>
-          <h2 id="how-title" className="text-3xl font-bold md:text-4xl">
+          <Eyebrow>Four-step process</Eyebrow>
+          <h2 id="how-title" className="mt-3 text-3xl font-bold md:text-4xl">
             How it works
           </h2>
         </Reveal>
-        <ol className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+        <ol className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {STEPS.map((step, i) => (
-            <li key={step.title}>
+            <li key={step.title} className="bento-card bento-lift p-6">
               <Reveal delay={i * 0.08}>
-                <span className="font-display text-5xl font-bold text-leaf">{i + 1}</span>
-                <h3 className="mt-3 text-xl font-semibold">{step.title}</h3>
+                <div className="flex items-center justify-between">
+                  <span
+                    aria-hidden="true"
+                    className="inline-flex items-center rounded-full border border-line bg-paper px-3 py-1 font-display text-xs font-bold tracking-[0.14em] text-leaf-deep"
+                  >
+                    0{i + 1}
+                  </span>
+                  <Asterisk className="size-4 text-leaf" />
+                </div>
+                <h3 className="mt-5 text-xl font-semibold">{step.title}</h3>
                 <p className="mt-2 text-muted">{step.text}</p>
               </Reveal>
             </li>
           ))}
         </ol>
-        <p className="mt-10">
-          <Link to="/how-to-pay" className="link font-medium">
+        <div className="mt-8">
+          <ButtonLink to="/how-to-pay" tone="outline">
             How payment works
-          </Link>
-        </p>
+          </ButtonLink>
+        </div>
       </section>
 
-      <section className="on-navy bg-navy-soft text-white" aria-labelledby="why-title">
-        <div className="wrap py-16 md:py-24">
+      <section className="on-navy relative overflow-hidden bg-navy text-white" aria-labelledby="why-title">
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_88%_18%,rgb(4_120_87_/_0.22),transparent_48%)]"
+        />
+        <div className="wrap relative py-16 md:py-24">
           <Reveal>
-            <h2 id="why-title" className="max-w-2xl text-3xl font-bold md:text-4xl">
+            <Eyebrow tone="dark">Public health in Juba</Eyebrow>
+            <h2 id="why-title" className="mt-3 max-w-2xl text-3xl font-bold md:text-4xl">
               Why this work matters in Juba
             </h2>
           </Reveal>
-          <div className="mt-10 grid gap-10 md:grid-cols-3">
-            {REASONS.map((r) => (
-              <div key={r.title} className="border-t-4 border-leaf pt-5">
-                <h3 className="text-xl font-semibold">{r.title}</h3>
+          <div className="mt-10 grid gap-5 md:grid-cols-3">
+            {REASONS.map((r, i) => (
+              <div
+                key={r.title}
+                className="rounded-[var(--radius-panel)] border border-white/12 bg-navy-soft p-6 transition-colors hover:border-sun/50"
+              >
+                <span
+                  aria-hidden="true"
+                  className="inline-flex rounded-full border border-sun/35 bg-navy px-3 py-1 font-display text-xs font-bold tracking-[0.14em] text-sun"
+                >
+                  0{i + 1}
+                </span>
+                <h3 className="mt-4 text-xl font-semibold">{r.title}</h3>
                 <p className="mt-3 text-slate-300">{r.text}</p>
               </div>
             ))}
@@ -203,12 +202,23 @@ export default function Home() {
       </section>
 
       {founderName && founderQuote && (
-        <section className="wrap py-16 md:py-24" aria-label="From the founder">
-          <figure className="max-w-3xl">
-            <blockquote className="font-display text-2xl font-medium leading-snug md:text-3xl">“{founderQuote}”</blockquote>
-            <figcaption className="mt-5 text-muted">
+        <section className="wrap py-14 md:py-20" aria-label="From the founder">
+          <figure className="bento-card relative overflow-hidden p-7 sm:p-10 md:p-12">
+            <div className="flex flex-wrap items-center justify-between gap-4">
+              <Eyebrow>From the founder</Eyebrow>
+              <span
+                aria-hidden="true"
+                className="inline-flex size-11 items-center justify-center rounded-full bg-sun text-navy"
+              >
+                <Asterisk className="size-5" />
+              </span>
+            </div>
+            <blockquote className="mt-5 max-w-3xl font-display text-2xl font-semibold leading-snug tracking-[-0.025em] md:text-3xl">
+              “{founderQuote}”
+            </blockquote>
+            <figcaption className="mt-5 font-display text-sm font-semibold text-muted">
               {founderName}
-              {founderRole ? `, ${founderRole}` : ""}
+              {founderRole ? ` · ${founderRole}` : ""}
             </figcaption>
           </figure>
         </section>

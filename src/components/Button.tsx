@@ -1,28 +1,87 @@
+import { ArrowUpRight } from "lucide-react";
+import type { ButtonHTMLAttributes } from "react";
 import { Link } from "react-router";
 
-type Tone = "leaf" | "sun" | "outline" | "outline-light";
+export type Tone = "leaf" | "sun" | "navy" | "outline" | "outline-light";
 
 const TONES: Record<Tone, string> = {
-  leaf: "bg-leaf text-white hover:bg-leaf-deep",
-  sun: "bg-sun text-navy hover:bg-white",
-  outline: "border-2 border-ink text-ink hover:bg-ink hover:text-white",
-  "outline-light": "border-2 border-white/70 text-white hover:bg-white hover:text-navy",
+  leaf: "btn-tone-leaf",
+  sun: "btn-tone-sun",
+  navy: "btn-tone-navy",
+  outline: "btn-tone-outline",
+  "outline-light": "btn-tone-outline-light",
 };
 
-const BASE =
-  "inline-flex min-h-12 items-center justify-center gap-2 rounded-md px-5 font-display text-base font-semibold transition-colors disabled:cursor-not-allowed disabled:opacity-60";
+export const buttonClass = (tone: Tone = "leaf", extra = "") =>
+  `btn-pill ${TONES[tone]} disabled:cursor-not-allowed disabled:opacity-60 ${extra}`.trim();
 
-export const buttonClass = (tone: Tone = "leaf", extra = "") => `${BASE} ${TONES[tone]} ${extra}`;
+function DiscArrow() {
+  return (
+    <span aria-hidden="true" className="btn-disc">
+      <ArrowUpRight className="btn-arrow-a size-4" aria-hidden="true" />
+      <ArrowUpRight className="btn-arrow-b size-4" aria-hidden="true" />
+    </span>
+  );
+}
 
-export function ButtonLink({ to, tone, className, children }: { to: string; tone?: Tone; className?: string; children: React.ReactNode }) {
+export function Button({
+  tone = "leaf",
+  withArrow = false,
+  className = "",
+  type = "button",
+  children,
+  ...props
+}: ButtonHTMLAttributes<HTMLButtonElement> & { tone?: Tone; withArrow?: boolean }) {
+  return (
+    <button type={type} data-disc={withArrow ? "true" : undefined} className={buttonClass(tone, className)} {...props}>
+      {withArrow ? (
+        <>
+          <span className="btn-label">{children}</span>
+          <DiscArrow />
+        </>
+      ) : (
+        children
+      )}
+    </button>
+  );
+}
+
+export function ButtonLink({
+  to,
+  tone = "leaf",
+  withArrow = true,
+  className = "",
+  children,
+}: {
+  to: string;
+  tone?: Tone;
+  withArrow?: boolean;
+  className?: string;
+  children: React.ReactNode;
+}) {
   const external = /^(https?:|tel:|mailto:)/.test(to);
+  const content = withArrow ? (
+    <>
+      <span className="btn-label">{children}</span>
+      <DiscArrow />
+    </>
+  ) : (
+    children
+  );
+  const discAttr = withArrow ? ("true" as const) : undefined;
+
   return external ? (
-    <a href={to} className={buttonClass(tone, className)} {...(to.startsWith("http") ? { target: "_blank", rel: "noopener" } : {})}>
-      {children}
+    <a
+      href={to}
+      data-disc={discAttr}
+      className={buttonClass(tone, className)}
+      {...(to.startsWith("http") ? { target: "_blank", rel: "noopener" } : {})}
+    >
+      {content}
     </a>
   ) : (
-    <Link to={to} className={buttonClass(tone, className)}>
-      {children}
+    <Link to={to} data-disc={discAttr} className={buttonClass(tone, className)}>
+      {content}
     </Link>
   );
 }

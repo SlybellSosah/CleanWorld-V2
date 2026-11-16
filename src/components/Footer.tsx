@@ -2,6 +2,7 @@ import { Link } from "react-router";
 import { company, fact } from "../content/company";
 import { services } from "../content/services";
 import { telLink, whatsappLink } from "../lib/whatsapp";
+import { Asterisk } from "./PageHeader";
 import { Wordmark } from "./Wordmark";
 
 export function Footer() {
@@ -12,15 +13,20 @@ export function Footer() {
   const hasContact = phone || whatsapp || email || address;
 
   return (
-    <footer className="on-navy bg-navy pb-28 pt-14 text-slate-200 md:pb-14">
+    <footer className="on-navy mt-6 border-t border-line/40 bg-navy pb-28 pt-14 text-slate-200 md:mt-10 md:pb-14 md:pt-16">
       <div className="wrap grid gap-10 md:grid-cols-[1.4fr_1fr_1fr]">
         <div>
-          <Wordmark light />
-          <p className="mt-4 max-w-sm text-slate-300">Cleaning, fumigation and waste collection in Juba, South Sudan.</p>
+          <div className="flex items-center gap-3">
+            <Wordmark light />
+            <Asterisk className="size-5 text-sun" />
+          </div>
+          <p className="mt-4 max-w-sm text-slate-300">
+            Cleaning, fumigation and waste collection in Juba, South Sudan.
+          </p>
         </div>
 
         <nav aria-label="Services">
-          <h2 className="font-display text-base font-semibold text-white">Services</h2>
+          <h2 className="font-display text-xs font-bold uppercase tracking-[0.14em] text-mist">Services</h2>
           <ul className="mt-3 space-y-1">
             {services.map((s) => (
               <li key={s.slug}>
@@ -33,7 +39,9 @@ export function Footer() {
         </nav>
 
         <div>
-          <h2 className="font-display text-base font-semibold text-white">{hasContact ? "Contact" : "More"}</h2>
+          <h2 className="font-display text-xs font-bold uppercase tracking-[0.14em] text-mist">
+            {hasContact ? "Contact" : "More"}
+          </h2>
           <ul className="mt-3 space-y-1">
             {phone && (
               <li>

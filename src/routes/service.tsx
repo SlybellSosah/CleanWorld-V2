@@ -13,8 +13,8 @@ export const meta = ({ params }: { params: { slug?: string } }) => {
 
 function List({ title, items }: { title: string; items: string[] }) {
   return (
-    <section>
-      <h2 className="text-2xl font-semibold">{title}</h2>
+    <section className="bento-card p-6 sm:p-8">
+      <h2 className="text-2xl font-bold">{title}</h2>
       <ul className="mt-4 space-y-3">
         {items.map((item) => (
           <li key={item} className="border-l-4 border-leaf pl-4">
@@ -33,30 +33,30 @@ export default function ServicePage() {
 
   return (
     <>
-      <PageHeader title={service.title} lead={service.intro} />
-      <div className="wrap grid gap-12 py-12 md:grid-cols-[1.6fr_1fr] md:py-16">
-        <div className="space-y-12">
+      <PageHeader eyebrow="Service detail" title={service.title} lead={service.intro} />
+      <div className="wrap grid gap-8 py-8 md:grid-cols-[1.6fr_1fr] md:py-12">
+        <div className="space-y-6">
           <List title="What is included" items={service.includes} />
           <List title="How we work" items={service.method} />
           <List title="Safety" items={service.safety} />
         </div>
-        <aside className="space-y-8 self-start md:sticky md:top-24">
-          <div className="rounded-lg border border-line bg-white p-6">
-            <h2 className="text-xl font-semibold">How often</h2>
+        <aside className="space-y-6 self-start md:sticky md:top-24">
+          <div className="bento-card p-6 sm:p-7">
+            <h2 className="text-xl font-bold">How often</h2>
             <p className="mt-2 text-muted">{service.frequency}</p>
-            <h2 className="mt-6 text-xl font-semibold">Good for</h2>
+            <h2 className="mt-6 text-xl font-bold">Good for</h2>
             <ul className="mt-2 list-disc space-y-1 pl-5 text-muted">
               {service.goodFor.map((g) => (
                 <li key={g}>{g}</li>
               ))}
             </ul>
           </div>
-          <nav aria-label="Other services">
-            <h2 className="text-xl font-semibold">Other services</h2>
-            <ul className="mt-2">
+          <nav aria-label="Other services" className="bento-card p-6 sm:p-7">
+            <h2 className="text-xl font-bold">Other services</h2>
+            <ul className="mt-3 space-y-1">
               {others.map((s) => (
                 <li key={s.slug}>
-                  <Link to={`/services/${s.slug}`} className="link inline-block py-2">
+                  <Link to={`/services/${s.slug}`} className="link inline-block py-1.5 font-medium">
                     {s.title}
                   </Link>
                 </li>

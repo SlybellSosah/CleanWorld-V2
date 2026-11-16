@@ -7,7 +7,8 @@ interface FieldProps {
   children: (props: { id: string; "aria-invalid": boolean; "aria-describedby"?: string; className: string }) => React.ReactNode;
 }
 
-const CONTROL = "mt-2 min-h-12 w-full rounded-md border bg-white px-3 py-2 text-base text-ink";
+const CONTROL =
+  "mt-2 min-h-12 w-full rounded-[var(--radius-control)] border bg-white px-3.5 py-2.5 text-base text-ink transition-colors";
 
 export function Field({ id, label, hint, error, optional, children }: FieldProps) {
   const describedBy = [hint && `${id}-hint`, error && `${id}-error`].filter(Boolean).join(" ") || undefined;
@@ -54,8 +55,8 @@ export function Choice<T extends string>({ name, legend, options, value, error, 
         {options.map((o) => (
           <label
             key={o.value}
-            className={`flex min-h-14 cursor-pointer items-start gap-3 rounded-md border-2 bg-white p-4 has-[:focus-visible]:outline-3 has-[:focus-visible]:outline-sky ${
-              value === o.value ? "border-leaf" : "border-line"
+            className={`flex min-h-14 cursor-pointer items-start gap-3 rounded-[var(--radius-panel)] border-2 p-4 transition-colors has-[:focus-visible]:outline-3 has-[:focus-visible]:outline-sky ${
+              value === o.value ? "border-leaf bg-paper" : "border-line bg-white hover:border-ink/30"
             }`}
           >
             <input
