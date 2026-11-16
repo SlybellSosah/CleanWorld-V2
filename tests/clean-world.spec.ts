@@ -36,13 +36,9 @@ test.describe('Clean World Inc E2E Test Suite', () => {
     const mapContainer = page.locator('#step3-checkout .h-64');
     await expect(mapContainer).toBeVisible();
 
-    // Click Authorize & Book
-    await page.getByRole('button', { name: 'Authorize & Book' }).click();
+    // Click Confirm Booking
+    await page.getByRole('button', { name: 'Confirm Booking' }).click();
 
-    // Fill USSD PIN in MTN MoMo verification modal
-    await expect(page.getByText('MTN MoMo Verification')).toBeVisible();
-    await page.getByPlaceholder('••••').fill('1234');
-    await page.getByRole('button', { name: 'Confirm & Authorize' }).click();
 
     // Verify confirmation and invoice reference receipt
     await expect(page.locator('#receipt-card')).toBeVisible();

@@ -53,13 +53,12 @@ export default function EcoShopPage({
 
   // Checkout modal states
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
-  const [checkoutStep, setCheckoutStep] = useState(1); // 1: Delivery, 2: Carrier, 3: PIN USSD, 4: Receipt
+  const [checkoutStep, setCheckoutStep] = useState(1); // 1: Delivery, 2: Carrier, 3: Confirm, 4: Receipt
   const [recipientName, setRecipientName] = useState("");
   const [deliveryLocation, setDeliveryLocation] = useState("Juba Town");
   const [deliveryAddress, setDeliveryAddress] = useState("");
   const [phoneNum, setPhoneNum] = useState("+211 ");
   const [paymentCarrier, setPaymentCarrier] = useState<"m-GURUSH" | "MTN MoMo" | "Zain Cash" | "Cash" | "">("");
-  const [ussdPin, setUssdPin] = useState("");
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [createdOrder, setCreatedOrder] = useState<ProductOrder | null>(null);
   const [checkoutError, setCheckoutError] = useState("");
@@ -155,11 +154,6 @@ export default function EcoShopPage({
 
   const handleSimulateUSSDPayment = () => {
     setCheckoutError("");
-    if (!ussdPin || ussdPin.length < 4) {
-      setCheckoutError("Please enter your 4-digit mobile money PIN.");
-      return;
-    }
-    
     setIsProcessingPayment(true);
     
     setTimeout(() => {
@@ -174,7 +168,7 @@ export default function EcoShopPage({
         phonePaid: phoneNum.replace(/\s+/g, ""),
         deliveryLocation,
         deliveryAddress,
-        transactionRef: `TXN-${Math.floor(10000000 + Math.random() * 90000000)}`,
+        transactionRef: "",
         status: "processing",
         createdAt: new Date().toISOString()
       };
@@ -193,7 +187,6 @@ export default function EcoShopPage({
     setDeliveryAddress("");
     setPhoneNum("+211 ");
     setPaymentCarrier("");
-    setUssdPin("");
     setCreatedOrder(null);
   };
 
@@ -753,7 +746,7 @@ export default function EcoShopPage({
                 <h3 className="font-display text-xl font-bold text-white">
                   {checkoutStep === 1 && "1. Delivery & Contact Details"}
                   {checkoutStep === 2 && "2. Select Payment Carrier"}
-                  {checkoutStep === 3 && "3. USSD PIN Verification"}
+                  {checkoutStep === 3 && "3. Confirm Order"}
                   {checkoutStep === 4 && "4. Order Confirmed"}
                 </h3>
                 
@@ -864,7 +857,7 @@ export default function EcoShopPage({
               {checkoutStep === 2 && (
                 <div className="space-y-5 text-xs font-sans">
                   <p className="text-slate-400">
-                    We support South Sudan's primary mobile money carriers. Payments will trigger a simulated USSD push prompt on your device.
+                    We support South Sudan's primary mobile money carriers. You pay from your own phone after we confirm the order.
                   </p>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
@@ -931,14 +924,14 @@ export default function EcoShopPage({
                       onClick={handleNextStep}
                       className="px-6 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-display font-extrabold rounded-xl transition-all shadow-md shadow-emerald-500/10 flex items-center gap-1"
                     >
-                      Next: Send PIN Request
+                      Next: Review Order
                       <ArrowRight className="w-3.5 h-3.5" />
                     </button>
                   </div>
                 </div>
               )}
 
-              {/* STEP 3: USSD PIN POPUP SIMULATOR */}
+              {/* STEP 3: CONFIRM ORDER */}
               {checkoutStep === 3 && (
                 <div className="space-y-6 text-xs font-sans">
                   
@@ -950,7 +943,7 @@ export default function EcoShopPage({
                       <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-4 animate-fadeIn">
                         
                         <div className="flex justify-between items-center pb-2 border-b border-slate-850">
-                          <span className="font-mono text-xs font-bold text-slate-400 uppercase tracking-widest">{paymentCarrier} USSD GATE</span>
+                          <span className="font-mono text-xs font-bold text-slate-400 uppercase tracking-widest">{paymentCarrier}</span>
                           <span className="relative flex h-2 w-2">
                             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                             <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
@@ -963,30 +956,22 @@ export default function EcoShopPage({
                           <p className="text-xs text-slate-400 font-mono">Carrier Target: {phoneNum}</p>
                         </div>
 
-                        <div className="space-y-1">
-                          <label className="text-xs text-slate-400 uppercase font-mono tracking-widest block text-center">ENTER YOUR PIN TO CONFIRM</label>
-                          <input 
-                            type="password"
-                            maxLength={4}
-                            placeholder="••••"
-                            value={ussdPin}
-                            onChange={(e) => setUssdPin(e.target.value.replace(/\D/g, ""))}
-                            className="w-24 mx-auto text-center block bg-slate-950 border border-slate-800 rounded-lg py-1.5 text-base tracking-widest font-mono text-white focus:outline-none focus:border-emerald-500"
-                          />
-                        </div>
+                        <p className="text-xs text-slate-300 text-center leading-relaxed">
+                          We will send {paymentCarrier} payment instructions to this number. You approve the payment on your own phone.
+                        </p>
 
                         <button
                           onClick={handleSimulateUSSDPayment}
                           className="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-mono font-bold text-xs py-2 rounded-lg transition-colors"
                         >
-                          Confirm &amp; Authorize
+                          Place Order
                         </button>
                       </div>
                     ) : (
                       <div className="py-12 text-center space-y-4 animate-pulse">
                         <RefreshCw className="w-10 h-10 text-emerald-400 mx-auto animate-spin" />
                         <div className="space-y-1">
-                          <p className="font-bold text-white text-xs">Simulating Juba Network Transit...</p>
+                          <p className="font-bold text-white text-xs">Placing your order...</p>
                           <p className="text-xs text-slate-400 font-mono">Carrier: {paymentCarrier} Gateway</p>
                         </div>
                       </div>
@@ -997,8 +982,7 @@ export default function EcoShopPage({
 
                   <div className="text-center">
                     <p className="text-xs text-slate-400">
-                      *Notice: This is a safe sandboxed payment environment. No actual funds are charged. 
-                      Input any 4 digit code to verify order telemetry.
+                      Never type your mobile money PIN into a website or share it with anyone, including us.
                     </p>
                   </div>
 
@@ -1026,10 +1010,10 @@ export default function EcoShopPage({
                       <Check className="w-6 h-6 animate-bounce" />
                     </div>
                     <h4 className="font-display font-extrabold text-white text-base">
-                      {createdOrder.paymentMethod === "Cash" ? "Order Placed Successfully!" : "Payment Authorized Successfully!"}
+                      {createdOrder.paymentMethod === "Cash" ? "Order Placed Successfully!" : "Order Received"}
                     </h4>
                     <p className="text-xs text-slate-400">
-                      {createdOrder.paymentMethod === "Cash" ? "Pay upon dispatch delivery in Juba." : "Simulated mobile push cleared in Juba."}
+                      {createdOrder.paymentMethod === "Cash" ? "Pay upon dispatch delivery in Juba." : "We will send payment instructions to your phone. Nothing has been charged."}
                     </p>
                   </div>
 
@@ -1043,8 +1027,8 @@ export default function EcoShopPage({
                     </div>
 
                     <div className="space-y-1">
-                      <span className="text-xs text-slate-400 font-mono uppercase block">TRANSACTION REF</span>
-                      <span className="font-mono font-semibold text-white">{createdOrder.transactionRef}</span>
+                      <span className="text-xs text-slate-400 font-mono uppercase block">PAYMENT STATUS</span>
+                      <span className="font-mono font-semibold text-white">{createdOrder.paymentMethod === "Cash" ? "Cash on delivery" : "Awaiting payment"}</span>
                     </div>
 
                     <div className="space-y-1">

@@ -51,7 +51,7 @@ function PinCircleInput({
         aria-label="4-digit PIN"
       />
       <p className="text-center text-[10px] font-mono text-slate-500 uppercase tracking-wide">
-        Set a 4-digit PIN — just like your mobile money
+        Choose a new 4-digit PIN — never reuse your mobile money PIN
       </p>
     </div>
   );

@@ -135,7 +135,7 @@ function ProgressiveRegistrationNudge({ currentUser, onRegisterSuccess }: Progre
             </div>
 
             <div>
-              <label className="block text-[10px] font-mono uppercase text-slate-400 mb-1">Set a 4-Digit PIN * (like your mobile money)</label>
+              <label className="block text-[10px] font-mono uppercase text-slate-400 mb-1">Set a new 4-Digit PIN * (not your mobile money PIN)</label>
               <div className="flex gap-2 items-center">
                 <input
                   type="password"
@@ -234,9 +234,6 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings, init
   const [paymentMethod, setPaymentMethod] = useState<"m-GURUSH" | "MTN MoMo" | "Zain Cash" | "Cash">("MTN MoMo");
   const [paymentPhone, setPaymentPhone] = useState("");
   const [paymentHolder, setPaymentHolder] = useState("");
-  const [ussdPin, setUssdPin] = useState("");
-  const [isUSSDPromptOpen, setIsUSSDPromptOpen] = useState(false);
-  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   
   const [selectedLat, setSelectedLat] = useState<number>(4.86010);
   const [selectedLng, setSelectedLng] = useState<number>(31.59100);
@@ -445,31 +442,11 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings, init
       return;
     }
 
-    if (paymentMethod !== "Cash") {
-      if (!paymentPhone) {
-        setStep3Error("Please enter your Mobile Money phone number.");
-        return;
-      }
-      // Open simulated USSD popup
-      setUssdPin("");
-      setIsUSSDPromptOpen(true);
-    } else {
-      // Cash payment proceeds instantly
-      executeBookingCreation();
-    }
-  };
-
-  const handleSimulateUSSDPayment = () => {
-    if (!ussdPin || ussdPin.length < 4) {
-      alert("Please enter your 4-digit USSD PIN.");
+    if (paymentMethod !== "Cash" && !paymentPhone) {
+      setStep3Error("Please enter your Mobile Money phone number.");
       return;
     }
-    setIsProcessingPayment(true);
-    setTimeout(() => {
-      setIsProcessingPayment(false);
-      setIsUSSDPromptOpen(false);
-      executeBookingCreation();
-    }, 1500);
+    executeBookingCreation();
   };
 
   const executeBookingCreation = () => {
@@ -507,7 +484,7 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings, init
         lng: selectedLng,
         paymentMethod: paymentMethod,
         paymentPhone: paymentMethod === "Cash" ? "" : paymentPhone,
-        transactionRef: paymentMethod === "Cash" ? "" : `${paymentMethod === "m-GURUSH" ? "MG" : paymentMethod === "MTN MoMo" ? "MT" : "ZC"}-${Math.floor(1000 + Math.random() * 9000)}-JUB`
+        transactionRef: ""
       };
 
       setBookings(prev => [newBooking, ...prev]);
@@ -1255,7 +1232,7 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings, init
                     {paymentMethod !== "Cash" ? (
                       <div className="space-y-4 animate-fadeIn">
                         <p className="text-xs text-slate-400 leading-relaxed font-sans">
-                          Payment will be processed via local South Sudanese mobile money USSD push request. Standard rates apply.
+                          After we confirm your booking, we will send {paymentMethod} payment instructions to this number. You approve the payment on your own phone. Never type your mobile money PIN into a website or share it with anyone, including us.
                         </p>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-sans">
                           <div className="space-y-1">
@@ -1312,7 +1289,7 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings, init
                         </>
                       ) : (
                         <>
-                          Authorize &amp; Book
+                          Confirm Booking
                           <ShieldCheck className="w-4 h-4" />
                         </>
                       )}
@@ -1452,104 +1429,6 @@ export default function QuoteWizard({ setActiveView, bookings, setBookings, init
         )}
 
       </div>
-
-      {/* South Sudan Mobile Money USSD Verification Mock Modal */}
-      <AnimatePresence>
-        {isUSSDPromptOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            {/* Backdrop */}
-            <motion.div 
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 0.6 }}
-              exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-black/80 backdrop-blur-sm"
-              onClick={() => {
-                if (!isProcessingPayment) setIsUSSDPromptOpen(false);
-              }}
-            ></motion.div>
-            
-            {/* Modal Card */}
-            <motion.div 
-              initial={{ opacity: 0, scale: 0.95, y: 15 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 15 }}
-              className="relative bg-slate-900 border border-slate-800 rounded-3xl p-6 sm:p-8 max-w-sm w-full shadow-2xl z-10 space-y-6 text-left"
-            >
-              {!isProcessingPayment && (
-                <button 
-                  onClick={() => setIsUSSDPromptOpen(false)}
-                  className="absolute top-4 right-4 p-2 text-slate-400 hover:text-white rounded-full bg-slate-950 border border-slate-800"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              )}
-
-              <div className="space-y-1">
-                <div className="flex items-center gap-1.5">
-                  <CreditCard className="w-4.5 h-4.5 text-emerald-400" />
-                  <span className="text-xs text-emerald-400 font-mono uppercase tracking-widest font-bold">
-                    South Sudan Local Checkout
-                  </span>
-                </div>
-                <h3 className="font-display text-lg font-bold text-white">
-                  {!isProcessingPayment ? `${paymentMethod} Verification` : "Sending Transit Push..."}
-                </h3>
-              </div>
-
-              {!isProcessingPayment ? (
-                <div className="bg-slate-950 border border-slate-850 rounded-2xl p-5 space-y-4 animate-fadeIn font-sans text-xs">
-                  <div className="flex justify-between items-center pb-2 border-b border-slate-850">
-                    <span className="font-mono text-xs font-bold text-slate-400 uppercase tracking-widest">{paymentMethod} USSD GATE</span>
-                    <span className="relative flex h-2 w-2">
-                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                      <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                    </span>
-                  </div>
-
-                  <div className="space-y-1 text-center py-2">
-                    <p className="text-xs text-slate-400 font-sans">Merchant: Clean World Inc.</p>
-                    <p className="text-base font-black text-white font-mono">${finalPrice.toFixed(2)} / SSP {(finalPrice * 1300).toLocaleString()}</p>
-                    <p className="text-xs text-slate-400 font-mono">Carrier Target: {paymentPhone}</p>
-                  </div>
-
-                  <div className="space-y-1">
-                    <label className="text-xs text-slate-400 uppercase font-mono tracking-widest block text-center">ENTER YOUR PIN TO CONFIRM</label>
-                    <input 
-                      type="password"
-                      maxLength={4}
-                      placeholder="••••"
-                      value={ussdPin}
-                      onChange={(e) => setUssdPin(e.target.value.replace(/\D/g, ""))}
-                      className="w-24 mx-auto text-center block bg-slate-950 border border-slate-800 rounded-lg py-1.5 text-base tracking-widest font-mono text-white focus:outline-none focus:border-emerald-500"
-                    />
-                  </div>
-
-                  <button
-                    onClick={handleSimulateUSSDPayment}
-                    className="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-mono font-bold text-xs py-2.5 rounded-lg transition-colors"
-                  >
-                    Confirm &amp; Authorize
-                  </button>
-                </div>
-              ) : (
-                <div className="py-12 text-center space-y-4 animate-pulse font-sans text-xs">
-                  <RefreshCw className="w-10 h-10 text-emerald-400 mx-auto animate-spin" />
-                  <div className="space-y-1">
-                    <p className="font-bold text-white text-xs">Simulating Juba Network Transit...</p>
-                    <p className="text-xs text-slate-400 font-mono">Carrier: {paymentMethod} Gateway</p>
-                  </div>
-                </div>
-              )}
-
-              <div className="text-center font-sans text-xs text-slate-450 leading-normal">
-                *Notice: This is a safe sandboxed payment environment. No actual funds are charged. 
-                Input any 4 digit code to verify order telemetry.
-              </div>
-
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
 
     </div>
   );
