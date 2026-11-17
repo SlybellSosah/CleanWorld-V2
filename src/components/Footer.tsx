@@ -3,6 +3,12 @@ import { company, COPYRIGHT_YEAR, fact } from "../content/company";
 import { services } from "../content/services";
 import { telLink, whatsappLink } from "../lib/whatsapp";
 
+const MANTRA_WORDS = [
+  { text: "Clean.", color: "text-sky-400 hover:drop-shadow-[0_4px_12px_rgba(56,189,248,0.45)]" },
+  { text: "Green.", color: "text-lime-400 hover:drop-shadow-[0_4px_12px_rgba(163,230,53,0.45)]" },
+  { text: "Sustainable.", color: "text-emerald-300 hover:drop-shadow-[0_4px_12px_rgba(110,231,183,0.45)]" },
+] as const;
+
 export function Footer() {
   const companyName = fact(company.name) ?? "Clean World Inc.";
   const phone = fact(company.phone);
@@ -20,10 +26,17 @@ export function Footer() {
             alt={companyName}
             width={192}
             height={192}
-            className="size-44 rounded-2xl object-contain shadow-sm sm:size-48"
+            className="size-44 rounded-2xl object-contain shadow-sm transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:-translate-y-1 hover:scale-110 hover:shadow-xl motion-reduce:transition-none motion-reduce:hover:transform-none sm:size-48"
           />
-          <p className="mt-4 max-w-sm text-slate-300">
-            Cleaning, fumigation and waste collection in Juba, South Sudan.
+          <p className="mt-5 flex flex-wrap items-center justify-center gap-x-2.5 font-display text-base font-bold tracking-[0.02em] sm:text-lg">
+            {MANTRA_WORDS.map(({ text, color }) => (
+              <span
+                key={text}
+                className={`inline-block cursor-default transition-transform duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:-translate-y-1 hover:scale-125 motion-reduce:transition-none motion-reduce:hover:transform-none ${color}`}
+              >
+                {text}
+              </span>
+            ))}
           </p>
         </div>
 
