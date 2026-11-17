@@ -15,6 +15,9 @@ export function pageMeta(page: PageMeta, siteUrl: string | undefined): Descripto
     { property: "og:title", content: page.title },
     { property: "og:description", content: page.description },
     { property: "og:type", content: "website" },
+    { property: "og:site_name", content: "Clean World Inc." },
+    { property: "og:locale", content: "en_SS" },
+    { name: "twitter:card", content: "summary" },
   ];
   if (page.noindex) tags.push({ name: "robots", content: "noindex, nofollow" });
   if (siteUrl && !page.noindex) {

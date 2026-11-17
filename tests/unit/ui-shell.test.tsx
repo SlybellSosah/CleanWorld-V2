@@ -4,6 +4,7 @@ import { afterEach, describe, expect, it } from "vitest";
 import { ContactBar } from "../../src/components/ContactBar";
 import { company } from "../../src/content/company";
 import { anyUnconfirmedShown, visible } from "../../src/lib/facts";
+import { pageMeta } from "../../src/lib/meta";
 import Home from "../../src/routes/home";
 import HowToPay from "../../src/routes/how-to-pay";
 import Privacy from "../../src/routes/privacy";
@@ -108,5 +109,34 @@ describe("spec ui-shell & production CompanyFact gates", () => {
       </MemoryRouter>,
     );
     expect(html).not.toContain("wa.me");
+  });
+
+  it("seo meta: pageMeta includes og:site_name, og:locale, and twitter:card", () => {
+    const tags = pageMeta({ title: "Test", description: "Desc", path: "/services" }, "https://cleanworld.live");
+    expect(tags).toContainEqual({ property: "og:site_name", content: "Clean World Inc." });
+    expect(tags).toContainEqual({ property: "og:locale", content: "en_SS" });
+    expect(tags).toContainEqual({ name: "twitter:card", content: "summary" });
+  });
+
+  it("view-home structured data: emits LocalBusiness JSON-LD only with confirmed facts", () => {
+    const confirmedHtml = renderToStaticMarkup(
+      <MemoryRouter>
+        <Home />
+      </MemoryRouter>,
+    );
+    expect(confirmedHtml).toContain("application/ld+json");
+    expect(confirmedHtml).toContain('"@type":"LocalBusiness"');
+    expect(confirmedHtml).toContain("+211 928 300 400");
+
+    company.phone.confirmed = false;
+    company.email.confirmed = false;
+    const partialHtml = renderToStaticMarkup(
+      <MemoryRouter>
+        <Home />
+      </MemoryRouter>,
+    );
+    expect(partialHtml).toContain('"@type":"LocalBusiness"');
+    expect(partialHtml).not.toContain('"telephone"');
+    expect(partialHtml).not.toContain('"email"');
   });
 });

@@ -52,12 +52,42 @@ const REASONS = [
 ];
 
 export default function Home() {
+  const name = fact(company.name);
+  const siteUrl = fact(company.siteUrl);
+  const phone = fact(company.phone);
+  const email = fact(company.email);
+  const address = fact(company.address);
   const founderName = fact(company.founderName);
   const founderQuote = fact(company.founderQuote);
   const founderRole = fact(company.founderRole);
 
+  const localBusiness = name
+    ? {
+        "@context": "https://schema.org",
+        "@type": "LocalBusiness",
+        name,
+        ...(siteUrl ? { url: siteUrl, image: `${siteUrl.replace(/\/$/, "")}/logo.jpg` } : {}),
+        ...(phone ? { telephone: phone } : {}),
+        ...(email ? { email } : {}),
+        ...(address
+          ? {
+              address: {
+                "@type": "PostalAddress",
+                streetAddress: address,
+                addressLocality: "Juba",
+                addressCountry: "SS",
+              },
+            }
+          : {}),
+        areaServed: "Juba, South Sudan",
+      }
+    : null;
+
   return (
     <>
+      {localBusiness && (
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusiness) }} />
+      )}
       <HeroBento />
 
       <section className="relative overflow-x-clip py-16 md:py-22" aria-labelledby="what-title">
