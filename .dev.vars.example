@@ -1,0 +1,8 @@
+# Copy to .dev.vars for local development. Never commit real values.
+ADMIN_DEV_BYPASS=1
+# RESEND_API_KEY=
+# NOTIFY_FROM=requests@example.com
+# NOTIFY_TO=staff@example.com
+# TURNSTILE_SECRET=
+# ACCESS_TEAM_DOMAIN=yourteam.cloudflareaccess.com
+# ACCESS_AUD=
