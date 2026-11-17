@@ -5,7 +5,9 @@ import type { Deps, NotifyResult } from "./deps";
 import type { Env, FetchFn } from "./env";
 
 const RESEND_URL = "https://api.resend.com/emails";
-export const MAX_NOTIFY_TRIES = 10;
+const FETCH_TIMEOUT_MS = 10_000;
+const IN_FLIGHT_GRACE_MS = 60_000;
+const MAX_NOTIFY_TRIES = 10;
 
 export async function sendStaffEmail(
   quote: QuoteRequest,
@@ -25,6 +27,7 @@ export async function sendStaffEmail(
         "idempotency-key": `quote-${quote.id}`,
       },
       body: JSON.stringify({ from: env.NOTIFY_FROM, to, subject, text }),
+      signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
     });
     return res.ok ? "sent" : "failed";
   } catch {
@@ -34,13 +37,14 @@ export async function sendStaffEmail(
 
 export async function notifyAndRecord(quote: QuoteRequest, deps: Deps): Promise<NotifyResult> {
   const result = await deps.notify(quote);
-  if (result === "sent") await deps.repo.recordNotify(quote.id, "sent", true);
+  if (result === "sent") await deps.repo.recordNotify(quote.id, "sent", false);
   if (result === "failed") await deps.repo.recordNotify(quote.id, "failed", true);
   return result;
 }
 
 export async function retryPending(deps: Deps): Promise<number> {
-  const waiting = await deps.repo.pendingNotify(20, MAX_NOTIFY_TRIES);
+  const pendingBeforeIso = new Date(deps.now().getTime() - IN_FLIGHT_GRACE_MS).toISOString();
+  const waiting = await deps.repo.pendingNotify(20, MAX_NOTIFY_TRIES, pendingBeforeIso);
   for (const quote of waiting) await notifyAndRecord(quote, deps);
   return waiting.length;
 }

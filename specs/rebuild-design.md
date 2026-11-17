@@ -1,8 +1,8 @@
 # Clean World Inc. — Rebuild Design
 
-Status: **draft, awaiting owner approval** · Version 2 · 2026-11-16
+Status: **historical phase 0–1 design & research baseline** · Version 2 · 2026-11-16
 
-**How to read this.** Sections 1–4 are for the owner: what was found, what is proposed, what it costs, and the decisions needed. Sections 5–12 are the detail developers will build from. Section 13 lists everything the owner needs to supply or do. Nothing has been built yet.
+> **Note:** Phases 0–1 are now implemented on `feature/rebuild`. Active source-of-truth schemas, architectural rules, and feature contracts live in [`project.md`](../project.md), [`architecture/blueprint.md`](../architecture/blueprint.md), and the 10 feature specifications in [`specs/`](./). Sections below preserve the original audit, South Sudan market research, and multi-phase roadmap.
 
 This design is based on a full audit of the current code, a comparison of the code with the planning documents in `specs/` and `architecture/`, and web research on payments, mapping and the cleaning-services market in South Sudan. Version 2 incorporates an independent seven-reviewer check of version 1.
 

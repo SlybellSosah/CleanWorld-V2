@@ -65,10 +65,10 @@ export function QuoteBand({ heading, to = "/quote", label = "Request a quote" }:
     <section className="wrap pb-12 pt-4 md:pb-16 md:pt-6">
       <div className="bento-card group relative overflow-hidden p-7 sm:p-10 md:flex md:items-center md:justify-between md:gap-8 md:p-12">
         <div className="max-w-2xl">
-          <Eyebrow>Written quotation · Juba</Eyebrow>
+          <Eyebrow>Free quote · Juba</Eyebrow>
           <h2 className="mt-3 text-2xl font-bold text-ink sm:text-3xl">{heading}</h2>
           <p className="mt-2 text-muted">
-            We call back to confirm the scope and send a written price — never pay on this website.
+            We call back to confirm the scope and give you a clear price — written quotations for organisations, phone or WhatsApp confirmation for homes. Never pay on this website.
           </p>
         </div>
         <ButtonLink to={to} tone="leaf" className="mt-6 shrink-0 md:mt-0">

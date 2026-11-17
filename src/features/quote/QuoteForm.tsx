@@ -1,30 +1,20 @@
-import { AnimatePresence } from "motion/react";
-import * as m from "motion/react-m";
 import { useEffect, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router";
-import { ButtonLink, buttonClass } from "../../components/Button";
+import { Button, ButtonLink } from "../../components/Button";
 import { company, fact } from "../../content/company";
-import { neighbourhoodNames, neighbourhoods } from "../../content/neighbourhoods";
+import { neighbourhoods } from "../../content/neighbourhoods";
 import { serviceBySlug, services, serviceTitle } from "../../content/services";
-import { buildFallbackText, buildFollowUpText } from "../../lib/messages";
+import { buildFallbackText, buildFollowUpText, FREQUENCY_LABELS } from "../../lib/messages";
 import { firstStepWithError, validateQuote, validateStep } from "../../lib/validate";
-import { whatsappLink } from "../../lib/whatsapp";
-import type { CustomerType, FieldErrors, Frequency, QuoteDraft, QuoteRequestInput, ServiceSlug } from "../../types";
+import { telLink, whatsappLink } from "../../lib/whatsapp";
+import { FREQUENCIES, type CustomerType, type FieldErrors, type Frequency, type QuoteDraft, type QuoteRequestInput, type ServiceSlug } from "../../types";
 import { clearDraft, emptyDraft, loadDraft, saveDraft } from "./draft";
 import { Choice, Field } from "./Field";
 import { submitQuote } from "./submit";
-import { Turnstile, TURNSTILE_SITE_KEY, type TurnstileHandle } from "./Turnstile";
+import { activeTurnstileSiteKey, Turnstile, type TurnstileHandle } from "./Turnstile";
 
 const STEP_TITLES = ["Who is this for?", "What do you need?", "Where is the site?", "How do we reach you?"];
 const LAST = STEP_TITLES.length - 1;
-
-const FREQUENCIES: { value: Frequency; label: string }[] = [
-  { value: "one-time", label: "One time" },
-  { value: "weekly", label: "Weekly" },
-  { value: "fortnightly", label: "Every two weeks" },
-  { value: "monthly", label: "Monthly" },
-  { value: "contract", label: "Ongoing contract" },
-];
 
 type Status = "editing" | "sending" | "failed" | { reference: string; customerType: CustomerType };
 
@@ -34,18 +24,25 @@ export function QuoteForm() {
   const [errors, setErrors] = useState<FieldErrors>({});
   const [status, setStatus] = useState<Status>("editing");
   const [ready, setReady] = useState(false);
+  const [stepAnimated, setStepAnimated] = useState(false);
   const turnstile = useRef<TurnstileHandle>(null);
   const heading = useRef<HTMLHeadingElement>(null);
   const formEl = useRef<HTMLFormElement>(null);
 
   const whatsapp = fact(company.whatsapp);
+  const phone = fact(company.phone);
+  const emailContact = fact(company.email);
   const f = draft.fields;
   const isOrg = f.customerType === "organisation";
+  const hasProgress = Boolean(draft.step > 0 || f.customerType || f.service || f.scope || f.neighbourhood || f.name || f.phone);
 
   useEffect(() => {
     const start = loadDraft() ?? emptyDraft();
     const wanted = serviceBySlug(params.get("service") ?? undefined);
-    if (wanted) start.fields.service = wanted.slug;
+    if (wanted && wanted.slug !== start.fields.service) {
+      start.fields.service = wanted.slug;
+      if (start.step > 1) start.step = 1;
+    }
     setDraft(start);
     setReady(true);
     // The draft is read once; later query changes must not overwrite typing.
@@ -65,7 +62,17 @@ export function QuoteForm() {
   };
 
   const goTo = (step: number) => {
+    setStepAnimated(true);
     setDraft((d) => ({ ...d, step }));
+    requestAnimationFrame(() => heading.current?.focus());
+  };
+
+  const resetAll = () => {
+    clearDraft();
+    setErrors({});
+    setStatus("editing");
+    setStepAnimated(false);
+    setDraft(emptyDraft());
     requestAnimationFrame(() => heading.current?.focus());
   };
 
@@ -73,21 +80,22 @@ export function QuoteForm() {
     requestAnimationFrame(() => formEl.current?.querySelector<HTMLElement>('[aria-invalid="true"], fieldset[aria-describedby] input')?.focus());
 
   const next = () => {
-    const found = validateStep(draft.step, f, neighbourhoodNames);
+    const found = validateStep(draft.step, f, neighbourhoods);
     setErrors(found);
     if (Object.keys(found).length > 0) return focusFirstError();
     goTo(draft.step + 1);
   };
 
   const send = async () => {
-    const checked = validateQuote(f, neighbourhoodNames);
+    const checked = validateQuote(f, neighbourhoods);
     if (!checked.ok) {
       setErrors(checked.fields);
       const step = firstStepWithError(checked.fields);
       if (step >= 0 && step !== draft.step) goTo(step);
       return focusFirstError();
     }
-    if (TURNSTILE_SITE_KEY && !turnstile.current?.token()) {
+    const siteKey = activeTurnstileSiteKey();
+    if (siteKey && !turnstile.current?.token()) {
       if (turnstile.current?.unavailable()) return setStatus("failed");
       return setErrors({ turnstileToken: "Wait for the check below to finish, then send again." });
     }
@@ -114,10 +122,14 @@ export function QuoteForm() {
     return <Confirmation reference={status.reference} customerType={status.customerType} whatsapp={whatsapp} headingRef={heading} />;
   }
 
-  const fallbackHref =
-    whatsapp && f.service && f.neighbourhood && f.name
-      ? whatsappLink(whatsapp, buildFallbackText(f as Required<Pick<QuoteRequestInput, "customerType" | "service" | "neighbourhood" | "name" | "phone">>, serviceTitle(f.service)))
+  const fallbackText =
+    f.service && f.neighbourhood && f.name
+      ? buildFallbackText(
+          f as Required<Pick<QuoteRequestInput, "customerType" | "service" | "neighbourhood" | "name" | "phone">>,
+          serviceTitle(f.service),
+        )
       : undefined;
+  const fallbackHref = whatsapp && fallbackText ? whatsappLink(whatsapp, fallbackText) : undefined;
 
   return (
     <form
@@ -142,164 +154,191 @@ export function QuoteForm() {
           aria-valuenow={draft.step + 1}
           className="h-2 flex-1 overflow-hidden rounded-full bg-line"
         >
-          <m.div className="h-full bg-leaf" initial={false} animate={{ width: `${((draft.step + 1) / STEP_TITLES.length) * 100}%` }} transition={{ duration: 0.3 }} />
+          <div
+            className="quote-progress-fill h-full bg-leaf"
+            style={{ width: `${((draft.step + 1) / STEP_TITLES.length) * 100}%` }}
+          />
         </div>
       </div>
 
-      <AnimatePresence mode="wait" initial={false}>
-        <m.div
-          key={draft.step}
-          initial={{ opacity: 0, x: 24 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -24 }}
-          transition={{ duration: 0.2 }}
-          className="mt-8 space-y-6"
-        >
-          <h2 id="quote-step-title" ref={heading} tabIndex={-1} className="text-2xl font-bold outline-none md:text-3xl">
-            {STEP_TITLES[draft.step]}
-          </h2>
+      <div key={draft.step} className={`mt-8 space-y-6 ${stepAnimated ? "quote-step-enter" : ""}`}>
+        <h2 id="quote-step-title" ref={heading} tabIndex={-1} className="text-2xl font-bold outline-none md:text-3xl">
+          {STEP_TITLES[draft.step]}
+        </h2>
 
-          {draft.step === 0 && (
-            <Choice<CustomerType>
-              name="customerType"
-              legend="Choose one"
-              value={f.customerType}
-              error={errors.customerType}
-              onChange={(v) => set("customerType", v)}
-              options={[
-                { value: "organisation", label: "An organisation", hint: "NGO, UN agency, embassy, hotel, clinic or company" },
-                { value: "household", label: "A household", hint: "Your home or family compound" },
-              ]}
-            />
-          )}
+        {errors.id && (
+          <p role="alert" className="font-medium text-alert">
+            {errors.id}
+          </p>
+        )}
 
-          {draft.step === 1 && (
-            <>
-              <Field id="service" label="Service" error={errors.service}>
-                {(p) => (
-                  <select {...p} value={f.service ?? ""} onChange={(e) => set("service", e.target.value as ServiceSlug)}>
-                    <option value="" disabled>
-                      Choose a service
+        {draft.step === 0 && (
+          <Choice<CustomerType>
+            name="customerType"
+            legend="Choose one"
+            value={f.customerType}
+            error={errors.customerType}
+            onChange={(v) => set("customerType", v)}
+            options={[
+              { value: "organisation", label: "An organisation", hint: "NGO, UN agency, embassy, hotel, clinic or company" },
+              { value: "household", label: "A household", hint: "Your home or family compound" },
+            ]}
+          />
+        )}
+
+        {draft.step === 1 && (
+          <>
+            <Field id="service" label="Service" error={errors.service}>
+              {(p) => (
+                <select {...p} value={f.service ?? ""} onChange={(e) => set("service", e.target.value as ServiceSlug)}>
+                  <option value="" disabled>
+                    Choose a service
+                  </option>
+                  {services.map((s) => (
+                    <option key={s.slug} value={s.slug}>
+                      {s.title}
                     </option>
-                    {services.map((s) => (
-                      <option key={s.slug} value={s.slug}>
-                        {s.title}
-                      </option>
-                    ))}
-                  </select>
-                )}
-              </Field>
-              <Field
-                id="scope"
-                label="Tell us about the job"
-                hint="For example: number of rooms or offices, the pest problem, or how much waste."
-                error={errors.scope}
-                optional
-              >
-                {(p) => <textarea {...p} rows={4} maxLength={500} value={f.scope ?? ""} onChange={(e) => set("scope", e.target.value)} />}
-              </Field>
-              <Field id="frequency" label="How often" error={errors.frequency} optional>
-                {(p) => (
-                  <select {...p} value={f.frequency ?? ""} onChange={(e) => set("frequency", (e.target.value || undefined) as Frequency)}>
-                    <option value="">Not sure yet</option>
-                    {FREQUENCIES.map((o) => (
-                      <option key={o.value} value={o.value}>
-                        {o.label}
-                      </option>
-                    ))}
-                  </select>
-                )}
-              </Field>
-            </>
-          )}
-
-          {draft.step === 2 && (
-            <>
-              <Field id="neighbourhood" label="Neighbourhood" error={errors.neighbourhood}>
-                {(p) => (
-                  <select {...p} value={f.neighbourhood ?? ""} onChange={(e) => set("neighbourhood", e.target.value)}>
-                    <option value="" disabled>
-                      Choose a neighbourhood
-                    </option>
-                    {neighbourhoods.map((n) => (
-                      <option key={n.name} value={n.name}>
-                        {n.name}
-                      </option>
-                    ))}
-                    <option value="Other">Other — not in this list</option>
-                  </select>
-                )}
-              </Field>
-              <Field
-                id="landmark"
-                label="Nearest landmark"
-                hint="A road, building, school, church, mosque or market that helps us find you."
-                error={errors.landmark}
-                optional={f.neighbourhood !== "Other"}
-              >
-                {(p) => <input {...p} type="text" maxLength={200} value={f.landmark ?? ""} onChange={(e) => set("landmark", e.target.value)} />}
-              </Field>
-            </>
-          )}
-
-          {draft.step === 3 && (
-            <>
-              <Field id="name" label="Your name" error={errors.name}>
-                {(p) => <input {...p} type="text" autoComplete="name" value={f.name ?? ""} onChange={(e) => set("name", e.target.value)} />}
-              </Field>
-              <Field id="phone" label="Phone number" hint="We call or WhatsApp this number. Example: 0912 345 678" error={errors.phone}>
-                {(p) => <input {...p} type="tel" inputMode="tel" autoComplete="tel" value={f.phone ?? ""} onChange={(e) => set("phone", e.target.value)} />}
-              </Field>
-              {isOrg && (
-                <>
-                  <Field id="organisation" label="Organisation" error={errors.organisation}>
-                    {(p) => (
-                      <input {...p} type="text" autoComplete="organization" value={f.organisation ?? ""} onChange={(e) => set("organisation", e.target.value)} />
-                    )}
-                  </Field>
-                  <Field id="email" label="Email" hint="We send the quotation here." error={errors.email} optional>
-                    {(p) => <input {...p} type="email" autoComplete="email" value={f.email ?? ""} onChange={(e) => set("email", e.target.value)} />}
-                  </Field>
-                  <Field id="poReference" label="Purchase order or tender reference" error={errors.poReference} optional>
-                    {(p) => <input {...p} type="text" maxLength={100} value={f.poReference ?? ""} onChange={(e) => set("poReference", e.target.value)} />}
-                  </Field>
-                </>
+                  ))}
+                </select>
               )}
-              <Turnstile ref={turnstile} />
-              {errors.turnstileToken && <p className="font-medium text-alert">{errors.turnstileToken}</p>}
-              <p className="text-sm text-muted">
-                We use these details only to answer your request. See our{" "}
-                <Link to="/privacy" className="link">
-                  privacy page
-                </Link>
-                .
-              </p>
-            </>
-          )}
-        </m.div>
-      </AnimatePresence>
+            </Field>
+            <Field
+              id="scope"
+              label="Tell us about the job"
+              hint="For example: number of rooms or offices, the pest problem, or how much waste."
+              error={errors.scope}
+              optional
+            >
+              {(p) => <textarea {...p} rows={4} maxLength={500} value={f.scope ?? ""} onChange={(e) => set("scope", e.target.value)} />}
+            </Field>
+            <Field id="frequency" label="How often" error={errors.frequency} optional>
+              {(p) => (
+                <select {...p} value={f.frequency ?? ""} onChange={(e) => set("frequency", (e.target.value || undefined) as Frequency)}>
+                  <option value="">Not sure yet</option>
+                  {FREQUENCIES.map((val) => (
+                    <option key={val} value={val}>
+                      {FREQUENCY_LABELS[val]}
+                    </option>
+                  ))}
+                </select>
+              )}
+            </Field>
+          </>
+        )}
+
+        {draft.step === 2 && (
+          <>
+            <Field id="neighbourhood" label="Neighbourhood" error={errors.neighbourhood}>
+              {(p) => (
+                <select {...p} value={f.neighbourhood ?? ""} onChange={(e) => set("neighbourhood", e.target.value)}>
+                  <option value="" disabled>
+                    Choose a neighbourhood
+                  </option>
+                  {neighbourhoods.map((name) => (
+                    <option key={name} value={name}>
+                      {name}
+                    </option>
+                  ))}
+                  <option value="Other">Other — not in this list</option>
+                </select>
+              )}
+            </Field>
+            <Field
+              id="landmark"
+              label="Nearest landmark"
+              hint="A road, building, school, church, mosque or market that helps us find you."
+              error={errors.landmark}
+              optional={f.neighbourhood !== "Other"}
+            >
+              {(p) => <input {...p} type="text" maxLength={200} value={f.landmark ?? ""} onChange={(e) => set("landmark", e.target.value)} />}
+            </Field>
+          </>
+        )}
+
+        {draft.step === 3 && (
+          <>
+            <Field id="name" label="Your name" error={errors.name}>
+              {(p) => <input {...p} type="text" autoComplete="name" value={f.name ?? ""} onChange={(e) => set("name", e.target.value)} />}
+            </Field>
+            <Field id="phone" label="Phone number" hint="We call or WhatsApp this number. Example: 0912 345 678" error={errors.phone}>
+              {(p) => <input {...p} type="tel" inputMode="tel" autoComplete="tel" value={f.phone ?? ""} onChange={(e) => set("phone", e.target.value)} />}
+            </Field>
+            {isOrg && (
+              <>
+                <Field id="organisation" label="Organisation" error={errors.organisation}>
+                  {(p) => (
+                    <input {...p} type="text" autoComplete="organization" value={f.organisation ?? ""} onChange={(e) => set("organisation", e.target.value)} />
+                  )}
+                </Field>
+                <Field id="email" label="Email" hint="We send the quotation here." error={errors.email} optional>
+                  {(p) => <input {...p} type="email" autoComplete="email" value={f.email ?? ""} onChange={(e) => set("email", e.target.value)} />}
+                </Field>
+                <Field id="poReference" label="Purchase order or tender reference" error={errors.poReference} optional>
+                  {(p) => <input {...p} type="text" maxLength={100} value={f.poReference ?? ""} onChange={(e) => set("poReference", e.target.value)} />}
+                </Field>
+              </>
+            )}
+            <Turnstile ref={turnstile} />
+            {errors.turnstileToken && <p className="font-medium text-alert">{errors.turnstileToken}</p>}
+            <p className="text-sm text-muted">
+              We use these details only to answer your request. See our{" "}
+              <Link to="/privacy" className="link">
+                privacy page
+              </Link>
+              .
+            </p>
+          </>
+        )}
+      </div>
 
       {status === "failed" && (
         <div role="alert" className="mt-8 rounded-lg border-2 border-alert bg-white p-5">
           <p className="font-semibold">We could not send your request.</p>
-          <p className="mt-1 text-muted">Your details are still here. Check your connection and try again{fallbackHref ? ", or send the same details by WhatsApp" : ""}.</p>
-          {fallbackHref && (
-            <ButtonLink to={fallbackHref} tone="outline" className="mt-4">
-              Send by WhatsApp instead
-            </ButtonLink>
-          )}
+          <p className="mt-1 text-muted">
+            Your details are still here. Check your connection and try again
+            {fallbackHref ? ", or send the same details by WhatsApp" : ""}.
+          </p>
+          <div className="mt-4 flex flex-wrap items-center gap-3">
+            {fallbackHref && (
+              <ButtonLink to={fallbackHref} tone="outline">
+                Send by WhatsApp instead
+              </ButtonLink>
+            )}
+            {phone && (
+              <a href={telLink(phone)} className="link text-sm font-medium">
+                Call {phone}
+              </a>
+            )}
+            {emailContact && fallbackText && (
+              <a
+                href={`mailto:${emailContact}?subject=${encodeURIComponent("Quote request")}&body=${encodeURIComponent(fallbackText)}`}
+                className="link text-sm font-medium"
+              >
+                Email {emailContact}
+              </a>
+            )}
+          </div>
         </div>
       )}
 
       <div className="mt-8 flex flex-wrap items-center gap-3">
         {draft.step > 0 && (
-          <button type="button" className={buttonClass("outline")} onClick={() => goTo(draft.step - 1)} disabled={status === "sending"}>
+          <Button tone="outline" onClick={() => goTo(draft.step - 1)} disabled={status === "sending"}>
             Back
+          </Button>
+        )}
+        <Button type="submit" tone="leaf" disabled={status === "sending" || !ready}>
+          {draft.step < LAST ? "Continue" : status === "sending" ? "Sending…" : status === "failed" ? "Try again" : "Send request"}
+        </Button>
+        {ready && hasProgress && status !== "sending" && (
+          <button
+            type="button"
+            onClick={resetAll}
+            className="ml-auto py-2 text-sm font-medium text-muted underline underline-offset-3 hover:text-ink"
+          >
+            Start over
           </button>
         )}
-        <button type="submit" className={buttonClass("leaf")} disabled={status === "sending" || !ready}>
-          {draft.step < LAST ? "Continue" : status === "sending" ? "Sending…" : status === "failed" ? "Try again" : "Send request"}
-        </button>
       </div>
     </form>
   );
@@ -322,7 +361,7 @@ function Confirmation({
       : ["We call or WhatsApp you to confirm the details and the price.", "We agree a day and time for the work.", "You pay in cash or by mobile money when the work is done."];
 
   return (
-    <m.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.35 }} aria-live="polite">
+    <div className="quote-step-enter" aria-live="polite">
       <h2 ref={headingRef} tabIndex={-1} className="text-3xl font-bold outline-none">
         Request sent
       </h2>
@@ -342,6 +381,6 @@ function Confirmation({
           How to pay
         </ButtonLink>
       </div>
-    </m.div>
+    </div>
   );
 }

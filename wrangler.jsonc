@@ -9,14 +9,13 @@
     "binding": "ASSETS",
     "not_found_handling": "404-page",
     "html_handling": "drop-trailing-slash",
-    "run_worker_first": ["/api/*", "/admin", "/admin/*"]
+    "run_worker_first": ["/api/*", "/admin*"]
   },
   "d1_databases": [
     {
       "binding": "DB",
       "database_name": "clean-world",
-      // Replace with the id printed by `wrangler d1 create clean-world` before the first deploy.
-      "database_id": "00000000-0000-0000-0000-000000000000",
+      "database_id": "d204ff77-fc19-4fb8-afb6-50acd07a710e",
       "migrations_dir": "worker/db/migrations"
     }
   ],

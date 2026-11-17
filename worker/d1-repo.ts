@@ -21,6 +21,9 @@ interface Row {
   notify_tries: number;
 }
 
+const COLUMNS =
+  "id, reference, created_at, customer_type, service, scope, frequency, neighbourhood, landmark, name, phone, organisation, email, po_reference, status, notify_status, notify_tries";
+
 const toQuote = (r: Row): QuoteRequest => ({
   id: r.id,
   reference: r.reference,
@@ -43,7 +46,7 @@ const toQuote = (r: Row): QuoteRequest => ({
 
 export function d1Repo(db: D1Database): QuoteRepo {
   const findById = async (id: string) => {
-    const row = await db.prepare("SELECT * FROM quote_requests WHERE id = ?").bind(id).first<Row>();
+    const row = await db.prepare(`SELECT ${COLUMNS} FROM quote_requests WHERE id = ?`).bind(id).first<Row>();
     return row ? toQuote(row) : null;
   };
 
@@ -60,41 +63,67 @@ export function d1Repo(db: D1Database): QuoteRepo {
              VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
           )
           .bind(
-            q.id, q.reference, q.createdAt, q.customerType, q.service, q.scope ?? null, q.frequency ?? null,
-            q.neighbourhood, q.landmark ?? null, q.name, q.phone, q.organisation ?? null, q.email ?? null,
-            q.poReference ?? null, q.status, q.notifyStatus, q.notifyTries,
+            q.id,
+            q.reference,
+            q.createdAt,
+            q.customerType,
+            q.service,
+            q.scope ?? null,
+            q.frequency ?? null,
+            q.neighbourhood,
+            q.landmark ?? null,
+            q.name,
+            q.phone,
+            q.organisation ?? null,
+            q.email ?? null,
+            q.poReference ?? null,
+            q.status,
+            q.notifyStatus,
+            q.notifyTries,
           )
           .run();
-        return true;
+        return "inserted";
       } catch (err) {
-        if (String(err).includes("quote_requests.reference")) return false;
+        const msg = String(err);
+        if (msg.includes("quote_requests.id") || msg.includes("PRIMARY KEY")) return "duplicate_id";
+        if (msg.includes("quote_requests.reference")) return "duplicate_reference";
         throw err;
       }
     },
 
     async recordNotify(id, status, countTry) {
       await db
-        .prepare("UPDATE quote_requests SET notify_status = ?, notify_tries = notify_tries + ? WHERE id = ?")
+        .prepare("UPDATE quote_requests SET notify_status = ?, notify_tries = notify_tries + ? WHERE id = ? AND notify_status != 'sent'")
         .bind(status, countTry ? 1 : 0, id)
         .run();
     },
 
-    async pendingNotify(limit, maxTries) {
+    async pendingNotify(limit, maxTries, pendingBeforeIso) {
       const { results } = await db
         .prepare(
-          "SELECT * FROM quote_requests WHERE notify_status IN ('pending','failed') AND notify_tries < ? ORDER BY created_at ASC LIMIT ?",
+          `SELECT ${COLUMNS} FROM quote_requests
+           WHERE ((notify_status = 'pending' AND created_at <= ?) OR notify_status = 'failed')
+             AND notify_tries < ?
+           ORDER BY created_at ASC LIMIT ?`,
         )
-        .bind(maxTries, limit)
+        .bind(pendingBeforeIso, maxTries, limit)
         .all<Row>();
       return results.map(toQuote);
     },
 
     async list(status, limit) {
       const stmt = status
-        ? db.prepare("SELECT * FROM quote_requests WHERE status = ? ORDER BY created_at DESC LIMIT ?").bind(status, limit)
-        : db.prepare("SELECT * FROM quote_requests ORDER BY created_at DESC LIMIT ?").bind(limit);
+        ? db.prepare(`SELECT ${COLUMNS} FROM quote_requests WHERE status = ? ORDER BY created_at DESC LIMIT ?`).bind(status, limit)
+        : db.prepare(`SELECT ${COLUMNS} FROM quote_requests ORDER BY created_at DESC LIMIT ?`).bind(limit);
       const { results } = await stmt.all<Row>();
       return results.map(toQuote);
+    },
+
+    async countUnemailed() {
+      const row = await db
+        .prepare("SELECT COUNT(*) AS count FROM quote_requests WHERE notify_status != 'sent' AND status != 'spam'")
+        .first<{ count: number }>();
+      return Number(row?.count ?? 0);
     },
 
     async updateStatus(id, status) {

@@ -10,6 +10,8 @@ import { normalisePhone } from "./phone";
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+export const isUuid = (value: string): boolean => UUID.test(value);
+
 export type ValidationResult =
   | { ok: true; value: QuoteRequestInput }
   | { ok: false; fields: FieldErrors };
@@ -33,6 +35,7 @@ export function validateQuote(raw: unknown, neighbourhoods: readonly string[]): 
 
   const customerType = text(r.customerType) as QuoteRequestInput["customerType"];
   if (!CUSTOMER_TYPES.includes(customerType)) fields.customerType = "Choose organisation or household.";
+  const isOrg = customerType === "organisation";
 
   const service = text(r.service) as QuoteRequestInput["service"];
   if (!SERVICE_SLUGS.includes(service)) fields.service = "Choose a service.";
@@ -59,27 +62,34 @@ export function validateQuote(raw: unknown, neighbourhoods: readonly string[]): 
   if (!phone) fields.phone = "Enter a phone number we can call, for example 0912 345 678.";
 
   const organisation = text(r.organisation);
-  if (customerType === "organisation" && (organisation.length < 2 || organisation.length > 150)) {
-    fields.organisation = "Enter your organisation's name.";
+  const email = text(r.email);
+  const poReference = text(r.poReference);
+  if (isOrg) {
+    if (organisation.length < 2 || organisation.length > 150) {
+      fields.organisation = "Enter your organisation's name.";
+    }
+    if (email && (!EMAIL.test(email) || email.length > 200)) {
+      fields.email = "Check this email address.";
+    }
+    if (poReference.length > 100) {
+      fields.poReference = "Keep this under 100 characters.";
+    }
   }
 
-  const email = text(r.email);
-  if (email && (!EMAIL.test(email) || email.length > 200)) fields.email = "Check this email address.";
-
-  const poReference = text(r.poReference);
-  if (poReference.length > 100) fields.poReference = "Keep this under 100 characters.";
+  const token = text(r.turnstileToken);
+  if (token.length > 2048) fields.turnstileToken = "Spam check failed. Try sending again.";
 
   if (Object.keys(fields).length > 0) return { ok: false, fields };
 
-  const isOrg = customerType === "organisation";
   const value: QuoteRequestInput = { id, customerType, service, neighbourhood, name, phone: phone! };
   if (scope) value.scope = scope;
   if (frequency) value.frequency = frequency;
   if (landmark) value.landmark = landmark;
-  if (email) value.email = email;
-  if (isOrg) value.organisation = organisation;
-  if (isOrg && poReference) value.poReference = poReference;
-  const token = text(r.turnstileToken);
+  if (isOrg) {
+    value.organisation = organisation;
+    if (email) value.email = email;
+    if (poReference) value.poReference = poReference;
+  }
   if (token) value.turnstileToken = token;
   return { ok: true, value };
 }

@@ -2,10 +2,11 @@ import { ArrowUpRight } from "lucide-react";
 import type { ButtonHTMLAttributes } from "react";
 import { Link } from "react-router";
 
-export type Tone = "leaf" | "sun" | "navy" | "outline" | "outline-light";
+type Tone = "leaf" | "sky" | "sun" | "navy" | "outline" | "outline-light";
 
 const TONES: Record<Tone, string> = {
   leaf: "btn-tone-leaf",
+  sky: "btn-tone-sky",
   sun: "btn-tone-sun",
   navy: "btn-tone-navy",
   outline: "btn-tone-outline",
@@ -52,12 +53,14 @@ export function ButtonLink({
   withArrow = true,
   className = "",
   children,
+  onClick,
 }: {
   to: string;
   tone?: Tone;
   withArrow?: boolean;
   className?: string;
   children: React.ReactNode;
+  onClick?: () => void;
 }) {
   const external = /^(https?:|tel:|mailto:)/.test(to);
   const content = withArrow ? (
@@ -74,13 +77,14 @@ export function ButtonLink({
     <a
       href={to}
       data-disc={discAttr}
+      onClick={onClick}
       className={buttonClass(tone, className)}
       {...(to.startsWith("http") ? { target: "_blank", rel: "noopener" } : {})}
     >
       {content}
     </a>
   ) : (
-    <Link to={to} data-disc={discAttr} className={buttonClass(tone, className)}>
+    <Link to={to} data-disc={discAttr} onClick={onClick} className={buttonClass(tone, className)}>
       {content}
     </Link>
   );

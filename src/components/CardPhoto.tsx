@@ -7,7 +7,7 @@ export type CardPhotoKey =
   | "audience-organisation"
   | "audience-household";
 
-/** Responsive decorative 16:10 AVIF/WebP/JPEG card photograph with lazy loading and surface fallback. */
+/** Responsive decorative 16:10 AVIF/WebP/JPEG generated card image with lazy loading and solid surface fallback. */
 export function CardPhoto({ photo, sizes }: { photo: CardPhotoKey; sizes: string }) {
   return (
     <picture className="block size-full">
@@ -33,4 +33,3 @@ export function CardPhoto({ photo, sizes }: { photo: CardPhotoKey; sizes: string
     </picture>
   );
 }
-

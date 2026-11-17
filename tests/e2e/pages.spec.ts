@@ -3,21 +3,21 @@ import { expect, test } from "@playwright/test";
 import { publicPaths } from "../../src/content/paths";
 
 for (const path of publicPaths) {
-  test(`${path} is pre-rendered, has one h1 and no accessibility violations`, async ({ page, request }) => {
+  test(`${path} is pre-rendered, has one h1, hides preview banner in production, and has no accessibility violations`, async ({ page, request }) => {
     const html = await (await request.get(path)).text();
     expect(html).toMatch(/<h1[\s>]/);
     expect(html).toContain('name="description"');
+    expect(html).not.toContain("Preview — showing details not yet confirmed by the owner");
 
     await page.emulateMedia({ reducedMotion: "reduce" });
     await page.goto(path);
     await expect(page.locator("h1")).toHaveCount(1);
-    await page.waitForTimeout(1000); // entrance fades must finish before contrast is measured
     const results = await new AxeBuilder({ page }).analyze();
     expect(results.violations.map((v) => `${v.id}: ${v.nodes[0]?.target}`)).toEqual([]);
   });
 }
 
-test("spec view-home step 02: what we do cards preserve service order, realistic decorative photography, and reduced-motion stillness", async ({ page }) => {
+test("spec view-home step 02: what we do cards preserve service order, decorative card images, and reduced-motion stillness", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
 
@@ -43,12 +43,13 @@ test("spec view-home step 02: what we do cards preserve service order, realistic
 
   const firstCardItem = section.locator("li.service-card-item").first();
   await expect(firstCardItem).toBeVisible();
+  await expect(firstCardItem).not.toHaveAttribute("tabindex");
   await expect(firstCardItem).toHaveCSS("transform", "none");
   await expect(firstCardItem).toHaveCSS("opacity", "1");
   await expect(page.locator('main img:not([alt=""])')).toHaveCount(0);
 });
 
-test("spec view-home step 03: who we work with buyer dossiers render workflow steps, realistic decorative photography, and reduced-motion stillness", async ({ page }) => {
+test("spec view-home step 03: who we work with customer cards render workflow steps, decorative card images, and reduced-motion stillness", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
 
@@ -110,7 +111,6 @@ test("spec view-home edge case 03: all images in main are decorative and backdro
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
   await expect(page.locator("h1")).toBeVisible();
-  await page.waitForTimeout(1000);
   const results = await new AxeBuilder({ page }).analyze();
   expect(results.violations.map((v) => `${v.id}: ${v.nodes[0]?.target}`)).toEqual([]);
 });

@@ -1,8 +1,5 @@
 import { ArrowUpRight } from "lucide-react";
-import { useReducedMotion } from "motion/react";
-import * as m from "motion/react-m";
-import { type LinksFunction } from "react-router";
-import { Link } from "react-router";
+import { Link, type LinksFunction } from "react-router";
 import { AudienceSection } from "../components/AudienceSection";
 import { ButtonLink } from "../components/Button";
 import { CardPhoto, type CardPhotoKey } from "../components/CardPhoto";
@@ -35,7 +32,7 @@ export const meta = () =>
 const STEPS = [
   { title: "Send a request", text: "Tell us what you need and where. It takes about two minutes." },
   { title: "We call you back", text: "We confirm the details by phone or WhatsApp and visit the site if the job needs it." },
-  { title: "You get a quotation", text: "A written price for the work, with how long it is valid." },
+  { title: "You get a clear price", text: "A stamped written quotation for organisations, or a confirmed price by phone or WhatsApp for homes." },
   { title: "We do the work, then you pay", text: "Cash, mobile money or bank transfer. Never on this website." },
 ];
 
@@ -55,14 +52,13 @@ const REASONS = [
 ];
 
 export default function Home() {
-  const reduceMotion = useReducedMotion() === true;
   const founderName = fact(company.founderName);
   const founderQuote = fact(company.founderQuote);
   const founderRole = fact(company.founderRole);
 
   return (
     <>
-      <HeroBento reduceMotion={reduceMotion} />
+      <HeroBento />
 
       <section className="relative overflow-x-clip py-16 md:py-22" aria-labelledby="what-title">
         <div aria-hidden="true" className="pointer-events-none absolute right-6 top-10 hidden text-leaf/10 md:block">
@@ -76,22 +72,13 @@ export default function Home() {
                 What we do
               </h2>
               <p className="max-w-md text-muted">
-                Five practical services for compounds, offices and homes, each priced by written quotation.
+                Five services for compounds, offices and homes — formal quotations for organisations and confirmed prices for households.
               </p>
             </div>
           </Reveal>
           <ul role="list" className="service-grid mt-10">
-            {services.map((s, i) => (
-              <m.li
-                key={s.slug}
-                className="service-card-item"
-                initial={{ opacity: 0, y: 16 }}
-                animate={reduceMotion ? { opacity: 1, y: 0 } : undefined}
-                whileInView={reduceMotion ? undefined : { opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "0px 0px -8% 0px" }}
-                transition={reduceMotion ? { duration: 0 } : { duration: 0.45, ease: "easeOut", delay: i * 0.07 }}
-                whileTap={reduceMotion ? undefined : { scale: 0.99 }}
-              >
+            {services.map((s) => (
+              <li key={s.slug} className="service-card-item">
                 <Link to={`/services/${s.slug}`} className="service-card group" data-service={s.slug}>
                   <div className="service-card-stage relative m-2.5 aspect-[16/10] overflow-hidden rounded-[calc(var(--radius-bento)-0.5rem)]">
                     <CardPhoto
@@ -116,13 +103,13 @@ export default function Home() {
                     </span>
                   </div>
                 </Link>
-              </m.li>
+              </li>
             ))}
           </ul>
         </div>
       </section>
 
-      <AudienceSection reduceMotion={reduceMotion} />
+      <AudienceSection />
 
       <section className="wrap py-16 md:py-22" aria-labelledby="how-title">
         <Reveal>

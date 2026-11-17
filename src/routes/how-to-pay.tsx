@@ -25,7 +25,7 @@ export default function HowToPay() {
           <ShieldAlert className="mt-1 shrink-0 text-alert" aria-hidden="true" />
           <p>
             <strong>Never type your mobile-money PIN into a website.</strong> Never share it with anyone, including our
-            staff. You only ever enter your PIN on your own phone, in your mobile-money menu.
+            staff. Only enter your PIN on your own phone, in your mobile-money menu.
           </p>
         </div>
 

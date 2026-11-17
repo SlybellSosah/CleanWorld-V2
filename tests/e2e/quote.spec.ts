@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { fillHousehold, REFERENCE } from "./helpers";
 
-test.describe("spec view-quote", () => {
+test.describe("spec view-quote & integration-turnstile", () => {
   test("a household request reaches the staff list", async ({ page, request }) => {
     const name = `E2E ${Date.now()} ${test.info().project.name}`;
     await page.goto("/quote");
@@ -18,7 +18,7 @@ test.describe("spec view-quote", () => {
     expect(stored).toMatchObject({ name, phone: "+211912345678", neighbourhood: "Tongping", status: "new" });
   });
 
-  test("edge case 01: a refresh restores the draft and the step", async ({ page }) => {
+  test("edge case 01: a refresh restores the draft and the step, and Start over clears it", async ({ page }) => {
     await page.goto("/quote");
     await page.getByLabel("A household").check();
     await page.getByRole("button", { name: "Continue" }).click();
@@ -28,6 +28,9 @@ test.describe("spec view-quote", () => {
     await expect(page.getByRole("heading", { name: "What do you need?" })).toBeVisible();
     await expect(page.getByLabel("Service", { exact: true })).toHaveValue("waste-collection");
     await expect(page.getByLabel("Tell us about the job")).toHaveValue("Two bins a week");
+
+    await page.getByRole("button", { name: "Start over" }).click();
+    await expect(page.getByRole("heading", { name: "Who is this for?" })).toBeVisible();
   });
 
   test("edge case 02: sending the same request twice gives one reference", async ({ request }) => {
@@ -68,11 +71,101 @@ test.describe("spec view-quote", () => {
     await expect(page.getByRole("heading", { name: "Request sent" })).toBeVisible();
   });
 
-  test("edge case 05: a household is not asked for organisation details", async ({ page }) => {
+  test("edge case 05: a household is not asked for organisation details and ignores prior org draft input", async ({ page }) => {
     await page.goto("/quote");
-    await fillHousehold(page);
+    await page.getByLabel("An organisation").check();
+    await page.getByRole("button", { name: "Continue" }).click();
+    await page.getByLabel("Service", { exact: true }).selectOption("cleaning");
+    await page.getByRole("button", { name: "Continue" }).click();
+    await page.getByLabel("Neighbourhood").selectOption("Tongping");
+    await page.getByRole("button", { name: "Continue" }).click();
+    await page.getByLabel("Email").fill("broken-email");
+
+    // Switch back to household and confirm hidden invalid email does not block submission
+    await page.getByRole("button", { name: "Back" }).click();
+    await page.getByRole("button", { name: "Back" }).click();
+    await page.getByRole("button", { name: "Back" }).click();
+    await page.getByLabel("A household").check();
+    await page.getByRole("button", { name: "Continue" }).click();
+    await page.getByRole("button", { name: "Continue" }).click();
+    await page.getByRole("button", { name: "Continue" }).click();
     await expect(page.getByLabel("Organisation", { exact: true })).toHaveCount(0);
     await expect(page.getByLabel("Purchase order or tender reference")).toHaveCount(0);
+    await page.getByLabel("Your name").fill("Household Switch");
+    await page.getByLabel("Phone number").fill("0912345678");
+    await page.getByRole("button", { name: "Send request" }).click();
+    await expect(page.getByRole("heading", { name: "Request sent" })).toBeVisible();
+  });
+
+  test("edge case 06 (view-quote): Turnstile script or challenge failure shows failure panel with WhatsApp fallback", async ({ page }) => {
+    await page.addInitScript(() => {
+      window.__CW_TURNSTILE_SITE_KEY = "2x00000000000000000000AB";
+    });
+    await page.route("https://challenges.cloudflare.com/turnstile/v0/api.js*", (route) =>
+      route.fulfill({
+        contentType: "application/javascript",
+        body: `window.turnstile = { render(el, opts) { setTimeout(() => opts["error-callback"](), 10); return "w-err"; }, reset() {}, remove() {} };`,
+      }),
+    );
+
+    await page.goto("/quote");
+    await fillHousehold(page);
+    await expect(page.getByTestId("turnstile-widget")).toBeAttached();
+    await page.waitForTimeout(30);
+    await page.getByRole("button", { name: "Send request" }).click();
+
+    await expect(page.getByText("We could not send your request.")).toBeVisible();
+    await expect(page.getByRole("link", { name: "Send by WhatsApp instead" })).toBeVisible();
+  });
+
+  test("edge case 05 (integration-turnstile): requests a fresh Turnstile token on every retry", async ({ page }) => {
+    await page.addInitScript(() => {
+      window.__CW_TURNSTILE_SITE_KEY = "1x00000000000000000000AA";
+    });
+    await page.route("https://challenges.cloudflare.com/turnstile/v0/api.js*", (route) =>
+      route.fulfill({
+        contentType: "application/javascript",
+        body: `
+          let seq = 0;
+          let savedOpts = null;
+          window.turnstile = {
+            render(el, opts) {
+              savedOpts = opts;
+              seq += 1;
+              opts.callback("tok-" + seq);
+              return "w-ok";
+            },
+            reset() {
+              seq += 1;
+              if (savedOpts) savedOpts.callback("tok-" + seq);
+            },
+            remove() {}
+          };
+        `,
+      }),
+    );
+
+    const seenTokens: (string | undefined)[] = [];
+    let attempt = 0;
+    await page.route("**/api/quotes", async (route) => {
+      attempt += 1;
+      const payload = JSON.parse(route.request().postData() ?? "{}");
+      seenTokens.push(payload.turnstileToken);
+      if (attempt === 1) {
+        await route.abort();
+      } else {
+        await route.continue();
+      }
+    });
+
+    await page.goto("/quote");
+    await fillHousehold(page);
+    await page.getByRole("button", { name: "Send request" }).click();
+    await expect(page.getByText("We could not send your request.")).toBeVisible();
+
+    await page.getByRole("button", { name: "Try again" }).click();
+    await expect(page.getByRole("heading", { name: "Request sent" })).toBeVisible();
+    expect(seenTokens).toEqual(["tok-1", "tok-2"]);
   });
 
   test("edge case 07: the service in the link is pre-selected only when it exists", async ({ page }) => {

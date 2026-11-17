@@ -1,12 +1,16 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { metaFor } from "../content/meta";
 import { serviceTitle } from "../content/services";
+import { FREQUENCY_LABELS } from "../lib/messages";
 import { telLink } from "../lib/whatsapp";
 import { QUOTE_STATUSES, type ApiResponse, type QuoteRequest, type QuoteStatus } from "../types";
 
 export const meta = () => metaFor({ title: "Requests — Clean World staff", description: "", path: "/admin", noindex: true });
 
-type Load = { state: "loading" } | { state: "error"; message: string } | { state: "ready"; quotes: QuoteRequest[] };
+type Load =
+  | { state: "loading" }
+  | { state: "error"; message: string }
+  | { state: "ready"; quotes: QuoteRequest[]; unemailedCount: number };
 
 const LOAD_ERRORS: Record<number, string> = {
   401: "You are not signed in as staff.",
@@ -15,30 +19,73 @@ const LOAD_ERRORS: Record<number, string> = {
 
 const when = (iso: string) => new Date(iso).toLocaleString("en-GB", { dateStyle: "medium", timeStyle: "short" });
 
+const notifySummary = (q: QuoteRequest): string =>
+  q.notifyStatus === "sent"
+    ? "Sent"
+    : q.notifyStatus === "failed"
+      ? `Failed (${q.notifyTries} ${q.notifyTries === 1 ? "try" : "tries"})`
+      : "Pending";
+
 export default function Admin() {
   const [filter, setFilter] = useState<QuoteStatus | "all">("all");
   const [load, setLoad] = useState<Load>({ state: "loading" });
   const [notice, setNotice] = useState("");
 
-  const refresh = useCallback(async () => {
+  useEffect(() => {
+    const controller = new AbortController();
     setLoad({ state: "loading" });
-    try {
-      const res = await fetch(`/api/admin/quotes${filter === "all" ? "" : `?status=${filter}`}`);
-      const json = (await res.json()) as ApiResponse<{ quotes: QuoteRequest[] }>;
-      if (json.status === "success") setLoad({ state: "ready", quotes: json.data.quotes });
-      else setLoad({ state: "error", message: LOAD_ERRORS[res.status] ?? "Could not load requests." });
-    } catch {
-      setLoad({ state: "error", message: "Could not load requests." });
-    }
+
+    void (async () => {
+      try {
+        const res = await fetch(`/api/admin/quotes${filter === "all" ? "" : `?status=${filter}`}`, {
+          signal: controller.signal,
+        });
+        if (!res.ok) {
+          if (!controller.signal.aborted) {
+            setLoad({ state: "error", message: LOAD_ERRORS[res.status] ?? "Could not load requests." });
+          }
+          return;
+        }
+        const json = (await res.json()) as ApiResponse<{ quotes: QuoteRequest[]; unemailedCount?: number }>;
+        if (controller.signal.aborted) return;
+        if (json.status === "success") {
+          const fallbackWaiting = json.data.quotes.filter((q) => q.notifyStatus !== "sent" && q.status !== "spam").length;
+          setLoad({
+            state: "ready",
+            quotes: json.data.quotes,
+            unemailedCount: json.data.unemailedCount ?? fallbackWaiting,
+          });
+        } else {
+          setLoad({ state: "error", message: LOAD_ERRORS[res.status] ?? "Could not load requests." });
+        }
+      } catch {
+        if (!controller.signal.aborted) {
+          setLoad({ state: "error", message: "Could not load requests." });
+        }
+      }
+    })();
+
+    return () => controller.abort();
   }, [filter]);
 
-  useEffect(() => void refresh(), [refresh]);
-
   const changeStatus = async (quote: QuoteRequest, status: QuoteStatus) => {
-    if (load.state !== "ready") return;
-    const previous = load.quotes;
+    const previousStatus = quote.status;
+    const unemailedDelta =
+      quote.notifyStatus !== "sent"
+        ? (previousStatus === "spam" ? 1 : 0) - (status === "spam" ? 1 : 0)
+        : 0;
+
     setNotice("");
-    setLoad({ state: "ready", quotes: previous.map((q) => (q.id === quote.id ? { ...q, status } : q)) });
+    setLoad((prev) =>
+      prev.state === "ready"
+        ? {
+            ...prev,
+            quotes: prev.quotes.map((q) => (q.id === quote.id ? { ...q, status } : q)),
+            unemailedCount: Math.max(0, prev.unemailedCount + unemailedDelta),
+          }
+        : prev,
+    );
+
     try {
       const res = await fetch(`/api/admin/quotes/${quote.id}`, {
         method: "PATCH",
@@ -47,12 +94,20 @@ export default function Admin() {
       });
       if (!res.ok) throw new Error();
     } catch {
-      setLoad({ state: "ready", quotes: previous });
-      setNotice(`Could not update ${quote.reference}. It is still "${quote.status}".`);
+      setLoad((prev) =>
+        prev.state === "ready"
+          ? {
+              ...prev,
+              quotes: prev.quotes.map((q) => (q.id === quote.id ? { ...q, status: previousStatus } : q)),
+              unemailedCount: Math.max(0, prev.unemailedCount - unemailedDelta),
+            }
+          : prev,
+      );
+      setNotice(`Could not update ${quote.reference}. It is still "${previousStatus}".`);
     }
   };
 
-  const waiting = load.state === "ready" ? load.quotes.filter((q) => q.notifyStatus !== "sent").length : 0;
+  const waiting = load.state === "ready" ? load.unemailedCount : 0;
 
   return (
     <div className="wrap py-10">
@@ -95,14 +150,16 @@ export default function Admin() {
           {load.message}
         </p>
       )}
-      {load.state === "ready" && load.quotes.length === 0 && <p className="mt-8 text-muted">No requests yet. New requests appear here as soon as they are sent.</p>}
+      {load.state === "ready" && load.quotes.length === 0 && (
+        <p className="mt-8 text-muted">No requests yet. New requests appear here as soon as they are sent.</p>
+      )}
 
       {load.state === "ready" && load.quotes.length > 0 && (
         <ul className="mt-8 border-t border-ink">
           {load.quotes.map((q) => (
             <li key={q.id} className="border-b border-line py-4">
               <details>
-                <summary className="grid cursor-pointer gap-x-6 gap-y-1 py-2 md:grid-cols-[10rem_1fr_1fr_auto] md:items-baseline">
+                <summary className="grid cursor-pointer gap-x-6 gap-y-1 py-2 md:grid-cols-[9.5rem_1fr_1fr_auto_auto] md:items-baseline">
                   <span className="font-mono font-semibold">{q.reference}</span>
                   <span>
                     {q.organisation ?? q.name}
@@ -112,6 +169,13 @@ export default function Admin() {
                     {serviceTitle(q.service)}
                     <span className="block text-sm text-muted">{q.neighbourhood}</span>
                   </span>
+                  <a
+                    href={telLink(q.phone)}
+                    onClick={(e) => e.stopPropagation()}
+                    className="link font-mono text-sm"
+                  >
+                    {q.phone}
+                  </a>
                   <span className="text-sm">
                     {q.status}
                     {q.notifyStatus !== "sent" && <span className="ml-2 font-semibold text-alert">not emailed</span>}
@@ -127,8 +191,9 @@ export default function Admin() {
                       ["PO / tender ref", q.poReference],
                       ["Customer", q.customerType],
                       ["Details", q.scope],
-                      ["How often", q.frequency],
+                      ["How often", q.frequency ? FREQUENCY_LABELS[q.frequency] : undefined],
                       ["Landmark", q.landmark],
+                      ["Email notification", notifySummary(q)],
                     ] as const
                   )
                     .filter(([, v]) => v)

@@ -19,8 +19,10 @@ export const company = {
   merchantNumbers: { value: [], confirmed: false } as CompanyFact<MerchantNumber[]>,
 };
 
-export const SHOW_UNCONFIRMED = import.meta.env.VITE_SHOW_UNCONFIRMED === "1";
+export const COPYRIGHT_YEAR = 2026;
 
-export const fact = <T,>(f: CompanyFact<T>): T | undefined => visible(f, SHOW_UNCONFIRMED);
+const showUnconfirmed = import.meta.env.VITE_SHOW_UNCONFIRMED === "1";
 
-export const showingUnconfirmed = anyUnconfirmedShown(Object.values(company), SHOW_UNCONFIRMED);
+export const fact = <T,>(f: CompanyFact<T>): T | undefined => visible(f, showUnconfirmed);
+
+export const showingUnconfirmed = anyUnconfirmedShown(Object.values(company), showUnconfirmed);

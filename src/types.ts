@@ -1,4 +1,4 @@
-// Generated from the global data schema in project.md. Change the schema first.
+// Maintained to match the global data schema in project.md. Update project.md first.
 
 export const SERVICE_SLUGS = ["fumigation", "cleaning", "waste-collection", "landscaping", "consultancy"] as const;
 export type ServiceSlug = (typeof SERVICE_SLUGS)[number];
@@ -87,11 +87,6 @@ export interface Service {
   safety: string[];
   frequency: string;
   goodFor: string[];
-}
-
-export interface Neighbourhood {
-  name: string;
-  aliases: string[];
 }
 
 export interface QuoteDraft {

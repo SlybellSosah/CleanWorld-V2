@@ -1,8 +1,8 @@
-import type { QuoteRequest, QuoteRequestInput } from "../types";
+import type { Frequency, QuoteRequest, QuoteRequestInput } from "../types";
 
 type Describable = Omit<QuoteRequestInput, "id" | "turnstileToken">;
 
-const FREQUENCY_LABEL: Record<string, string> = {
+export const FREQUENCY_LABELS: Record<Frequency, string> = {
   "one-time": "One time",
   weekly: "Weekly",
   fortnightly: "Every two weeks",
@@ -11,18 +11,19 @@ const FREQUENCY_LABEL: Record<string, string> = {
 };
 
 function lines(q: Describable, serviceTitle: string): string[] {
+  const isOrg = q.customerType === "organisation";
   const rows: [string, string | undefined][] = [
-    ["Customer", q.customerType === "organisation" ? "Organisation" : "Household"],
-    ["Organisation", q.organisation],
+    ["Customer", isOrg ? "Organisation" : "Household"],
+    ["Organisation", isOrg ? q.organisation : undefined],
     ["Service", serviceTitle],
     ["Details", q.scope],
-    ["How often", q.frequency ? FREQUENCY_LABEL[q.frequency] : undefined],
+    ["How often", q.frequency ? FREQUENCY_LABELS[q.frequency] : undefined],
     ["Neighbourhood", q.neighbourhood],
     ["Landmark", q.landmark],
     ["Name", q.name],
     ["Phone", q.phone],
-    ["Email", q.email],
-    ["PO / tender ref", q.poReference],
+    ["Email", isOrg ? q.email : undefined],
+    ["PO / tender ref", isOrg ? q.poReference : undefined],
   ];
   return rows.filter(([, v]) => v).map(([k, v]) => `${k}: ${v}`);
 }

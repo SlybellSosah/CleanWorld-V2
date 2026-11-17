@@ -17,7 +17,7 @@ export default function Services() {
       <PageHeader
         eyebrow="Services · Juba"
         title="Services"
-        lead="Five kinds of work, for organisations and households across Juba. Every job starts with a quote request."
+        lead="Five services for organisations and households across Juba. Every job starts with a quote request."
       />
       <ul role="list" className="wrap grid gap-5 py-8 md:grid-cols-2 md:py-12">
         {services.map((s, i) => (

@@ -1,18 +1,11 @@
-import * as m from "motion/react-m";
 import { Link } from "react-router";
 import { company, fact } from "../content/company";
 import { services } from "../content/services";
 import { Button, ButtonLink } from "./Button";
 import { Asterisk } from "./PageHeader";
 
-const rise = (delay: number, reduceMotion: boolean) => ({
-  initial: { opacity: 0, y: 16 },
-  animate: { opacity: 1, y: 0 },
-  transition: reduceMotion ? { duration: 0 } : { duration: 0.45, ease: "easeOut" as const, delay },
-});
-
 /** Full-bleed viewport-height hero bar matching the menu bar width and wrapping container alignment. */
-export function HeroBento({ reduceMotion }: { reduceMotion: boolean }) {
+export function HeroBento() {
   const address = fact(company.address);
 
   return (
@@ -34,33 +27,29 @@ export function HeroBento({ reduceMotion }: { reduceMotion: boolean }) {
             </p>
           </div>
 
-          <m.h1
-            {...rise(0, reduceMotion)}
-            className="mt-6 text-[2.45rem] font-bold leading-[1.0] tracking-[-0.035em] sm:text-5xl lg:text-[3.65rem]"
-          >
+          <h1 className="hero-rise hero-rise-1 mt-6 text-[2.45rem] font-bold leading-[1.0] tracking-[-0.035em] sm:text-5xl lg:text-[3.65rem]">
             Cleaner compounds. Fewer mosquitoes. Waste gone on schedule.
-          </m.h1>
+          </h1>
 
-          <m.p {...rise(0.12, reduceMotion)} className="mt-5 max-w-xl text-base text-slate-200 sm:text-lg">
+          <p className="hero-rise hero-rise-2 mt-5 max-w-xl text-base text-slate-200 sm:text-lg">
             Clean World is a Juba company that cleans, fumigates and collects waste for organisations and
             households. Tell us what you need and we will call you back with a quotation.
-          </m.p>
+          </p>
 
-          <m.div {...rise(0.22, reduceMotion)} className="mt-8 flex flex-wrap items-center gap-3">
+          <div className="hero-rise hero-rise-3 mt-8 flex flex-wrap items-center gap-3">
             <ButtonLink to="/quote" tone="sun">
               Request a quote
             </ButtonLink>
             <ButtonLink to="/services" tone="outline-light" withArrow={false}>
               See services
             </ButtonLink>
-          </m.div>
+          </div>
         </div>
 
-        <m.form
-          {...rise(0.22, reduceMotion)}
+        <form
           action="/quote"
           method="get"
-          className="hidden rounded-[var(--radius-panel)] border border-line/80 bg-paper p-6 text-ink shadow-2xl md:block"
+          className="hero-rise hero-rise-3 hidden rounded-[var(--radius-panel)] border border-line/80 bg-paper p-6 text-ink shadow-2xl md:block"
           aria-labelledby="slip-title"
         >
           <h2 id="slip-title" className="text-2xl font-bold">
@@ -91,7 +80,7 @@ export function HeroBento({ reduceMotion }: { reduceMotion: boolean }) {
             </Link>
             .
           </p>
-        </m.form>
+        </form>
       </div>
     </section>
   );

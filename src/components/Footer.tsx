@@ -1,11 +1,12 @@
 import { Link } from "react-router";
-import { company, fact } from "../content/company";
+import { company, COPYRIGHT_YEAR, fact } from "../content/company";
 import { services } from "../content/services";
 import { telLink, whatsappLink } from "../lib/whatsapp";
 import { Asterisk } from "./PageHeader";
 import { Wordmark } from "./Wordmark";
 
 export function Footer() {
+  const companyName = fact(company.name) ?? "Clean World Inc.";
   const phone = fact(company.phone);
   const whatsapp = fact(company.whatsapp);
   const email = fact(company.email);
@@ -84,7 +85,7 @@ export function Footer() {
         </div>
       </div>
       <p className="wrap mt-10 border-t border-white/15 pt-6 text-sm text-slate-400">
-        © {new Date().getFullYear()} {company.name.value}
+        © {COPYRIGHT_YEAR} {companyName}
       </p>
     </footer>
   );

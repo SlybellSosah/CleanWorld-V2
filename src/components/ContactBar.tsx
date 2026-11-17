@@ -5,13 +5,14 @@ import { telLink, whatsappLink } from "../lib/whatsapp";
 
 const HIDDEN_ON = ["/quote", "/admin"];
 
-export function ContactBar() {
+export function ContactBar({ phone: phoneProp, whatsapp: whatsappProp }: { phone?: string; whatsapp?: string } = {}) {
   const { pathname } = useLocation();
-  if (HIDDEN_ON.some((p) => pathname.startsWith(p))) return null;
+  if (HIDDEN_ON.some((p) => pathname === p || pathname.startsWith(`${p}/`))) return null;
 
-  const phone = fact(company.phone);
-  const whatsapp = fact(company.whatsapp);
-  const cell = "flex min-h-12 flex-1 items-center justify-center gap-1.5 rounded-full font-display text-sm font-semibold text-ink transition-colors hover:bg-paper";
+  const phone = phoneProp !== undefined ? phoneProp : fact(company.phone);
+  const whatsapp = whatsappProp !== undefined ? whatsappProp : fact(company.whatsapp);
+  const cell =
+    "flex min-h-12 flex-1 items-center justify-center gap-1.5 rounded-full font-display text-sm font-semibold text-ink transition-colors hover:bg-paper";
 
   return (
     <nav

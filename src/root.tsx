@@ -1,4 +1,3 @@
-import { domAnimation, LazyMotion, MotionConfig } from "motion/react";
 import { Links, Meta, Outlet, Scripts, ScrollRestoration } from "react-router";
 import "./app.css";
 import { ContactBar } from "./components/ContactBar";
@@ -31,24 +30,25 @@ export function Layout({ children }: { children: React.ReactNode }) {
 
 export default function App() {
   return (
-    <MotionConfig reducedMotion="user">
-      <LazyMotion features={domAnimation} strict>
-        <a href="#main" className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-50 focus:rounded-md focus:bg-ink focus:px-4 focus:py-3 focus:text-white">
-          Skip to content
-        </a>
-        {showingUnconfirmed && (
-          <div role="region" aria-label="Preview notice" className="bg-sun px-4 py-2 text-center text-sm font-medium text-navy">
-            Preview — showing details not yet confirmed by the owner
-          </div>
-        )}
-        <Header />
-        <main id="main">
-          <Outlet />
-        </main>
-        <Footer />
-        <ContactBar />
-      </LazyMotion>
-    </MotionConfig>
+    <>
+      <a
+        href="#main"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-3 focus:top-3 focus:z-50 focus:rounded-md focus:bg-ink focus:px-4 focus:py-3 focus:text-white"
+      >
+        Skip to content
+      </a>
+      {showingUnconfirmed && (
+        <div role="region" aria-label="Preview notice" className="bg-sun px-4 py-2 text-center text-sm font-medium text-navy">
+          Preview — showing details not yet confirmed by the owner
+        </div>
+      )}
+      <Header />
+      <main id="main">
+        <Outlet />
+      </main>
+      <Footer />
+      <ContactBar />
+    </>
   );
 }
 

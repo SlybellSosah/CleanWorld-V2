@@ -1,7 +1,8 @@
 import { ButtonLink } from "../components/Button";
 import { Eyebrow } from "../components/PageHeader";
+import { metaFor } from "../content/meta";
 
-export const meta = () => [{ title: "Page not found — Clean World Inc." }, { name: "robots", content: "noindex" }];
+export const meta = () => metaFor({ title: "Page not found — Clean World Inc.", description: "", path: "/404", noindex: true });
 
 export default function NotFound() {
   return (
@@ -11,7 +12,7 @@ export default function NotFound() {
           <Eyebrow>Error 404</Eyebrow>
           <h1 className="mt-4 text-4xl font-bold md:text-5xl">Page not found</h1>
           <p className="prose-block mt-5 text-lg text-muted">
-            This address does not match a page on our site. It may have moved when we rebuilt the website.
+            This address does not match a page on our site.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
             <ButtonLink to="/">Go to the home page</ButtonLink>
